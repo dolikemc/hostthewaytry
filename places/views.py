@@ -29,3 +29,6 @@ class CreatePlace(generic.CreateView):
     model = Places
     template_name = 'places/create_place.html'
     fields = '__all__'
+
+    # todo: use special save image file functionality
+    # todo: split fields into optional and mandatory, eventually two screens (create and update)

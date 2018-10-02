@@ -38,7 +38,7 @@ SECRET_KEY = 'y6r_9lfz$af-egoz-fb@-9-wybc6@3a*5+=ibj1-wds#pfj^(e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['hostthewaytry.pythonanywhere.com']
 
 # Application definition
 
