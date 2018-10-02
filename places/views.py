@@ -32,8 +32,8 @@ class CreatePlace(generic.CreateView):
     model = Places
     template_name = 'places/create_place.html'
     # todo: reduce fields and unit test still runs
-    # fields = ['name', 'picture', 'country']
-    fields = '__all__'
+    fields = ['name', 'picture', 'country']
+    # fields = '__all__'
     user = User(is_staff=True)
 
     @login_required
@@ -44,5 +44,16 @@ class CreatePlace(generic.CreateView):
     # todo: split fields into optional and mandatory, eventually two screens (create and update)
 
     def post(self, request: HttpRequest, *args, **kwargs):
-        print(request.body)
-        return super(CreatePlace, self).post(request, *args, **kwargs)
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        print(request.FILES)
+        if 'picture' in request.FILES:
+            files = request.FILES['picture']
+        else:
+            return super(CreatePlace, self).post(request, *args, **kwargs)
+        if form.is_valid():
+            for f in files:
+                print(f)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)

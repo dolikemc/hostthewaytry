@@ -6,8 +6,6 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.urls import reverse
 
-from .file_modify_field import ImageFieldAdjusted
-
 
 # todo: go to singular class names because of auto plural in the admin site
 
@@ -168,9 +166,9 @@ class Places(models.Model):
                                    help_text='What else would you like to tell your gusets?')
     # location data
     # todo: define a proper sub clss of models.ImageFiled with a resizing pres_save method
-    picture = ImageFieldAdjusted(help_text='Picture of your place',
-                                 upload_to='',
-                                 default='hosttheway.jpg')
+    picture = models.ImageField(help_text='Picture of your place',
+                                upload_to='',
+                                default='hosttheway.jpg')
     longitude = models.FloatField(
         help_text='Where is your place (longitude)? Could be taken from the picture meta data', null=True, blank=True)
     latitude = models.FloatField(help_text='Where is your place (latitude)? Could be taken from the picture meta data',
@@ -191,6 +189,7 @@ class Places(models.Model):
         # copied from https://djangosnippets.org/snippets/10597/
         # Opening the uploaded image
         im = Image.open(self.picture)
+        # print(self.picture)
 
         output = BytesIO()
 
