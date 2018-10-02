@@ -27,20 +27,22 @@ def base_layout(request: HttpRequest) -> HttpResponse:
     return render(request, template)
 
 
+# todo: picture send through this view
 class CreatePlace(generic.CreateView):
     model = Places
     template_name = 'places/create_place.html'
-    fields = ['name', 'picture', 'country']
-    # fields = '__all__'
+    # todo: reduce fields and unit test still runs
+    # fields = ['name', 'picture', 'country']
+    fields = '__all__'
     user = User(is_staff=True)
 
     @login_required
     def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+        return super(CreatePlace, self).dispatch(*args, **kwargs)
 
     # todo: use special save image file functionality
     # todo: split fields into optional and mandatory, eventually two screens (create and update)
 
-    def post(self, request, *args, **kwargs):
-        print(request)
-        return super().post(request, *args, **kwargs)
+    def post(self, request: HttpRequest, *args, **kwargs):
+        print(request.body)
+        return super(CreatePlace, self).post(request, *args, **kwargs)

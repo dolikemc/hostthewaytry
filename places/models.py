@@ -205,7 +205,6 @@ class Places(models.Model):
         self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
                                             'image/jpeg',
                                             sys.getsizeof(output), None)
-        print('called?  ')
         super(Places, self).save(**kwargs)
 
     def get_absolute_url(self):
