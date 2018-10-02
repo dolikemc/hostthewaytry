@@ -25,6 +25,12 @@ class ExifData(TestCase):
         self.assertAlmostEquals(data[1], 11.5763, 4)
 
 
+class CreateScreen(TestCase):
+    def test_use_template(self):
+        response = self.client.get('/places/add/')
+        self.assertTemplateUsed(response, template_name='places/create_place.html')
+
+
 class ListScreen(TestCase):
     def setUp(self):
         # Every test needs a client.

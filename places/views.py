@@ -23,3 +23,9 @@ class DetailView(generic.DetailView):
 def base_layout(request: HttpRequest) -> HttpResponse:
     template = 'places/w3base.html'
     return render(request, template)
+
+
+class CreatePlace(generic.CreateView):
+    model = Places
+    template_name = 'places/create_place.html'
+    fields = '__all__'

@@ -4,6 +4,7 @@ from io import BytesIO
 from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
+from django.urls import reverse
 
 from .file_modify_field import ImageFieldAdjusted
 
@@ -206,3 +207,6 @@ class Places(models.Model):
                                             sys.getsizeof(output), None)
 
         super(Places, self).save(kwargs)
+
+    def get_absolute_url(self):
+        return reverse('places:detail', kwargs={'pk': self.pk})

@@ -1,0 +1,9 @@
+{% extends 'places/w3base.html' %}
+{% block content %}
+    {% load static %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
