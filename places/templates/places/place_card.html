@@ -1,0 +1,17 @@
+<a href="{% url 'places:detail' place.id %}">
+    <div class="w3-col s6 m4 l3 w3-card w3-round-large {{ card_color|default:"w3-blue" }}"
+         style="min-height: 300px">
+        <!-- todo: all overview information in the card-->
+        <div>
+            <div class="w3-container w3-center">
+                <h6>{{ place.name }}</h6>
+            </div>
+            <img class="w3-image"
+                 src="static/img/{{ place.picture }}"
+                 alt="'Picture of the Place'">
+            <div class="w3-container w3-center">
+                <p>{{ forloop.counter }}</p>
+            </div>
+        </div>
+    </div>
+</a>

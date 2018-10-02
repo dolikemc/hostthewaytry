@@ -1,0 +1,28 @@
+{% extends 'places/w3base.html' %}
+{% block content %}
+    {% load static %}
+    {% load leaflet_tags %}
+    <div class="w3-row-padding">
+        {% for place in places %}
+            {% if forloop.counter == 1 %}
+                {% include 'places/place_card.html' %}
+            {% elif forloop.counter == 2 %}
+                {% include 'places/place_card.html' with card_color="w3-orange" %}
+                <!-- todo: set map to the searched place or the current loaction    -->
+                <div class="w3-col s12 m4 l3 w3-container w3-light-blue w3-round-large">
+                    {% leaflet_map "yourmap" %}
+                </div>
+            {% elif forloop.counter == 3 or forloop.counter == 6 %}
+                {% include 'places/place_card.html' with card_color="w3-amber" %}
+            {% else %}
+                {% include 'places/place_card.html' with card_color="w3-lime" %}
+            {% endif %}
+
+        {% empty %}
+            <h1>Error</h1>
+        {% endfor %}
+        <div class="w3-col s6 m4 l3 w3-container w3-round-large w3-grey" style="min-height: 302px">
+            <h1><b class="w3-opacity">ADDITIONAL STUFF</b></h1>
+        </div>
+    </div>
+{% endblock %}

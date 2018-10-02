@@ -1,0 +1,24 @@
+{% extends 'places/w3base.html' %}
+{% block content %}
+    {% load static %}
+    <!-- todo: show all necessary information of this place -->
+    <!-- todo: make a suitable design -->
+    <div class="w3-container w3-pale-yellow">
+        <h1>{{ place.name }}</h1>
+        <!-- todo: configurable static img path -->
+        <img src="/places/static/img/{{ place.picture }}" alt="Picture" class="w3-image"
+             style="height: 200px; width: 200px">
+        {% if place.private_bathroom == 1 %}
+            <i class="fas fa-bath w3-large"> private {{ place.bathrooms }}</i>
+        {% else %}
+            <i class="fas fa-bath w3-large">{{ place.bathrooms }}</i>
+        {% endif %}
+        <i class="fa fa-bed w3-large">{{ place.beds }}</i>
+        {% if place.smoking == 1 %}
+            <i class="fas fa-smoking w3-large w3-text-green"></i>
+        {% else %}
+            <i class="fas fa-smoking-ban w3-large w3-text-red"></i>
+        {% endif %}
+        <i class="fas fa-coffee w3-large w3-text-brown">{{ place.meals }}</i>
+    </div>
+{% endblock %}
