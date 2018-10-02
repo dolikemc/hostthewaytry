@@ -164,7 +164,7 @@ class Places(models.Model):
     own_key = models.BooleanField(help_text='Do guests have their own key to the house?', default=False)
     separate_entrance = models.BooleanField(help_text='Is there a separate entrance to the house for guests?',
                                             default=False)
-    description = models.CharField(max_length=500, default='',
+    description = models.CharField(max_length=500, default='', blank=True,
                                    help_text='What else would you like to tell your gusets?')
     # location data
     # todo: define a proper sub clss of models.ImageFiled with a resizing pres_save method
@@ -172,9 +172,9 @@ class Places(models.Model):
                                  upload_to='',
                                  default='hosttheway.jpg')
     longitude = models.FloatField(
-        help_text='Where is your place (longitude)? Could be taken from the picture meta data', null=True)
+        help_text='Where is your place (longitude)? Could be taken from the picture meta data', null=True, blank=True)
     latitude = models.FloatField(help_text='Where is your place (latitude)? Could be taken from the picture meta data',
-                                 null=True)
+                                 null=True, blank=True)
     # todo: remaining data: prices, seasons, cleaning fee
     # todo: remaining data: minimum, maximum stay
     # todo: remaining data: accepted currencies
@@ -205,8 +205,8 @@ class Places(models.Model):
         self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
                                             'image/jpeg',
                                             sys.getsizeof(output), None)
-
-        super(Places, self).save(kwargs)
+        print('called?  ')
+        super(Places, self).save(**kwargs)
 
     def get_absolute_url(self):
         return reverse('places:detail', kwargs={'pk': self.pk})

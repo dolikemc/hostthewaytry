@@ -26,9 +26,21 @@ class ExifData(TestCase):
 
 
 class CreateScreen(TestCase):
+    def setUp(self):
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'secret'}
+        User.objects.create_user(**self.credentials, is_staff=True)
+
     def test_use_template(self):
         response = self.client.get('/places/add/')
         self.assertTemplateUsed(response, template_name='places/create_place.html')
+
+    def test_post_minimal_data(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        response = self.client.post('/places/add/', data={'name': 'test'})
+        print(response)
+        self.assertEqual(response.status_code, 200)
 
 
 class ListScreen(TestCase):
@@ -50,7 +62,6 @@ class ListScreen(TestCase):
         # Issue a GET request.
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.get('/admin/')
-        print(response)
         self.assertEqual(response.status_code, 200)
 
     def test_on_start(self):
@@ -63,8 +74,7 @@ class ListScreen(TestCase):
         # Issue a GET request.
         response: HttpResponse = self.client.get('/places/')
         self.assertContains(response, 'places', status_code=200)
-        # self.assertInHTML('<div id="first_hit">', str(response.content))
-        print(response.content)
+        self.assertInHTML('<title>HOST THE WAY</title>', str(response.content))
 
     def test_index_template(self):
         response = self.client.get('/places/')

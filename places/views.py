@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views import generic
@@ -28,7 +30,17 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 class CreatePlace(generic.CreateView):
     model = Places
     template_name = 'places/create_place.html'
-    fields = '__all__'
+    fields = ['name', 'picture', 'country']
+    # fields = '__all__'
+    user = User(is_staff=True)
+
+    @login_required
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     # todo: use special save image file functionality
     # todo: split fields into optional and mandatory, eventually two screens (create and update)
+
+    def post(self, request, *args, **kwargs):
+        print(request)
+        return super().post(request, *args, **kwargs)
