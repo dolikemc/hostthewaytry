@@ -38,7 +38,10 @@ class CreateScreen(TestCase):
 
     def test_post_minimal_data(self):
         # self.assertTrue(self.client.login(**self.credentials))
-        response = self.client.post('/places/add/', data={'name': 'test', 'picture': 'hosttheway.jpg'})
+        # todo: use credentials
+        # todo: picture data, not file name
+        response = self.client.post('/places/add/',
+                                    data={'name': 'test', 'picture': 'places/static/img/hosttheway.jpg'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
 

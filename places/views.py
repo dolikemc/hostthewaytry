@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import generic
 
 from .models import Places
@@ -32,16 +32,21 @@ class CreatePlace(ModelForm):
         model = Places
         # template_name = 'places/create_place.html'
         # todo: reduce fields and unit test still runs
-        fields = ['name', 'country', 'picture']
+        fields = ['name', 'picture']
         # fields = '__all__'
         # initial = {'name': 'Name', 'country': 'DE'}
         # user = User(is_staff=True)
 
-    # todo: use special save image file functionality
     # todo: split fields into optional and mandatory, eventually two screens (create and update)
 
 
 def create_new_place(request: HttpRequest) -> HttpResponse:
-    form = CreatePlace()
-    print(request.FILES)
+    if request.method == 'POST':
+        print(request.POST, request.FILES)
+        form = CreatePlace(request.POST, request.FILES)
+    else:
+        form = CreatePlace()
+    if form.is_valid():
+        place = form.save()
+        return redirect('places:detail', pk=place.pk)
     return render(request, 'places/create_place.html', {'form': form})
