@@ -37,10 +37,10 @@ class CreateScreen(TestCase):
         self.assertTemplateUsed(response, template_name='places/create_place.html')
 
     def test_post_minimal_data(self):
-        self.assertTrue(self.client.login(**self.credentials))
+        # self.assertTrue(self.client.login(**self.credentials))
         response = self.client.post('/places/add/', data={'name': 'test', 'picture': 'hosttheway.jpg'})
-        print(response)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
 
 
 class ListScreen(TestCase):

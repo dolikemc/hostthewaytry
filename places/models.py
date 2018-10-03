@@ -168,7 +168,7 @@ class Places(models.Model):
     # todo: define a proper sub clss of models.ImageFiled with a resizing pres_save method
     picture = models.ImageField(help_text='Picture of your place',
                                 upload_to='',
-                                default='hosttheway.jpg')
+                                blank=True)
     longitude = models.FloatField(
         help_text='Where is your place (longitude)? Could be taken from the picture meta data', null=True, blank=True)
     latitude = models.FloatField(help_text='Where is your place (latitude)? Could be taken from the picture meta data',
@@ -187,23 +187,27 @@ class Places(models.Model):
 
     def save(self, **kwargs):
         # copied from https://djangosnippets.org/snippets/10597/
+
         # Opening the uploaded image
-        im = Image.open(self.picture)
-        # print(self.picture)
+        try:
+            im = Image.open(self.picture)
+            # print(self.picture)
 
-        output = BytesIO()
+            output = BytesIO()
 
-        # Resize/modify the image
-        im = im.resize((200, 200))
+            # Resize/modify the image
+            im = im.resize((200, 200))
 
-        # after modifications, save it to the output
-        im.save(output, format='JPEG', quality=100)
-        output.seek(0)
+            # after modifications, save it to the output
+            im.save(output, format='JPEG', quality=100)
+            output.seek(0)
 
-        # change the imagefield value to be the newley modifed image value
-        self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
-                                            'image/jpeg',
-                                            sys.getsizeof(output), None)
+            # change the imagefield value to be the newley modifed image value
+            self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
+                                                'image/jpeg',
+                                                sys.getsizeof(output), None)
+        except:
+            pass
         super(Places, self).save(**kwargs)
 
     def get_absolute_url(self):

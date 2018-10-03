@@ -7,7 +7,7 @@ from . import views
 app_name = 'places'
 urlpatterns = [
                   path('', views.IndexView.as_view(), name='index'),
-                  path('add/', views.CreatePlace.as_view(), name='create'),
+                  path('add/', views.create_new_place, name='create'),
                   path('<int:pk>/', views.DetailView.as_view(), name='detail'),
                   path('base_layout', views.base_layout, name='base_layout'),
 
