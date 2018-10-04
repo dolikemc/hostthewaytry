@@ -5,14 +5,15 @@ from django.db import models
 
 # Create your models here.
 
-class ImageFieldAdjusted(models.ImageField):
+class ImageFieldExtend(models.ImageField):
 
     # Copied from https://gist.github.com/erans/983821/cce3712b82b3de71c73fbce9640e25adef2b0392
 
-    def get_exif_data(self):
+    def get_exif_data(self, im: Image = None):
         """Returns a dictionary from the exif data of an PIL Image item. Also converts the GPS Tags"""
         # Opening the uploaded image
-        im = Image.open(self.name)
+        if im is None:
+            im = Image.open(self.name)
         if 'exif' not in im.info:
             return {}
 
@@ -37,12 +38,12 @@ class ImageFieldAdjusted(models.ImageField):
 
         return d + (m / 60.0) + (s / 3600.0)
 
-    def get_lat_lon(self):
+    def get_lat_lon(self, im: Image = None):
         """Returns the latitude and longitude, if available, from the provided exif_data
         (obtained through get_exif_data above)"""
         lat = None
         lon = None
-        exif_data = self.get_exif_data()
+        exif_data = self.get_exif_data(im)
         if "GPS" in exif_data:
             if piexif.GPSIFD.GPSLatitude in exif_data["GPS"]:
                 lat = self._convert_to_degress(exif_data["GPS"][piexif.GPSIFD.GPSLatitude])

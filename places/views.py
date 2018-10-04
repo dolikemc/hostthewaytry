@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
@@ -26,13 +27,12 @@ def base_layout(request: HttpRequest) -> HttpResponse:
     return render(request, template)
 
 
-# todo: picture send through this view
 class CreatePlace(ModelForm):
     class Meta:
         model = Places
         # template_name = 'places/create_place.html'
         # todo: reduce fields and unit test still runs
-        fields = ['name', 'picture']
+        exclude = ['longitude', 'latitude', 'area']
         # fields = '__all__'
         # initial = {'name': 'Name', 'country': 'DE'}
         # user = User(is_staff=True)
@@ -40,6 +40,7 @@ class CreatePlace(ModelForm):
     # todo: split fields into optional and mandatory, eventually two screens (create and update)
 
 
+@login_required
 def create_new_place(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         print(request.POST, request.FILES)
