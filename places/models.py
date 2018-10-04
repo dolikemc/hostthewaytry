@@ -6,6 +6,8 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.urls import reverse
 
+from .image_filed_extend import ImageFieldExtend
+
 
 # todo: go to singular class names because of auto plural in the admin site
 
@@ -191,18 +193,22 @@ class Places(models.Model):
         # Opening the uploaded image
         try:
             im = Image.open(self.picture)
-            # print(self.picture)
+
+            # read lat and long
+            imgExt = ImageFieldExtend(self.picture)
+            (self.longitude, self.latitude) = imgExt.get_lat_lon(im)
 
             output = BytesIO()
 
-            # Resize/modify the image
+            # todo: keep orientation
             im = im.resize((200, 200))
+            # print(im.info)
 
             # after modifications, save it to the output
             im.save(output, format='JPEG', quality=100)
             output.seek(0)
 
-            # change the imagefield value to be the newley modifed image value
+            # change the image field value to be the newley modifed image value
             self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
                                                 'image/jpeg',
                                                 sys.getsizeof(output), None)
