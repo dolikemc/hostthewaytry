@@ -30,8 +30,8 @@ class ExifData(TestCase):
             name='./places/static/img/IMG_3745.JPG')
         fp = Image.open(file.name)
         data = file.get_lat_lon(fp)
-        self.assertAlmostEquals(data[0], 48.1367, 4)
         self.assertAlmostEquals(data[1], 11.5763, 4)
+        self.assertAlmostEquals(data[0], 48.1367, 4)
 
 
 class CreateScreen(TestCase):
