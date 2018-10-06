@@ -2,6 +2,7 @@ from pathlib import Path
 
 from PIL import Image
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
 from django.test import TestCase, Client
 
@@ -51,6 +52,12 @@ class CreateScreen(TestCase):
         response = self.client.post('/places/add/', data={'name': 'test'})
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(response.url, '/places/1/')
+
+    def test_post_file_load(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        fp = SimpleUploadedFile(name='places/static/img/IMG_3745.JPG', content=b'file_content', content_type='file/*')
+        response = self.client.post('/places/add/', data={'name': 'test file upload', 'picture': fp})
+        self.assertEqual(response.status_code, 200)
 
 
 class ListScreen(TestCase):
