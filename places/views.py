@@ -4,7 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
 
-from .models import Place
+from .models import Place, Price
 
 
 class IndexView(generic.ListView):
@@ -52,3 +52,21 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         place = form.save()
         return redirect('places:detail', pk=place.pk)
     return render(request, 'places/create_place.html', {'form': form})
+
+
+class AddPriceToPlace(ModelForm):
+    class Meta:
+        model = Price
+        fields = '__all__'
+
+
+@login_required
+def create_new_price(request: HttpRequest) -> HttpResponse:
+    if request.method == 'POST':
+        form = AddPriceToPlace(request.POST, request.FILES)
+    else:
+        form = AddPriceToPlace()
+    if form.is_valid():
+        price = form.save()
+        return redirect('places:detail', pk=price.place_id_id)
+    return render(request, 'places/create_price.html', {'form': form})

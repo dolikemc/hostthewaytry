@@ -8,6 +8,7 @@ app_name = 'places'
 urlpatterns = [
                   path('', views.IndexView.as_view(), name='index'),
                   path('add/', views.create_new_place, name='create'),
+                  path('price/', views.create_new_price, name='create_price'),
                   path('<int:pk>/', views.DetailView.as_view(), name='detail'),
                   path('base_layout', views.base_layout, name='base_layout'),
 

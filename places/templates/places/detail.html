@@ -1,6 +1,9 @@
 {% extends 'places/w3base.html' %}
 {% block content %}
     {% load static %}
+    {% load leaflet_tags %}
+
+
     <!-- todo: show all necessary information of this place -->
     <!-- todo: make a suitable design -->
     <div class="w3-container w3-pale-yellow">
@@ -20,5 +23,14 @@
             <i class="fas fa-smoking-ban w3-large w3-text-red"></i>
         {% endif %}
         <i class="fas fa-coffee w3-large w3-text-brown">{{ place.meals }}</i>
+
+        {% leaflet_map "detail_map" callback="window.map_init_basic" %}
+
+        <script type="text/javascript">
+            function map_init_basic(map, options) {
+                map.setView([{{ place.longitude }}, {{ place.latitude }}], 10);
+                L.marker([{{ place.longitude }}, {{ place.latitude }}]).addTo(map);
+            };
+        </script>
     </div>
 {% endblock %}

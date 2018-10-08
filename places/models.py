@@ -1,4 +1,5 @@
 import sys
+from datetime import date
 from io import BytesIO
 
 from PIL import Image
@@ -173,6 +174,9 @@ class Place(models.Model):
     reviewed = models.BooleanField(editable=False, default=False)
     deleted = models.BooleanField(editable=False, default=False)
 
+    def __str__(self):
+        return f"{self.name} ({self.country})"
+
     def save(self, **kwargs):
         # copied from https://djangosnippets.org/snippets/10597/
 
@@ -211,12 +215,12 @@ class Place(models.Model):
 
 
 class Price(models.Model):
-    REGULAR_PER_NIGHT = 'NI'
-    REGULAR_PER_PERSON = 'PE'
-    REGULAR_PER_ROOM = 'RO'
-    SEASON_PER_NIGHT = 'SN'
-    SEASON_PER_PERSON = 'SP'
-    SEASON_PER_ROOM = 'SR'
+    CATEGORY_C_PER_NIGHT = 'CN'
+    CATEGORY_C_PER_ROOM = 'CR'
+    CATEGORY_B_PER_NIGHT = 'BN'
+    CATEGORY_B_PER_ROOM = 'BR'
+    CATEGORY_A_PER_NIGHT = 'AN'
+    CATEGORY_A_PER_ROOM = 'AR'
     CLEANING_FEE = 'CL'
     BREAKFAST = 'BR'
     BREAKFAST_LUNCH = 'BL'
@@ -224,12 +228,12 @@ class Price(models.Model):
     ALL_MEALS = 'AM'
 
     PRICE_CATEGORIES = (
-        (REGULAR_PER_NIGHT, 'Regular price per night'),
-        (REGULAR_PER_PERSON, 'Regular price per person'),
-        (REGULAR_PER_ROOM, 'Regular price per room'),
-        (SEASON_PER_NIGHT, 'Season price per night'),
-        (SEASON_PER_PERSON, 'Season price per person'),
-        (SEASON_PER_ROOM, 'Season price per room'),
+        (CATEGORY_C_PER_NIGHT, 'Regular price per night'),
+        (CATEGORY_C_PER_ROOM, 'Regular price per room'),
+        (CATEGORY_B_PER_NIGHT, 'Special price per night'),
+        (CATEGORY_B_PER_ROOM, 'Special price per room'),
+        (CATEGORY_A_PER_NIGHT, 'Top price per night'),
+        (CATEGORY_A_PER_ROOM, 'Top price per room'),
         (CLEANING_FEE, 'Cleaning fee'),
         (BREAKFAST, 'Price for breakfast'),
         (BREAKFAST_LUNCH, 'Price for breakfast and lunch'),
@@ -240,7 +244,9 @@ class Price(models.Model):
                                 max_digits=9)
     currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
     category = models.CharField(max_length=2, help_text='Waht kind of contact you can offer your guest?',
-                                choices=PRICE_CATEGORIES, default=REGULAR_PER_PERSON)
+                                choices=PRICE_CATEGORIES, default=CATEGORY_C_PER_NIGHT)
+    valid_from = models.DateField(help_text='Price is valid from this date', default=date(2018, 1, 1))
+    valid_to = models.DateField(help_text='Price is valid to this date', default=date(2018, 12, 31))
     # technical data
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)

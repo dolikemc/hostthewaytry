@@ -99,7 +99,6 @@ DATABASES = {
 # Leaflet configuration
 
 LEAFLET_CONFIG = {
-    'SPATIAL_EXTENT': (12.0, 49.0, 8, 46),
     'DEFAULT_CENTER': (48.1309291, 11.5793613),
     'DEFAULT_ZOOM': 16,
     'MIN_ZOOM': 3,
