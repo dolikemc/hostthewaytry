@@ -4,7 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
 
-from .models import Places
+from .models import Place
 
 
 class IndexView(generic.ListView):
@@ -13,13 +13,13 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         # todo: measure of distance
-        return Places.objects.order_by('-latitude')
+        return Place.objects.order_by('-latitude')
 
 
 class DetailView(generic.DetailView):
     template_name = 'places/detail.html'
     context_object_name = 'place'
-    model = Places
+    model = Place
 
 
 def base_layout(request: HttpRequest) -> HttpResponse:
@@ -29,13 +29,14 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 
 class CreatePlace(ModelForm):
     class Meta:
-        model = Places
+        model = Place
         # template_name = 'places/create_place.html'
         # todo: reduce fields and unit test still runs
-        exclude = ['longitude', 'latitude', 'area']
+        exclude = ['longitude', 'latitude']
         # fields = '__all__'
         # initial = {'name': 'Name', 'country': 'DE'}
         # user = User(is_staff=True)
+        # localized_fields =
 
     # todo: split fields into optional and mandatory, eventually two screens (create and update)
 

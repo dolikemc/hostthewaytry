@@ -9,8 +9,6 @@ from django.urls import reverse
 from .image_filed_extend import ImageFieldExtend
 
 
-# todo: go to singular class names because of auto plural in the admin site
-
 class GeoName(models.Model):
     """ geonameid         : integer id of record in geonames database
         name              : name of geographical point (utf8) varchar(200)
@@ -71,29 +69,7 @@ class GeoName(models.Model):
         return f"{self.ascii_name} ({self.country_code}):{self.geo_name_id}"
 
 
-class Towns(models.Model):
-    name = models.CharField(max_length=200, help_text='Name of your town/area')
-    # todo: town specialities like airport, famous buildings etc...
-    # technical data
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True)
-    reviewed = models.BooleanField(editable=False, default=False)
-    deleted = models.BooleanField(editable=False, default=False)
-
-
-class Prices(models.Model):
-    value = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=1.00,
-                                max_digits=9)
-    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
-    # todo: price data: season, category, charges
-    # technical data
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True)
-    reviewed = models.BooleanField(editable=False, default=False)
-    deleted = models.BooleanField(editable=False, default=False)
-
-
-class Places(models.Model):
+class Place(models.Model):
     NO_MEAL = 'NO'
     ONLY_BREAKFAST = 'BR'
     BREAKFAST_LUNCH = 'BL'
@@ -111,17 +87,17 @@ class Places(models.Model):
         (NO_CONTACT, "Unfortunately I'm personally not available"), (WITH_CONTACT, "I'll be in contact with my guests"),
         (SPENT_TIME, "I'll spend time with my guests?"), (PERSONAL_OFFER, "I can personally offer my guests"),
         (NO_ANSWER, "I could not answer this question"))
+
     name = models.CharField(max_length=200, help_text='Name of your place')
     # if blank we try to use email data
     contact_first_name = models.CharField(max_length=100, help_text='Your first name', blank=True)
     contact_last_name = models.CharField(max_length=100, help_text='Your last name', default='owner')
-    contact_type = models.CharField(max_length=2, help_text='Waht kind of contact you can offer your guest?',
+    contact_type = models.CharField(max_length=2, help_text='What kind of contact you can offer your guest?',
                                     choices=CONTACT_TYPES, default=NO_ANSWER)
     # address could be filled with geo location data
     street = models.CharField(max_length=100, help_text='Street', blank=True)
     city = models.CharField(max_length=100, help_text='City', blank=True)
-    area = models.ForeignKey(to=GeoName, on_delete=models.CASCADE, help_text='Link to the available towns or areas',
-                             null=True, blank=True)
+
     country = models.CharField(max_length=2, help_text='Country Code', blank=True)
     address_add = models.CharField(max_length=200, help_text='Additional address information', blank=True)
     # contact data
@@ -137,6 +113,15 @@ class Places(models.Model):
     beds = models.PositiveSmallIntegerField(help_text='How many beds do you have?', default=2)
     maximum_of_guests = models.PositiveSmallIntegerField(help_text='How many guests can stay in yourt house?',
                                                          default=1)
+    """price_per_person = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=10.00,
+                                           max_digits=9)
+    price_per_room = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
+                                         max_digits=9)
+    season_price_per_person = models.DecimalField(help_text='Price for the current category', decimal_places=2,
+                                                  default=0.00, max_digits=9)
+    season_price_per_room = models.DecimalField(help_text='Price for the current category', decimal_places=2,
+                                                default=0.00, max_digits=9)"""
+
     bathrooms = models.PositiveSmallIntegerField(help_text='How many bathrooms do you have?', default=1)
     private_bathroom = models.BooleanField(help_text='Do guests have a private bathroom?', default=False)
     common_kitchen = models.BooleanField(
@@ -150,8 +135,6 @@ class Places(models.Model):
     # about meal
     meals = models.CharField(max_length=2, help_text='How many meals per day your serve?', choices=MEALS,
                              default=NO_MEAL)
-    price_breakfast = models.FloatField(help_text='Which is the average price for breakfast?', null=True, blank=True)
-    price_meal = models.FloatField(help_text='Which is the average price for dinner/lunch?', null=True, blank=True)
     vegetarian = models.BooleanField(help_text='Do you serve vegetarian meal option?', default=False)
     vegan = models.BooleanField(help_text='Do you serve vegan meal option?', default=False)
     meal_example = models.CharField(max_length=400, help_text='Please describe a typical meal in your home', blank=True)
@@ -175,11 +158,14 @@ class Places(models.Model):
         help_text='Where is your place (longitude)? Could be taken from the picture meta data', null=True, blank=True)
     latitude = models.FloatField(help_text='Where is your place (latitude)? Could be taken from the picture meta data',
                                  null=True, blank=True)
-    # todo: remaining data: prices, seasons, cleaning fee
-    # todo: remaining data: minimum, maximum stay
-    # todo: remaining data: accepted currencies
-    # todo: remaining data: checkout/in time
-    # todo: remaining data: pick up airport
+    max_stay = models.PositiveIntegerField(default=365, help_text='What is the maximum stay?')
+    min_stay = models.PositiveIntegerField(default=1, help_text='What is the mimum stay?')
+    currencies = models.CharField(max_length=50, default='€', help_text='What currencies do you accept?')
+    check_out_time = models.PositiveIntegerField(default=12, help_text='Check out time')
+    check_in_time = models.PositiveIntegerField(default=14, help_text='Check in time')
+    pick_up_service = models.BooleanField(default=False,
+                                          help_text='Can you pick up your guests from the airport, train station or '
+                                                    'bus stop')
 
     # technical data
     created_on = models.DateTimeField(auto_now_add=True)
@@ -195,8 +181,10 @@ class Places(models.Model):
             im = Image.open(self.picture)
 
             # read lat and long
-            imgExt = ImageFieldExtend(self.picture)
-            (self.longitude, self.latitude) = imgExt.get_lat_lon(im)
+            img_ext = ImageFieldExtend(self.picture)
+            if self.longitude is None or self.longitude == 0 or \
+                    self.latitude is None or self.latitude == 0:
+                (self.longitude, self.latitude) = img_ext.get_lat_lon(im)
 
             output = BytesIO()
 
@@ -212,9 +200,49 @@ class Places(models.Model):
             self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
                                                 'image/jpeg',
                                                 sys.getsizeof(output), None)
-        except:
+        except FileNotFoundError:
             pass
-        super(Places, self).save(**kwargs)
+        except ValueError:
+            pass
+        super(Place, self).save(**kwargs)
 
     def get_absolute_url(self):
         return reverse('places:detail', kwargs={'pk': self.pk})
+
+
+class Price(models.Model):
+    REGULAR_PER_NIGHT = 'NI'
+    REGULAR_PER_PERSON = 'PE'
+    REGULAR_PER_ROOM = 'RO'
+    SEASON_PER_NIGHT = 'SN'
+    SEASON_PER_PERSON = 'SP'
+    SEASON_PER_ROOM = 'SR'
+    CLEANING_FEE = 'CL'
+    BREAKFAST = 'BR'
+    BREAKFAST_LUNCH = 'BL'
+    BREAKFAST_DINNER = 'BD'
+    ALL_MEALS = 'AM'
+
+    PRICE_CATEGORIES = (
+        (REGULAR_PER_NIGHT, 'Regular price per night'),
+        (REGULAR_PER_PERSON, 'Regular price per person'),
+        (REGULAR_PER_ROOM, 'Regular price per room'),
+        (SEASON_PER_NIGHT, 'Season price per night'),
+        (SEASON_PER_PERSON, 'Season price per person'),
+        (SEASON_PER_ROOM, 'Season price per room'),
+        (CLEANING_FEE, 'Cleaning fee'),
+        (BREAKFAST, 'Price for breakfast'),
+        (BREAKFAST_LUNCH, 'Price for breakfast and lunch'),
+        (BREAKFAST_DINNER, 'Price for breakfast and dinner'),
+        (ALL_MEALS, 'Price for three meals'))
+    place_id = models.ForeignKey(to=Place, on_delete=models.DO_NOTHING)
+    value = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
+                                max_digits=9)
+    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
+    category = models.CharField(max_length=2, help_text='Waht kind of contact you can offer your guest?',
+                                choices=PRICE_CATEGORIES, default=REGULAR_PER_PERSON)
+    # technical data
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+    reviewed = models.BooleanField(editable=False, default=False)
+    deleted = models.BooleanField(editable=False, default=False)

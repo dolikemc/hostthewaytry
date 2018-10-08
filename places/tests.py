@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.test import TestCase, Client
 
 from .image_filed_extend import ImageFieldExtend
-from .models import Places
+from .models import Place
 
 
 class ExifData(TestCase):
@@ -64,7 +64,7 @@ class ListScreen(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = Client()
-        place = Places
+        place = Place
         place.objects.create(name='Test')
         place.objects.create(name='Test1')
         place.objects.create(name='Test2')
