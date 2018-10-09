@@ -114,15 +114,6 @@ class Place(models.Model):
     beds = models.PositiveSmallIntegerField(help_text='How many beds do you have?', default=2)
     maximum_of_guests = models.PositiveSmallIntegerField(help_text='How many guests can stay in yourt house?',
                                                          default=1)
-    """price_per_person = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=10.00,
-                                           max_digits=9)
-    price_per_room = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
-                                         max_digits=9)
-    season_price_per_person = models.DecimalField(help_text='Price for the current category', decimal_places=2,
-                                                  default=0.00, max_digits=9)
-    season_price_per_room = models.DecimalField(help_text='Price for the current category', decimal_places=2,
-                                                default=0.00, max_digits=9)"""
-
     bathrooms = models.PositiveSmallIntegerField(help_text='How many bathrooms do you have?', default=1)
     private_bathroom = models.BooleanField(help_text='Do guests have a private bathroom?', default=False)
     common_kitchen = models.BooleanField(
@@ -133,6 +124,7 @@ class Place(models.Model):
     smoking = models.BooleanField(help_text='Is smoking allowed in the house?', default=False)
     pets = models.BooleanField(help_text='Are peds wellcome?', default=True)
     family = models.BooleanField(help_text='Is your house suitable families/kids?', default=True)
+    handicapped_enabled = models.BooleanField(help_text='Is your house suitable for handicapped guests?', default=False)
     # about meal
     meals = models.CharField(max_length=2, help_text='How many meals per day your serve?', choices=MEALS,
                              default=NO_MEAL)
@@ -140,7 +132,6 @@ class Place(models.Model):
     vegan = models.BooleanField(help_text='Do you serve vegan meal option?', default=False)
     meal_example = models.CharField(max_length=400, help_text='Please describe a typical meal in your home', blank=True)
     # other flags
-    handicapped_enabled = models.BooleanField(help_text='Is your house suitable for handicapped guests?', default=False)
     laundry = models.BooleanField(
         help_text='Do you have laundry facilities at your house guests can use (washer/dryer)?', default=False)
     parking = models.BooleanField(help_text='Do you have parking at your house?', default=False)
@@ -151,7 +142,7 @@ class Place(models.Model):
     description = models.CharField(max_length=500, default='', blank=True,
                                    help_text='What else would you like to tell your gusets?')
     # location data
-    # todo: define a proper sub clss of models.ImageFiled with a resizing pres_save method
+    # todo: define a proper sub class of models.ImageFiled with a resizing pres_save method
     picture = models.ImageField(help_text='Picture of your place',
                                 upload_to='',
                                 blank=True)
@@ -239,11 +230,13 @@ class Price(models.Model):
         (BREAKFAST_LUNCH, 'Price for breakfast and lunch'),
         (BREAKFAST_DINNER, 'Price for breakfast and dinner'),
         (ALL_MEALS, 'Price for three meals'))
-    place_id = models.ForeignKey(to=Place, on_delete=models.DO_NOTHING)
+    place = models.ForeignKey(to=Place, on_delete=models.DO_NOTHING)
+    description = models.CharField(max_length=100, default='', blank=True,
+                                   help_text='WDescription of this price')
     value = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
                                 max_digits=9)
     currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
-    category = models.CharField(max_length=2, help_text='Waht kind of contact you can offer your guest?',
+    category = models.CharField(max_length=2, help_text='What kind of contact you can offer your guest?',
                                 choices=PRICE_CATEGORIES, default=CATEGORY_C_PER_NIGHT)
     valid_from = models.DateField(help_text='Price is valid from this date', default=date(2018, 1, 1))
     valid_to = models.DateField(help_text='Price is valid to this date', default=date(2018, 12, 31))
@@ -252,3 +245,35 @@ class Price(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     reviewed = models.BooleanField(editable=False, default=False)
     deleted = models.BooleanField(editable=False, default=False)
+
+    def __str__(self):
+        return f"{self.place} - {self.category} - {self.value}{self.currency}"
+
+
+class Room(models.Model):
+    place = models.ForeignKey(to=Place, on_delete=models.DO_NOTHING)
+    room_number = models.CharField(help_text='Room number/identifier', default='01', max_length=50)
+    beds = models.PositiveIntegerField(help_text='Number of beds in this room', default=2)
+    price_per_person = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
+                                           max_digits=9)
+    price_per_room = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
+                                         max_digits=9)
+    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
+    valid_from = models.DateField(help_text='Price is valid from this date', default=date(2018, 1, 1))
+    valid_to = models.DateField(help_text='Price is valid to this date', default=date(2018, 12, 31))
+    bathroom = models.BooleanField(help_text='Do this room have a private bathroom?', default=True)
+    kitchen = models.BooleanField(help_text='Do this room  have a private kitchen?', default=False)
+    outdoor_place = models.BooleanField(help_text='Do this room have a garden, a terrace or a balcony?', default=False)
+    room_add = models.CharField(max_length=200, help_text='Additional information about this room', blank=True)
+    smoking = models.BooleanField(help_text='Smoking allowed in the room?', default=False)
+    pets = models.BooleanField(help_text='Are peds wellcome?', default=True)
+    family = models.BooleanField(help_text='Is this room suitable families/kids?', default=True)
+    handicapped_enabled = models.BooleanField(help_text='Is this room suitable for handicapped guests?', default=False)
+    # technical data
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+    reviewed = models.BooleanField(editable=False, default=False)
+    deleted = models.BooleanField(editable=False, default=False)
+
+    def __str__(self):
+        return f"{self.place} - {self.room_number} - ({self.beds})"

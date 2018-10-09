@@ -1,12 +1,9 @@
 {% extends 'places/w3base.html' %}
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
+    <form method="post">
         {% csrf_token %}
         <table>
             {{ form.as_table }}
-        </table>
-        <table>
-            {{ formset.as_table }}
         </table>
         <button type="submit">Upload</button>
     </form>

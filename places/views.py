@@ -1,10 +1,10 @@
 from django.contrib.auth.decorators import login_required
-from django.forms import ModelForm
+from django.forms import ModelForm, inlineformset_factory
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
 
-from .models import Place, Price
+from .models import Place, Price, Room
 
 
 class IndexView(generic.ListView):
@@ -54,6 +54,21 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
     return render(request, 'places/create_place.html', {'form': form})
 
 
+@login_required
+def update_place(request: HttpRequest, pk: int) -> HttpResponse:
+    place = Place.objects.get(pk=pk)
+    PlaceInlineFormset = inlineformset_factory(Place, Room, fields='__all__')
+    if request.method == "POST":
+        formset = PlaceInlineFormset(request.POST, request.FILES, instance=place)
+        if formset.is_valid():
+            formset.save()
+            # Do something. Should generally end with a redirect. For example:
+            return redirect('places:detail', pk=place.pk)
+    else:
+        formset = PlaceInlineFormset(instance=place)
+    return render(request, 'places/create_place.html', {'formset': formset})
+
+
 class AddPriceToPlace(ModelForm):
     class Meta:
         model = Price
@@ -68,5 +83,23 @@ def create_new_price(request: HttpRequest) -> HttpResponse:
         form = AddPriceToPlace()
     if form.is_valid():
         price = form.save()
-        return redirect('places:detail', pk=price.place_id_id)
+        return redirect('places:detail', pk=price.place_id)
     return render(request, 'places/create_price.html', {'form': form})
+
+
+class AddRoomToPlace(ModelForm):
+    class Meta:
+        model = Room
+        fields = '__all__'
+
+
+@login_required
+def create_new_room(request: HttpRequest) -> HttpResponse:
+    if request.method == 'POST':
+        form = AddRoomToPlace(request.POST, request.FILES)
+    else:
+        form = AddRoomToPlace()
+    if form.is_valid():
+        room = form.save()
+        return redirect('places:detail', pk=room.place_id)
+    return render(request, 'places/create_room.html', {'form': form})
