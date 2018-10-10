@@ -8,6 +8,9 @@
         <table>
             {{ formset.as_table }}
         </table>
-        <button type="submit">Upload</button>
+        <table>
+            {{ room_formset.as_table }}
+        </table>
+        <button type="submit" class="" w3-button w3-amber>Save</button>
     </form>
 {% endblock %}

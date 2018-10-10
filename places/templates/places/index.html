@@ -8,7 +8,6 @@
                 {% include 'places/place_card.html' %}
             {% elif forloop.counter == 2 %}
                 {% include 'places/place_card.html' with card_color="w3-orange" %}
-                <!-- todo: set map to the searched place or the current loaction    -->
                 <div class="w3-col s12 m4 l3 w3-container w3-light-blue w3-round-large">
                     {% leaflet_map "yourmap" callback="window.map_init_basic" %}
                 </div>

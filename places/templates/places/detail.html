@@ -34,9 +34,10 @@
 
         {% if user.is_authenticated %}
             <div class="w3-container">
-                <a href="{% url 'places:create_room' %}" class="w3-btn w3-amber">Add room info</a>
-                <a href="{% url 'places:create_price' %}" class="w3-btn w3-amber">Add price info</a>
-                <a href="{% url 'places:change_place' place.id %}" class="w3-btn w3-amber">Change info</a>
+                <a href="{% url 'places:create_room' place=place.id %}" class="w3-btn w3-amber">Add room info</a>
+                <a href="{% url 'places:create_price' place=place.id %}" class="w3-btn w3-amber">Add price info</a>
+                <a href="{% url 'places:change_place' pk=place.id %}" class="w3-btn w3-amber">Change info</a>
+                <a href="{% url 'places:update_place' pk=place.id %}" class="w3-btn w3-amber">Update plac</a>
             </div>
         {% endif %}
 

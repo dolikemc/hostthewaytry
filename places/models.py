@@ -169,10 +169,11 @@ class Place(models.Model):
         return f"{self.name} ({self.country})"
 
     def save(self, **kwargs):
-        # copied from https://djangosnippets.org/snippets/10597/
+        self.country = str.upper(self.country)
 
         # Opening the uploaded image
         try:
+            # copied from https://djangosnippets.org/snippets/10597/
             im = Image.open(self.picture)
 
             # read lat and long
@@ -255,9 +256,9 @@ class Room(models.Model):
     room_number = models.CharField(help_text='Room number/identifier', default='01', max_length=50)
     beds = models.PositiveIntegerField(help_text='Number of beds in this room', default=2)
     price_per_person = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
-                                           max_digits=9)
+                                           max_digits=9, max_length=12)
     price_per_room = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
-                                         max_digits=9)
+                                         max_digits=9, max_length=12)
     currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
     valid_from = models.DateField(help_text='Price is valid from this date', default=date(2018, 1, 1))
     valid_to = models.DateField(help_text='Price is valid to this date', default=date(2018, 12, 31))

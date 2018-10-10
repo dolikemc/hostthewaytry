@@ -1,10 +1,97 @@
 {% extends 'places/w3base.html' %}
 {% block content %}
-    <form method="post">
+    <form method="post" class="w3-container">
         {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-        </table>
-        <button type="submit">Upload</button>
+        <br>
+        <div class="w3-row-padding">
+            <div class="w3-third ">
+                {{ form.place.errors }}
+                {{ form.place.label_tag }}
+                {{ form.place }}
+            </div>
+            <div class="w3-third ">
+                {{ form.room_number.errors }}
+                {{ form.room_number.label_tag }}
+                {{ form.room_number }}
+            </div>
+            <div class="w3-third ">
+                {{ form.beds.errors }}
+                {{ form.beds.label_tag }}
+                {{ form.beds }}
+            </div>
+        </div>
+        <br>
+        <div class="w3-row-padding">
+            <div class="w3-third ">
+                {{ form.bathroom.errors }}
+                {{ form.bathroom.label_tag }}
+                {{ form.bathroom }}
+            </div>
+            <div class="w3-third ">
+                {{ form.kitchen.errors }}
+                {{ form.kitchen.label_tag }}
+                {{ form.kitchen }}
+            </div>
+            <div class="w3-third ">
+                {{ form.handicapped_enabled.errors }}
+                {{ form.handicapped_enabled.label_tag }}
+                {{ form.handicapped_enabled }}
+            </div>
+        </div>
+        <div class="w3-row-padding">
+            <div class="w3-third ">
+                {{ form.pets.errors }}
+                {{ form.pets.label_tag }}
+                {{ form.pets }}
+            </div>
+            <div class="w3-third ">
+                {{ form.smoking.errors }}
+                {{ form.smoking.label_tag }}
+                {{ form.smoking }}
+            </div>
+            <div class="w3-third ">
+                {{ form.family.errors }}
+                {{ form.family.label_tag }}
+                {{ form.family }}
+            </div>
+        </div>
+        <br>
+        <div class="w3-row-padding">
+            <div class="w3-third ">
+                {{ form.price_per_person.errors }}
+                {{ form.price_per_person.label_tag }}
+                {{ form.price_per_person }}
+            </div>
+            <div class="w3-third">
+                {{ form.price_per_room.errors }}
+                {{ form.price_per_room.label_tag }}
+                {{ form.price_per_room }}
+            </div>
+            <div class="w3-third">
+                {{ form.currency.errors }}
+                {{ form.currency.label_tag }}<br>
+                {{ form.currency }}
+            </div>
+        </div>
+        <div class="w3-row-padding">
+            <div class="w3-third ">
+                {{ form.valid_from.errors }}
+                {{ form.valid_from.label_tag }}
+                {{ form.valid_from }}
+            </div>
+            <div class="w3-third">
+                {{ form.valid_to.errors }}
+                {{ form.valid_to.label_tag }}
+                {{ form.valid_to }}
+            </div>
+            <div class="w3-third">
+                {{ form.room_add.errors }}
+                {{ form.room_add.label_tag }}
+                {{ form.room_add }}
+            </div>
+        </div>
+        <br>
+        <button class="w3-btn w3-amber" type="submit">Save</button>
+        <br>
     </form>
 {% endblock %}

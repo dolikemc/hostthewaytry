@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.forms import ModelForm, inlineformset_factory
+from django.forms import ModelForm, inlineformset_factory, modelformset_factory
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
@@ -55,7 +55,7 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def update_place(request: HttpRequest, pk: int) -> HttpResponse:
+def change_place(request: HttpRequest, pk: int) -> HttpResponse:
     place = Place.objects.get(pk=pk)
     PlaceInlineFormset = inlineformset_factory(Place, Room, fields='__all__')
     if request.method == "POST":
@@ -69,14 +69,18 @@ def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     return render(request, 'places/create_place.html', {'formset': formset})
 
 
+# todo: use Styling required or erroneous form rows Form.error_css_class Form.required_css_class
+
 class AddPriceToPlace(ModelForm):
+    required_css_class = 'w3-amber'
+
     class Meta:
         model = Price
         fields = '__all__'
 
 
 @login_required
-def create_new_price(request: HttpRequest) -> HttpResponse:
+def create_new_price(request: HttpRequest, place: int) -> HttpResponse:
     if request.method == 'POST':
         form = AddPriceToPlace(request.POST, request.FILES)
     else:
@@ -91,15 +95,47 @@ class AddRoomToPlace(ModelForm):
     class Meta:
         model = Room
         fields = '__all__'
+        localized_fields = ['valid_from', 'valid_to']
 
 
 @login_required
-def create_new_room(request: HttpRequest) -> HttpResponse:
+def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
     if request.method == 'POST':
         form = AddRoomToPlace(request.POST, request.FILES)
     else:
         form = AddRoomToPlace()
+        form.place_id = place
     if form.is_valid():
         room = form.save()
         return redirect('places:detail', pk=room.place_id)
     return render(request, 'places/create_room.html', {'form': form})
+
+
+@login_required
+def update_place(request: HttpRequest, pk: int) -> HttpResponse:
+    RoomFormSet = modelformset_factory(model=Room, fields='__all__', max_num=1)
+    PriceFormSet = modelformset_factory(model=Price, fields='__all__', max_num=3)
+    PlaceFormSet = modelformset_factory(model=Place, fields='__all__', max_num=1)
+    if request.method == 'POST':
+        room_form_set = RoomFormSet(request.POST, request.FILES,
+                                    queryset=Room.objects.filter(place_id__exact=pk),
+                                    prefix='room')
+        price_form_set = PriceFormSet(request.POST, request.FILES,
+                                      queryset=Price.objects.filter(place_id__exact=pk),
+                                      prefix='price')
+        place_form_set = PlaceFormSet(request.POST, request.FILES, queryset=Place.objects.filter(id=pk), )
+        if room_form_set.is_valid() and price_form_set.is_valid() and place_form_set.is_valid():
+            # do something with the cleaned_data on the formsets.
+            room_form_set.save()
+            place = place_form_set.save()
+            price_form_set.save()
+            return redirect('places:detail', pk=pk)
+    else:
+        room_form_set = RoomFormSet(prefix='room', queryset=Room.objects.filter(place_id__exact=pk), )
+        price_form_set = PriceFormSet(prefix='price', queryset=Price.objects.filter(place_id__exact=pk), )
+        place_form_set = PlaceFormSet(queryset=Place.objects.filter(id=pk), )
+    return render(request, 'places/create_place.html', {
+        'formset': price_form_set,
+        'room_formset': room_form_set,
+        'form': place_form_set,
+    })
