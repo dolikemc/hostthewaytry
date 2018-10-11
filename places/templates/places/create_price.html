@@ -1,12 +1,23 @@
 {% extends 'places/w3base.html' %}
 {% block content %}
-    <form method="post">
-        {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-        </table>
-        <br>
-        <button type="submit" class="w3-button w3-amber">Save</button>
-        <br>
-    </form>
+    <div class="w3-amber w3-container">
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                {% cycle '<div class="w3-row-padding">' '' %}
+
+                <div class="w3-half ">
+                    {{ field.errors }}
+                    {{ field.label_tag }}<br>
+                    {{ field }}
+                </div>
+                <br>
+                {% cycle '' '</div>' %}
+            {% endfor %}
+
+            <br>
+            <button type="submit" class="w3-button w3-brown">Save</button>
+            <br>
+        </form>
+    </div>
 {% endblock %}

@@ -100,3 +100,19 @@ class ListScreen(TestCase):
     def tearDown(self):
         for p in Path("./places/static/img/").glob("hosttheway_*.jpg"):
             p.unlink()
+
+
+class PriceScreen(TestCase):
+    def setUp(self):
+        # Every test needs a client.
+        self.client = Client()
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'secret'}
+        User.objects.create_user(**self.credentials, is_staff=True)
+
+    def test_new_price(self):
+        # Issue a GET request.
+        self.assertTrue(self.client.login(**self.credentials))
+        response = self.client.post('/places/price/3/', data={'description': 'test'})
+        self.assertEqual(response.status_code, 200)

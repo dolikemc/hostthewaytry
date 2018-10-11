@@ -232,13 +232,13 @@ class Price(models.Model):
         (BREAKFAST_DINNER, 'Price for breakfast and dinner'),
         (ALL_MEALS, 'Price for three meals'))
     place = models.ForeignKey(to=Place, on_delete=models.DO_NOTHING)
-    description = models.CharField(max_length=100, default='', blank=True,
-                                   help_text='WDescription of this price')
+    description = models.CharField(max_length=100, blank=True,
+                                   help_text='Description of this price')
     value = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
                                 max_digits=9)
     currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
-    category = models.CharField(max_length=2, help_text='What kind of contact you can offer your guest?',
-                                choices=PRICE_CATEGORIES, default=CATEGORY_C_PER_NIGHT)
+    category = models.CharField(max_length=2, help_text='For what is the price for?',
+                                choices=PRICE_CATEGORIES, default=CLEANING_FEE)
     valid_from = models.DateField(help_text='Price is valid from this date', default=date(2018, 1, 1))
     valid_to = models.DateField(help_text='Price is valid to this date', default=date(2018, 12, 31))
     # technical data

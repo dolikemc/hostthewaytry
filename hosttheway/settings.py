@@ -146,3 +146,24 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = 'static/img/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'places/static/img/')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'places':
+            {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+            },
+    },
+}
