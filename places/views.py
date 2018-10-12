@@ -65,6 +65,7 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         place.languages = str.upper(place.languages)
         place.save()
         return redirect('places:detail', pk=place.pk)
+    logger.warning(form.errors)
     return render(request, 'places/create_place.html', {'form': form})
 
 
@@ -74,6 +75,7 @@ def change_place(request: HttpRequest, pk: int) -> HttpResponse:
     # todo: enhance change place inline formset
     place = Place.objects.get(pk=pk)
     place_inline_formset = inlineformset_factory(Place, Room, fields='__all__')
+    logger.info(request.POST)
     if request.method == "POST":
         formset = place_inline_formset(request.POST, request.FILES, instance=place)
         if formset.is_valid():
@@ -103,13 +105,14 @@ def create_new_price(request: HttpRequest, place: int) -> HttpResponse:
         form = AddPriceToPlace(request.POST, request.FILES)
     else:
         form = AddPriceToPlace()
-
+    logger.info(request.POST)
     if form.is_valid():
         logger.info(form.data)
         price = form.save(commit=False)
         price.place_id = place
         price.save()
         return redirect('places:detail', pk=price.place_id)
+    logger.warning(form.errors)
     return render(request, 'places/create_price.html', {'form': form})
 
 
@@ -127,9 +130,11 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
     else:
         form = AddRoomToPlace()
         form.place_id = place
+    logger.info(request.POST)
     if form.is_valid():
         room = form.save()
         return redirect('places:detail', pk=room.place_id)
+    logger.warning(form.errors)
     return render(request, 'places/create_room.html', {'form': form})
 
 
@@ -138,6 +143,7 @@ def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     room_form_set = modelformset_factory(model=Room, fields='__all__', max_num=1)
     price_form_set = modelformset_factory(model=Price, fields='__all__', max_num=3)
     place_form_set = modelformset_factory(model=Place, fields='__all__', max_num=1)
+    logger.info(request.POST)
     if request.method == 'POST':
         room_form_set = room_form_set(request.POST, request.FILES,
                                       queryset=Room.objects.filter(place_id__exact=pk),
@@ -147,12 +153,15 @@ def update_place(request: HttpRequest, pk: int) -> HttpResponse:
                                         prefix='price')
         place_form_set = place_form_set(request.POST, request.FILES, queryset=Place.objects.filter(id=pk), )
         if room_form_set.is_valid() and price_form_set.is_valid() and place_form_set.is_valid():
-            # do something with the cleaned_data on the formsets.
+            # todo: do something with the cleaned_data on the formsets.
 
             room_form_set.save()
-            place = place_form_set.save()
+            place_form_set.save()
             price_form_set.save()
             return redirect('places:detail', pk=pk)
+        logger.warning(room_form_set.errors)
+        logger.warning(price_form_set.errors)
+        logger.warning(place_form_set.errors)
     else:
         room_form_set = room_form_set(prefix='room', queryset=Room.objects.filter(place_id__exact=pk), )
         price_form_set = price_form_set(prefix='price', queryset=Price.objects.filter(place_id__exact=pk), )
