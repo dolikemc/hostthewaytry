@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.test import TestCase, Client
 
 from .image_filed_extend import ImageFieldExtend
-from .models import Place, Price
+from .models import Place, Price, Room
 
 
 class ExifData(TestCase):
@@ -128,19 +128,19 @@ class RoomScreen(TestCase):
             'username': 'testuser',
             'password': 'secret'}
         User.objects.create_user(**self.credentials, is_staff=True)
-        self.std_data = {'description': ['sweet home'], 'value': ['0.0'], 'currency': ['EUR'], 'category': ['CL'],
+        self.std_data = {'room_number': ['sweet home'], 'value': ['0.0'], 'currency': ['EUR'], 'category': ['CL'],
                          'valid_from': ['2018-01-01'], 'valid_to': ['2018-12-31']}
         Place.objects.create(name='TestIt')
 
-    def test_new_price(self):
+    def test_new_room(self):
         self.assertTrue(self.client.login(**self.credentials))
         place = Place.objects.first()
         self.assertIsInstance(place, Place)
         self.assertEqual(place.id, 1)
         response = self.client.post('/places/room/1/', data=self.std_data)
-        price = Price.objects.first()
-        self.assertIsInstance(price, Price)
-        self.assertEqual(price.place_id, 1)
+        room = Room.objects.first()
+        self.assertIsInstance(room, Room)
+        self.assertEqual(room.place_id, 1)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
 
@@ -179,6 +179,38 @@ class EditPlace(TestCase):
         User.objects.create_user(**self.credentials, is_staff=True)
         Place.objects.create(name='TestOne')
         Place.objects.create(name='TestTwo')
+        self.std_data = {
+            'form-TOTAL_FORMS': ['1'], 'form-INITIAL_FORMS': ['1'], 'form-MIN_NUM_FORMS': ['0'],
+            'form-MAX_NUM_FORMS': ['1'], 'form-0-name': ['Da'], 'form-0-contact_first_name': [''],
+            'form-0-contact_last_name': ['owner'], 'form-0-contact_type': ['NA'], 'form-0-street': [''],
+            'form-0-city': [''], 'form-0-country': [''], 'form-0-address_add': [''], 'form-0-phone': [''],
+            'form-0-mobile': [''], 'form-0-email': ['hosttheway@gmail.com'], 'form-0-email_alt': [''],
+            'form-0-languages': ['EN'], 'form-0-who_lives_here': [''], 'form-0-rooms': ['1'],
+            'form-0-beds': ['2'], 'form-0-maximum_of_guests': ['1'], 'form-0-bathrooms': ['1'],
+            'form-0-room_add': [''], 'form-0-pets': ['on'], 'form-0-family': ['on'],
+            'form-0-meals': ['NO'], 'form-0-meal_example': [''], 'form-0-wifi': ['on'],
+            'form-0-description': [''], 'form-0-picture': [''], 'form-0-longitude': ['43.511005555555556'],
+            'form-0-latitude': ['16.444283333333335'], 'form-0-max_stay': ['365'],
+            'form-0-min_stay': ['1'], 'form-0-currencies': ['€'], 'form-0-check_out_time': ['12'],
+            'form-0-check_in_time': ['14'], 'form-0-id': ['1'], 'price-TOTAL_FORMS': ['2'],
+            'price-INITIAL_FORMS': ['1'], 'price-MIN_NUM_FORMS': ['0'], 'price-MAX_NUM_FORMS': ['3'],
+            'price-0-place': ['1'], 'price-0-description': ['sweet home'], 'price-0-value': ['0.00'],
+            'price-0-currency': ['EUR'], 'price-0-category': ['CL'], 'price-0-valid_from': ['2018-01-01'],
+            'price-0-valid_to': ['2018-12-31'], 'price-0-id': ['14'], 'price-1-place': [''],
+            'price-1-description': [''], 'price-1-value': ['0.0'], 'price-1-currency': ['EUR'],
+            'price-1-category': ['CL'], 'price-1-valid_from': ['2018-01-01'],
+            'price-1-valid_to': ['2018-12-31'], 'price-1-id': [''], 'room-TOTAL_FORMS': ['2'],
+            'room-INITIAL_FORMS': ['2'], 'room-MIN_NUM_FORMS': ['0'], 'room-MAX_NUM_FORMS': ['1'],
+            'room-0-place': ['1'], 'room-0-room_number': ['01'], 'room-0-beds': ['6'],
+            'room-0-price_per_person': ['10.00'], 'room-0-price_per_room': ['50.00'],
+            'room-0-currency': ['EUR'], 'room-0-valid_from': ['2018-01-01'],
+            'room-0-valid_to': ['2018-12-31'], 'room-0-bathroom': ['on'], 'room-0-room_add': [''],
+            'room-0-pets': ['on'], 'room-0-family': ['on'], 'room-0-id': ['1'], 'room-1-place': ['1'],
+            'room-1-room_number': ['01'], 'room-1-beds': ['2'], 'room-1-price_per_person': ['30.00'],
+            'room-1-price_per_room': ['50.00'], 'room-1-currency': ['EUR'],
+            'room-1-valid_from': ['2018-01-01'], 'room-1-valid_to': ['2018-12-31'],
+            'room-1-bathroom': ['on'], 'room-1-room_add': [''], 'room-1-pets': ['on'],
+            'room-1-family': ['on'], 'room-1-handicapped_enabled': ['on'], 'room-1-id': ['2']}
 
     def test_setup(self):
         response = self.client.get('/places/1/')
@@ -192,20 +224,7 @@ class EditPlace(TestCase):
 
     def test_update_place(self):
         self.assertTrue(self.client.login(**self.credentials))
-        response = self.client.post('/places/edit/1/',
-                                    data={'name': ['Da'], 'contact_first_name': [''], 'contact_last_name': ['owner'],
-                                          'contact_type': ['NA'], 'street': [''], 'city': [''], 'country': ['dE'],
-                                          'address_add': [''],
-                                          'phone': [''], 'mobile': [''], 'email': ['hosttheway@gmail.com'],
-                                          'email_alt': [''],
-                                          'languages': ['EN'], 'who_lives_here': [''], 'rooms': ['1'], 'beds': ['2'],
-                                          'maximum_of_guests': ['1'], 'bathrooms': ['1'], 'room_add': [''],
-                                          'pets': ['on'],
-                                          'family': ['on'], 'meals': ['NO'], 'meal_example': [''], 'wifi': ['on'],
-                                          'description': [''],
-                                          'max_stay': ['365'], 'min_stay': ['1'], 'currencies': ['€'],
-                                          'check_out_time': ['12'],
-                                          'check_in_time': ['14']})
+        response = self.client.post('/places/update/1/', data=self.std_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
         place = Place.objects.get(pk=1)
