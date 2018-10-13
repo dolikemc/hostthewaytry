@@ -1,3 +1,4 @@
+import logging
 import sys
 from datetime import date
 from io import BytesIO
@@ -8,6 +9,9 @@ from django.db import models
 from django.urls import reverse
 
 from .image_filed_extend import ImageFieldExtend
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class GeoName(models.Model):

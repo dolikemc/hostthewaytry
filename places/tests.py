@@ -120,6 +120,31 @@ class ListScreen(TestCase):
             p.unlink()
 
 
+class RoomScreen(TestCase):
+    def setUp(self):
+        # Every test needs a client.
+        self.client = Client()
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'secret'}
+        User.objects.create_user(**self.credentials, is_staff=True)
+        self.std_data = {'description': ['sweet home'], 'value': ['0.0'], 'currency': ['EUR'], 'category': ['CL'],
+                         'valid_from': ['2018-01-01'], 'valid_to': ['2018-12-31']}
+        Place.objects.create(name='TestIt')
+
+    def test_new_price(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        place = Place.objects.first()
+        self.assertIsInstance(place, Place)
+        self.assertEqual(place.id, 1)
+        response = self.client.post('/places/room/1/', data=self.std_data)
+        price = Price.objects.first()
+        self.assertIsInstance(price, Price)
+        self.assertEqual(price.place_id, 1)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
+
+
 class PriceScreen(TestCase):
     def setUp(self):
         # Every test needs a client.
@@ -143,3 +168,45 @@ class PriceScreen(TestCase):
         self.assertEqual(price.place_id, 1)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
+
+
+class EditPlace(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'secret'}
+        User.objects.create_user(**self.credentials, is_staff=True)
+        Place.objects.create(name='TestOne')
+        Place.objects.create(name='TestTwo')
+
+    def test_setup(self):
+        response = self.client.get('/places/1/')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/places/2/')
+        self.assertEqual(response.status_code, 200)
+        place = Place.objects.get(pk=1)
+        self.assertEqual(place.name, 'TestOne')
+        place = Place.objects.get(pk=2)
+        self.assertEqual(place.name, 'TestTwo')
+
+    def test_update_place(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        response = self.client.post('/places/edit/1/',
+                                    data={'name': ['Da'], 'contact_first_name': [''], 'contact_last_name': ['owner'],
+                                          'contact_type': ['NA'], 'street': [''], 'city': [''], 'country': ['dE'],
+                                          'address_add': [''],
+                                          'phone': [''], 'mobile': [''], 'email': ['hosttheway@gmail.com'],
+                                          'email_alt': [''],
+                                          'languages': ['EN'], 'who_lives_here': [''], 'rooms': ['1'], 'beds': ['2'],
+                                          'maximum_of_guests': ['1'], 'bathrooms': ['1'], 'room_add': [''],
+                                          'pets': ['on'],
+                                          'family': ['on'], 'meals': ['NO'], 'meal_example': [''], 'wifi': ['on'],
+                                          'description': [''],
+                                          'max_stay': ['365'], 'min_stay': ['1'], 'currencies': ['€'],
+                                          'check_out_time': ['12'],
+                                          'check_in_time': ['14']})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
+        place = Place.objects.get(pk=1)
+        self.assertEqual(place.name, 'Da')

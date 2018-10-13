@@ -1,6 +1,11 @@
+import logging
+
 import piexif
 from PIL import Image
 from django.db import models
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 # Create your models here.
@@ -18,6 +23,7 @@ class ImageFieldExtend(models.ImageField):
             return {}
 
         exif_data = piexif.load(im.info["exif"])
+        logger.debug(exif_data)
 
         return exif_data
 
@@ -50,4 +56,5 @@ class ImageFieldExtend(models.ImageField):
 
             if piexif.GPSIFD.GPSLongitude in exif_data["GPS"]:
                 lon = self._convert_to_degress(exif_data["GPS"][piexif.GPSIFD.GPSLongitude])
+        logging.debug(lat, lon)
         return lat, lon

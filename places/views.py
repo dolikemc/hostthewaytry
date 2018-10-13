@@ -1,6 +1,7 @@
 # import the logging library
 import logging
 
+
 # django moduls
 from django.contrib.auth.decorators import login_required
 from django.forms import ModelForm, inlineformset_factory, modelformset_factory
@@ -12,7 +13,7 @@ from django.views import generic
 from .models import Place, Price, Room
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class IndexView(generic.ListView):
@@ -53,8 +54,8 @@ class EditPlace(ModelForm):
 def create_new_place(request: HttpRequest) -> HttpResponse:
     """create a new place"""
     if request.method == 'POST':
-        logger.info(request.POST)
-        logger.info(str(request.FILES))
+        logger.debug(request.POST)
+        logger.debug(str(request.FILES))
         form = EditPlace(request.POST, request.FILES)
     else:
         form = EditPlace()
@@ -75,7 +76,7 @@ def change_place(request: HttpRequest, pk: int) -> HttpResponse:
     # todo: enhance change place inline formset
     place = Place.objects.get(pk=pk)
     place_inline_formset = inlineformset_factory(Place, Room, fields='__all__')
-    logger.info(request.POST)
+    logger.warning(request.POST)
     if request.method == "POST":
         formset = place_inline_formset(request.POST, request.FILES, instance=place)
         if formset.is_valid():
@@ -105,9 +106,9 @@ def create_new_price(request: HttpRequest, place: int) -> HttpResponse:
         form = AddPriceToPlace(request.POST, request.FILES)
     else:
         form = AddPriceToPlace()
-    logger.info(request.POST)
+    logger.debug(request.POST)
     if form.is_valid():
-        logger.info(form.data)
+        logger.debug(form.data)
         price = form.save(commit=False)
         price.place_id = place
         price.save()
@@ -130,7 +131,7 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
     else:
         form = AddRoomToPlace()
         form.place_id = place
-    logger.info(request.POST)
+    logger.warning(request.POST)
     if form.is_valid():
         room = form.save()
         return redirect('places:detail', pk=room.place_id)
@@ -143,7 +144,7 @@ def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     room_form_set = modelformset_factory(model=Room, fields='__all__', max_num=1)
     price_form_set = modelformset_factory(model=Price, fields='__all__', max_num=3)
     place_form_set = modelformset_factory(model=Place, fields='__all__', max_num=1)
-    logger.info(request.POST)
+    logger.warning(request.POST)
     if request.method == 'POST':
         room_form_set = room_form_set(request.POST, request.FILES,
                                       queryset=Room.objects.filter(place_id__exact=pk),
