@@ -1,7 +1,6 @@
 # import the logging library
 import logging
 
-
 # django moduls
 from django.contrib.auth.decorators import login_required
 from django.forms import ModelForm, inlineformset_factory, modelformset_factory
@@ -114,13 +113,13 @@ def create_new_price(request: HttpRequest, place: int) -> HttpResponse:
         price.save()
         return redirect('places:detail', pk=price.place_id)
     logger.warning(form.errors)
-    return render(request, 'places/create_price.html', {'form': form})
+    return render(request, 'places/create_detail.html', {'form': form})
 
 
 class AddRoomToPlace(ModelForm):
     class Meta:
         model = Room
-        fields = '__all__'
+        exclude = ['place']
         localized_fields = ['valid_from', 'valid_to']
 
 
@@ -133,10 +132,13 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
         form.place_id = place
     logger.warning(request.POST)
     if form.is_valid():
-        room = form.save()
+        room: Room = form.save(commit=False)
+        room.place_id = place
+        room.save()
+
         return redirect('places:detail', pk=room.place_id)
     logger.warning(form.errors)
-    return render(request, 'places/create_room.html', {'form': form})
+    return render(request, 'places/create_detail.html', {'form': form})
 
 
 @login_required
