@@ -175,3 +175,8 @@ def update_place(request: HttpRequest, pk: int) -> HttpResponse:
         'room_formset': room_form_set,
         'form': place_form_set,
     })
+
+
+def show_intro(request: HttpRequest) -> HttpResponse:
+    """ just show the introduction, currently without database access"""
+    return render(request, 'places/intro.html')
