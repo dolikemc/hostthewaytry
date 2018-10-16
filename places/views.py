@@ -1,8 +1,9 @@
 # import the logging library
 import logging
 
-# django moduls
 from django.contrib.auth.decorators import login_required
+# django moduls
+from django.contrib.auth.models import User, Group
 from django.forms import ModelForm, inlineformset_factory, modelformset_factory
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
@@ -37,6 +38,17 @@ def base_layout(request: HttpRequest) -> HttpResponse:
     return render(request, template)
 
 
+class NewPlaceMinimal(ModelForm):
+    """form for the minimum of information creating a new place"""
+    required_css_class = 'w3-light-blue'
+
+    class Meta:
+        model = Place
+        fields = ['name', 'picture', 'description', 'laundry', 'parking',
+                  'wifi', 'own_key', 'separate_entrance', 'who_lives_here']
+        # user = User()
+
+
 class EditPlace(ModelForm):
     """edit and create standard class for a place"""
 
@@ -46,12 +58,41 @@ class EditPlace(ModelForm):
         # user = User(is_staff=True)
 
 
-# todo: split fields into optional and mandatory, eventually two screens (create and update)
+@login_required
+def create_new_place(request: HttpRequest) -> HttpResponse:
+    """cover the create new place process.
+        first create a new user group
+        than add the current user id to the group
+        at last create a place just with the name, a picture and the user group id"""
+    if request.method == 'POST':
+        logger.warning(request.user)
+        logger.warning(request.POST)
+        user = User.objects.get(pk=request.user.id)
+        logger.warning(user)
+        group_name = request.POST.get('name', 'auto')
+        index = 0
+        while Group.objects.filter(name=group_name).count() > 0:
+            group_name = group_name + str(index)
+            index += 1
+        group = Group.objects.create(name=group_name)
+        user.groups.add(group)
+        form = NewPlaceMinimal(request.POST, request.FILES)
+    else:
+        form = NewPlaceMinimal()
+    if form.is_valid():
+        place = form.save(commit=False)
+        place.group_id = group.id
+        group.save()
+        user.save()
+        place.save()
+        return redirect('places:detail', pk=place.pk)
+    logger.warning(form.errors)
+    return render(request, 'places/create_place.html', {'form': form})
 
 
 @login_required
-def create_new_place(request: HttpRequest) -> HttpResponse:
-    """create a new place"""
+def create_new_place_v1(request: HttpRequest) -> HttpResponse:
+    """create a new place old version"""
     if request.method == 'POST':
         logger.debug(request.POST)
         logger.debug(str(request.FILES))

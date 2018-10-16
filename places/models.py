@@ -4,6 +4,7 @@ from datetime import date
 from io import BytesIO
 
 from PIL import Image
+from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.urls import reverse
@@ -164,6 +165,7 @@ class Place(models.Model):
                                                     'bus stop')
 
     # technical data
+    group = models.ForeignKey(to=Group, on_delete=models.CASCADE, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     reviewed = models.BooleanField(editable=False, default=False)

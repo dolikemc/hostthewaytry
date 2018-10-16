@@ -7,7 +7,8 @@ from . import views
 app_name = 'places'
 urlpatterns = [
                   path('', views.IndexView.as_view(), name='index'),
-                  path('add/', views.create_new_place, name='create'),
+                  path('add/', views.create_new_place_v1, name='create'),
+                  path('new/', views.create_new_place, name='new'),
                   path('price/<int:place>/', views.create_new_price, name='create_price'),
                   path('room/<int:place>/', views.create_new_room, name='create_room'),
                   path('<int:pk>/', views.DetailView.as_view(), name='detail'),

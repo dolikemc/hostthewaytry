@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PIL import Image
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
 from django.test import TestCase, Client
@@ -198,6 +198,34 @@ class PriceScreen(TestCase):
         self.assertEqual(price.place_id, 1)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
+
+
+class NewPlaceProcess(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'secret'}
+        # todo: should not need stuff policies, just allowance to add places
+        User.objects.create_user(**self.credentials, is_staff=True)
+
+    def test_create_minimal_place(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        fp = SimpleUploadedFile(name='IMG_3745.JPG',
+                                content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
+                                content_type='image/jpeg')
+        response = self.client.post('/places/new/', data={'name': 'New place', 'picture': fp})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
+        group: Group = Group.objects.first()
+        self.assertEqual(group.id, 1)
+        self.assertEqual(group.name, 'New place')
+        place: Place = Place.objects.first()
+        self.assertEqual(place.id, 1)
+        self.assertEqual(place.group_id, group.id)
+        self.assertTrue(place.latitude > 0)
+        user: User = User.objects.first()
+        self.assertEqual(user.groups.first(), group)
 
 
 class EditPlace(TestCase):
