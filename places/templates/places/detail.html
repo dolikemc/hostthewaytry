@@ -2,54 +2,56 @@
 {% block content %}
     {% load static %}
     {% load leaflet_tags %}
-
-
     <!-- todo: show all necessary information of this place -->
     <!-- todo: make a suitable design -->
-    <div class="w3-container w3-pale-yellow">
+    <div class="w3-panel w3-center w3-amber">
         <h1>{{ place.name }}</h1>
-        <!-- todo: configurable static img path -->
-        <img src="/places/static/img/{{ place.picture }}" alt="Picture" class="w3-image"
-             style="height: 200px; width: 200px">
+    </div>
+    <div class="w3-row-padding">
+        <div class="w3-container w3-third w3-center">
 
-        <div class="w3-container">
+            <img src="{% static 'img/' %}{{ place.picture }}" alt="Picture" style="height: 200px; width: 200px">
             {% if place.description == '' %}
-                <p>You will be in a beautiful place together with {{ place.who_lives_here }}. </p>
+                <p>You will be in a beautiful place together with {{ place.who_lives_her | lower }}. </p>
             {% else %}
                 <p>{{ place.description }}</p>
             {% endif %}
         </div>
-        {% if place.private_bathroom == 1 %}
-            <i class="fas fa-bath w3-large"> private {{ place.bathrooms }}</i>
-        {% else %}
-            <i class="fas fa-bath w3-large">{{ place.bathrooms }}</i>
-        {% endif %}
-        <i class="fa fa-bed w3-large">{{ place.beds }}</i>
-        {% if place.smoking == 1 %}
-            <i class="fas fa-smoking w3-large w3-text-green"></i>
-        {% else %}
-            <i class="fas fa-smoking-ban w3-large w3-text-red"></i>
-        {% endif %}
-        <i class="fas fa-coffee w3-large w3-text-brown">{{ place.meals }}</i>
+        <div class="w3-container w3-third">
+            {% if place.private_bathroom == 1 %}
+                <i class="fas fa-bath w3-large"> private {{ place.bathrooms }}</i>
+            {% else %}
+                <i class="fas fa-bath w3-large">{{ place.bathrooms }}</i>
+            {% endif %}
+            <i class="fa fa-bed w3-large">{{ place.beds }}</i>
+            {% if place.smoking == 1 %}
+                <i class="fas fa-smoking w3-large w3-text-green"></i>
+            {% else %}
+                <i class="fas fa-smoking-ban w3-large w3-text-red"></i>
+            {% endif %}
+            <i class="fas fa-coffee w3-large w3-text-brown">{{ place.meals }}</i>
+            {% if place.wifi %}
+                <i class="fas fa-wifi w3-latge w3-text-blue"></i>
+            {% else %}
+                <p>No WiFi</p>
+            {% endif %}
+            <br>
+            {% if user.is_authenticated %}
+                <a href="{% url 'places:add_user' place_id=place.id %}" class="w3-button w3-amber">+A</a>
+                <a href="{% url 'places:create_room' place=place.id %}" class="w3-button w3-amber">+R</a>
+                <a href="{% url 'places:create_price' place=place.id %}" class="w3-button w3-amber">+P</a>
+                <a href="{% url 'places:update_place' pk=place.id %}" class="w3-button w3-amber">Change</a>
 
-        {% if user.is_authenticated %}
-            <div class="w3-container">
-                <a href="{% url 'places:add_user' place_id=place.id %}" class="w3-btn w3-amber">Add administrator</a>
-                <a href="{% url 'places:create_room' place=place.id %}" class="w3-btn w3-amber">Add room</a>
-                <a href="{% url 'places:create_price' place=place.id %}" class="w3-btn w3-amber">Add price</a>
-                <a href="{% url 'places:update_place' pk=place.id %}" class="w3-btn w3-amber">Update place info</a>
-            </div>
-        {% endif %}
-
+            {% endif %}
+        </div>
         <div class="w3-container w3-third">
             {% leaflet_map "detail_map" callback="window.map_init_basic" %}
         </div>
-
-        <script type="text/javascript">
-            function map_init_basic(map, options) {
-                map.setView([{{ place.longitude }}, {{ place.latitude }}], 16);
-                L.marker([{{ place.longitude }}, {{ place.latitude }}]).addTo(map);
-            };
-        </script>
     </div>
+    <script type="text/javascript">
+        function map_init_basic(map, options) {
+            map.setView([{{ place.longitude }}, {{ place.latitude }}], 16);
+            L.marker([{{ place.longitude }}, {{ place.latitude }}]).addTo(map);
+        };
+    </script>
 {% endblock %}

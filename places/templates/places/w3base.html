@@ -6,22 +6,17 @@
 {% load leaflet_tags %}
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- todo: use pwa functionality-->
     {% progressive_web_app_meta %}
-
     <link rel="stylesheet" type="text/css" href="{% static 'places/style.css' %}">
-
     {% leaflet_css %}
-
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     {% leaflet_js %}
-
 </head>
 
 <body>
-<header class="w3-container">
+<header>
     <form class="w3-bar w3-light-grey">
         <!-- todo: implement dropdown menue-->
         <div class="w3-dropdown-hover">

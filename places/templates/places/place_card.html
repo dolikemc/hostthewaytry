@@ -4,13 +4,31 @@
         <!-- todo: all overview information in the card-->
         <div>
             <div class="w3-container w3-center">
-                <h6>{{ place.name }}</h6>
+                <h8>{{ place.name }}</h8>
             </div>
-            <img class="w3-image"
-                 src="static/img/{{ place.picture }}"
-                 alt="'Picture of the Place'">
+            <div class="w3-center">
+                <img class="w3-image"
+                     src="static/img/{{ place.picture }}"
+                     alt="'Picture of the Place'">
+            </div>
             <div class="w3-container w3-center">
-                <p>{{ forloop.counter }}</p>
+                {% if place.private_bathroom == 1 %}
+                    <i class="fas fa-bath w3-large"> private {{ place.bathrooms }}</i>
+                {% else %}
+                    <i class="fas fa-bath w3-large">{{ place.bathrooms }}</i>
+                {% endif %}
+                <i class="fa fa-bed w3-large">{{ place.beds }}</i>
+                {% if place.smoking == 1 %}
+                    <i class="fas fa-smoking w3-large w3-text-green"></i>
+                {% else %}
+                    <i class="fas fa-smoking-ban w3-large w3-text-red"></i>
+                {% endif %}
+                <i class="fas fa-coffee w3-large w3-text-brown">{{ place.meals }}</i>
+                {% if place.wifi %}
+                    <i class="fas fa-wifi w3-latge w3-text-blue"></i>
+                {% else %}
+                    <p>No WiFi</p>
+                {% endif %}
             </div>
         </div>
     </div>

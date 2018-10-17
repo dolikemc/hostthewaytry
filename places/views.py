@@ -1,8 +1,8 @@
 # import the logging library
 import logging
 
-from django.contrib.auth.decorators import login_required
 # django moduls
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.forms import ModelForm, inlineformset_factory, modelformset_factory
 from django.http import HttpRequest, HttpResponse
@@ -142,23 +142,6 @@ def create_new_place_v1(request: HttpRequest) -> HttpResponse:
     logger.warning(form.errors)
     return render(request, 'places/create_place.html', {'form': form})
 
-
-@login_required
-def change_place(request: HttpRequest, pk: int) -> HttpResponse:
-    """change a place using inline formset"""
-    # todo: enhance change place inline formset
-    place = Place.objects.get(pk=pk)
-    place_inline_formset = inlineformset_factory(Place, Room, fields='__all__')
-    logger.debug(request.POST)
-    if request.method == "POST":
-        formset = place_inline_formset(request.POST, request.FILES, instance=place)
-        if formset.is_valid():
-            formset.save()
-            # Do something. Should generally end with a redirect. For example:
-            return redirect('places:detail', pk=place.pk)
-    else:
-        formset = place_inline_formset(instance=place)
-    return render(request, 'places/create_place.html', {'formset': formset})
 
 
 # todo: use Styling required or erroneous form rows Form.error_css_class Form.required_css_class

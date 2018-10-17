@@ -41,9 +41,8 @@ class CreateScreen(TestCase):
             'username': 'testuser',
             'password': 'secret'}
         User.objects.create_user(**self.credentials, is_staff=True)
-        self.std_data = {'name': ['Da'], 'contact_first_name': [''], 'contact_last_name': ['owner'],
-                         'contact_type': ['NA'], 'street': [''], 'city': [''], 'country': ['dE'], 'address_add': [''],
-                         'phone': [''], 'mobile': [''], 'email': ['hosttheway@gmail.com'], 'email_alt': [''],
+        self.std_data = {'name': ['Da'], 'contact_type': ['NA'], 'street': [''], 'city': [''], 'country': ['dE'],
+                         'address_add': [''], 'phone': [''], 'mobile': [''],
                          'languages': ['EN'], 'who_lives_here': [''], 'rooms': ['1'], 'beds': ['2'],
                          'maximum_of_guests': ['1'], 'bathrooms': ['1'], 'room_add': [''], 'pets': ['on'],
                          'family': ['on'], 'meals': ['NO'], 'meal_example': [''], 'wifi': ['on'], 'description': [''],
@@ -286,3 +285,24 @@ class EditPlace(TestCase):
         self.assertEqual(response.url, '/places/1/')
         place = Place.objects.get(pk=1)
         self.assertEqual(place.name, 'TestCase')
+
+
+class AddUser(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'secret'}
+        # todo: should not need stuff policies, just allowance to add places
+        User.objects.create_user(**self.credentials, is_staff=True)
+        Group.objects.create(name='Test')
+        Place.objects.create(name='Test', group_id=1)
+
+    def test_add_admin_to_place(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        response = self.client.post('/places/user/1/', data=
+        {'email': 'a@b.de', 'password': 'zegwugr643267', 'first_name': 'f', 'last_name': 'l', 'username': 'fl'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
+        user = User.objects.filter(groups__in=[1]).first()
+        self.assertIsInstance(user, User)
