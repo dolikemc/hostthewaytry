@@ -49,6 +49,36 @@ class NewPlaceMinimal(ModelForm):
         # user = User()
 
 
+class AddUser(ModelForm):
+    """add an administrator to a place"""
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'password', 'email']
+
+
+@login_required
+def add_administrator_to_place(request: HttpRequest, place_id: int) -> HttpResponse:
+    """create a new user and add him to the admin group of the place"""
+    if request.method == 'POST':
+        logging.debug(request.POST)
+        form = AddUser(request.POST, request.FILES)
+    else:
+        form = AddUser()
+
+    if form.is_valid():
+        user = form.save(commit=False)
+        place: Place = Place.objects.get(id=place_id)
+
+        # todo: add permissions
+        user.save()
+        user.groups.add(place.group)
+        user.save()
+        return redirect('places:detail', pk=place_id)
+    logger.warning(form.errors)
+    return render(request, 'places/create_place.html', {'form': form})
+
+
 class EditPlace(ModelForm):
     """edit and create standard class for a place"""
 
@@ -64,11 +94,13 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         first create a new user group
         than add the current user id to the group
         at last create a place just with the name, a picture and the user group id"""
+
+    # todo: make access to request.user safe
+    user = User.objects.get(pk=request.user.id)
+    logger.debug(user)
     if request.method == 'POST':
-        logger.warning(request.user)
-        logger.warning(request.POST)
-        user = User.objects.get(pk=request.user.id)
-        logger.warning(user)
+        logger.debug(request.POST)
+
         group_name = request.POST.get('name', 'auto')
         index = 0
         while Group.objects.filter(name=group_name).count() > 0:
@@ -78,6 +110,7 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         user.groups.add(group)
         form = NewPlaceMinimal(request.POST, request.FILES)
     else:
+        group = Group()
         form = NewPlaceMinimal()
     if form.is_valid():
         place = form.save(commit=False)
@@ -116,7 +149,7 @@ def change_place(request: HttpRequest, pk: int) -> HttpResponse:
     # todo: enhance change place inline formset
     place = Place.objects.get(pk=pk)
     place_inline_formset = inlineformset_factory(Place, Room, fields='__all__')
-    logger.warning(request.POST)
+    logger.debug(request.POST)
     if request.method == "POST":
         formset = place_inline_formset(request.POST, request.FILES, instance=place)
         if formset.is_valid():
@@ -171,7 +204,7 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
     else:
         form = AddRoomToPlace()
         form.place_id = place
-    logger.warning(request.POST)
+    logger.debug(request.POST)
     if form.is_valid():
         room: Room = form.save(commit=False)
         room.place_id = place
@@ -187,7 +220,7 @@ def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     room_form_set = modelformset_factory(model=Room, fields='__all__', max_num=1)
     price_form_set = modelformset_factory(model=Price, fields='__all__', max_num=3)
     place_form_set = modelformset_factory(model=Place, fields='__all__', max_num=1)
-    logger.warning(request.POST)
+    logger.debug(request.POST)
     if request.method == 'POST':
         room_form_set = room_form_set(request.POST, request.FILES,
                                       queryset=Room.objects.filter(place_id__exact=pk),
@@ -203,7 +236,7 @@ def update_place(request: HttpRequest, pk: int) -> HttpResponse:
             place_form_set.save()
             price_form_set.save()
             return redirect('places:detail', pk=pk)
-        logger.warning(room_form_set.errors)
+        logger.debug(room_form_set.errors)
         logger.warning(price_form_set.errors)
         logger.warning(place_form_set.errors)
     else:

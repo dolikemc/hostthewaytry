@@ -10,6 +10,7 @@ urlpatterns = [
                   path('add/', views.create_new_place_v1, name='create'),
                   path('new/', views.create_new_place, name='new'),
                   path('price/<int:place>/', views.create_new_price, name='create_price'),
+                  path('user/<int:place_id>/', views.add_administrator_to_place, name='add_user'),
                   path('room/<int:place>/', views.create_new_room, name='create_room'),
                   path('<int:pk>/', views.DetailView.as_view(), name='detail'),
                   path('change/<int:pk>/', views.change_place, name='change_place'),
