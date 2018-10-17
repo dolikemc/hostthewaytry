@@ -94,10 +94,12 @@ class Place(models.Model):
         (SPENT_TIME, "I'll spend time with my guests?"), (PERSONAL_OFFER, "I can personally offer my guests"),
         (NO_ANSWER, "I could not answer this question"))
 
+    NO_ANSWER = 'NA'
+    ALWAYS_ON_TOP = 'AW'
+    PRIORITY_TYPES = ((NO_ANSWER, "No special category"), (ALWAYS_ON_TOP, "Alwasy on top"))
+
     name = models.CharField(max_length=200, help_text='Name of your place')
     # if blank we try to use email data
-    contact_first_name = models.CharField(max_length=100, help_text='Your first name', blank=True)
-    contact_last_name = models.CharField(max_length=100, help_text='Your last name', default='owner')
     contact_type = models.CharField(max_length=2, help_text='What kind of contact you can offer your guest?',
                                     choices=CONTACT_TYPES, default=NO_ANSWER)
     # address could be filled with geo location data
@@ -109,8 +111,7 @@ class Place(models.Model):
     # contact data
     phone = models.CharField(max_length=30, help_text='Phone number', blank=True)
     mobile = models.CharField(max_length=20, help_text='Mobile number', blank=True)
-    email = models.EmailField(help_text='Your contact email address', default='hosttheway@gmail.com')
-    email_alt = models.EmailField(help_text='Alternative email address', blank=True)
+
     # information about you
     languages = models.CharField(max_length=100, help_text='Which languages do you speak?', default='EN')
     who_lives_here = models.CharField(max_length=200, help_text='Who lives in your house?', blank=True)
@@ -120,12 +121,9 @@ class Place(models.Model):
     maximum_of_guests = models.PositiveSmallIntegerField(help_text='How many guests can stay in yourt house?',
                                                          default=1)
     bathrooms = models.PositiveSmallIntegerField(help_text='How many bathrooms do you have?', default=1)
-    private_bathroom = models.BooleanField(help_text='Do guests have a private bathroom?', default=False)
     common_kitchen = models.BooleanField(
         help_text='Do guests have access to your kitchen and can use it for preparing food?', default=False)
-    private_kitchen = models.BooleanField(help_text='Do guests have a private kitchen?', default=False)
     outdoor_place = models.BooleanField(help_text='Do you have a garden, aterrace or a balcony?', default=False)
-    room_add = models.CharField(max_length=200, help_text='What other rooms can your guests use?', blank=True)
     smoking = models.BooleanField(help_text='Is smoking allowed in the house?', default=False)
     pets = models.BooleanField(help_text='Are peds wellcome?', default=True)
     family = models.BooleanField(help_text='Is your house suitable families/kids?', default=True)
@@ -163,6 +161,10 @@ class Place(models.Model):
     pick_up_service = models.BooleanField(default=False,
                                           help_text='Can you pick up your guests from the airport, train station or '
                                                     'bus stop')
+    # payed priority
+    priority_value = models.PositiveSmallIntegerField(default=0, blank=True, null=True)
+    priority_valid_until = models.DateTimeField(blank=True, null=True)
+    priority_category = models.CharField(max_length=2, choices=PRIORITY_TYPES, default=NO_ANSWER, blank=True, null=True)
 
     # technical data
     group = models.ForeignKey(to=Group, on_delete=models.CASCADE, null=True, blank=True)
