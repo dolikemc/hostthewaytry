@@ -13,43 +13,67 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     {% leaflet_js %}
+    <style>
+        body, h1, h2, h3, h4, h5, h6 {
+            font-family: "Roboto", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif
+        }
+
+        .w3-bar-block .w3-bar-item {
+            padding: 20px
+        }
+    </style>
 </head>
 
 <body>
 <header>
-    <form class="w3-bar w3-light-grey">
-        <!-- todo: implement dropdown menue-->
-        <div class="w3-dropdown-hover">
-            <button class="w3-button "><i class="fa fa-bars"></i></button>
-            <div class="w3-dropdown-content w3-bar-block w3-card-4">
-                <a href="#" class="w3-bar-item w3-button">Filter</a>
-                <a href="/admin/login/?next=/places/" class="w3-bar-item w3-button">Login</a>
-                <a href="/admin/logout/?next=/places/" class="w3-bar-item w3-button">Logout</a>
-                <a href="{% url 'places:intro' %}" class="w3-bar-item w3-button">Introduction</a>
-            </div>
-        </div>
-        <!-- todo: implement search functionality-->
-        <input type="text" class="w3-bar-item w3-input w3-button w3-center" placeholder="Search..">
-        <a href="{% url 'places:index' %}" class="w3-bar-item w3-button  w3-right"><i class="fa fa-home"></i></a>
-    </form>
+    <!-- Top menu -->
+    <div class="w3-top">
 
-    <!-- todo: representative design for the funny header -->
-    <div class="w3-panel w3-center">
-        <div class="w3-tag w3-tiny w3-red">H</div>
-        <div class="w3-tag w3-tiny w3-light-blue">O</div>
-        <div class="w3-tag w3-tiny w3-lime">S</div>
-        <div class="w3-tag w3-tiny w3-blue">T</div>
-        <div class="w3-tag w3-tiny w3-grey">*</div>
-        <div class="w3-tag w3-tiny w3-brown">T</div>
-        <div class="w3-tag w3-tiny w3-orange">H</div>
-        <div class="w3-tag w3-tiny w3-light-blue">E</div>
-        <div class="w3-tag w3-tiny w3-grey">*</div>
-        <div class="w3-tag w3-tiny w3-lime">W</div>
-        <div class="w3-tag w3-tiny w3-orange">A</div>
-        <div class="w3-tag w3-tiny w3-light-blue">Y</div>
+        <div class="w3-bar w3-black w3-xlarge" style="margin:auto">
+            <a href="#" class="w3-bar-item w3-button">
+                <div class="w3-padding-16"><i class="fa fa-cog"></i></div>
+            </a>
+
+
+            {% if user.is_authenticated %}
+                <a href="/admin/logout/?next=/places/" class="w3-bar-item w3-button">
+                    <div class="w3-padding-16"><i class="fa fa-key w3-text-green"></i></div>
+                </a>
+            {% else %}
+                <a href="/admin/login/?next=/places/" class="w3-bar-item w3-button">
+                    <div class="w3-padding-16"><i class="fa fa-key w3-text-grey"></i></div>
+                </a>
+            {% endif %}
+            <a href="#" class="w3-bar-item w3-button">
+                <div class="w3-padding-16"><i class="fa fa-search w3-text-grey"></i></div>
+            </a>
+            <a href="{% url 'places:intro' %}" class="w3-bar-item w3-button">
+                <div class="w3-padding-16"><i class="fa fa-info"></i></div>
+            </a>
+            <a href="{% url 'places:index' %}" class="w3-bar-item w3-button w3-right">
+                <div class="w3-padding-16"><i class="fa fa-home"></i></div>
+            </a>
+
+            <a href="{% url 'places:index' %}" style="a">
+                <div class="w3-panel w3-center">
+                    <div class="w3-tag w3-tiny w3-red">H</div>
+                    <div class="w3-tag w3-tiny w3-light-blue">O</div>
+                    <div class="w3-tag w3-tiny w3-lime">S</div>
+                    <div class="w3-tag w3-tiny w3-blue">T</div>
+                    <div class="w3-tag w3-tiny w3-grey">*</div>
+                    <div class="w3-tag w3-tiny w3-brown">T</div>
+                    <div class="w3-tag w3-tiny w3-orange">H</div>
+                    <div class="w3-tag w3-tiny w3-light-blue">E</div>
+                    <div class="w3-tag w3-tiny w3-grey">*</div>
+                    <div class="w3-tag w3-tiny w3-lime">W</div>
+                    <div class="w3-tag w3-tiny w3-orange">A</div>
+                    <div class="w3-tag w3-tiny w3-light-blue">Y</div>
+                </div>
+            </a>
+        </div>
     </div>
 </header>
-<div id="content" class="w3-light-grey">
+<div class="w3-main w3-padding w3-content" style="margin-top:170px">
     {% block content %}
     {% endblock %}
 </div>

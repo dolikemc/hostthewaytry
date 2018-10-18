@@ -2,25 +2,25 @@
 {% block content %}
     {% load static %}
     {% load leaflet_tags %}
-    <div class="w3-row-padding">
+    <div class="w3-row w3-center">
         {% for place in places %}
             {% if forloop.counter == 1 %}
                 {% include 'places/place_card.html' %}
             {% elif forloop.counter == 2 %}
-                {% include 'places/place_card.html' with card_color="w3-orange" %}
-                <div class="w3-col s12 m4 l3 w3-container w3-light-blue w3-round-large">
+                {% include 'places/place_card.html' with card_color="w3-grey" %}
+                <div class="w3-col s12 m4 l3 w3-light-blue w3-round-large w3-margin-bottom">
                     {% leaflet_map "yourmap" callback="window.map_init_basic" %}
                 </div>
             {% elif forloop.counter == 3 or forloop.counter == 6 %}
-                {% include 'places/place_card.html' with card_color="w3-amber" %}
+                {% include 'places/place_card.html' with card_color="w3-black" %}
             {% else %}
-                {% include 'places/place_card.html' with card_color="w3-lime" %}
+                {% include 'places/place_card.html' with card_color="w3-black" %}
             {% endif %}
 
         {% empty %}
             <h1>Error</h1>
         {% endfor %}
-        <div class="w3-col s6 m4 l3 w3-container w3-round-large w3-grey" style="min-height: 302px">
+        <div class="w3-col s6 m4 l3 w3-round-large w3-black w3-margin-bottom" style="min-height: 302px">
             {% if user.is_authenticated %}
                 <a href="{% url 'places:new' %}" class="w3-btn w3-amber">Add place</a>
             {% endif %}

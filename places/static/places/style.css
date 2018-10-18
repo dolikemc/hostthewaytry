@@ -2,24 +2,8 @@ html, body {
     background-color: #000000;
     height: 100%;
     width: 100%;
-    margin: 1%;
-    padding: 0;
     font-size: 1em;
     color: #ffffff;
-}
-
-a {
-    color: #ffff00;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #ffff00;
-    text-decoration: underline;
-}
-
-p {
-    margin-bottom: 20px;
 }
 
 #content {
@@ -30,6 +14,16 @@ p {
     font-size: 0.7em;
     font-style: italic;
     margin-bottom: 20px;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #000;
+    text-decoration: underline;
 }
 
 /*
@@ -51,5 +45,10 @@ img.place {
     display: inline-grid;
     object-fit: cover;
     position: center;
+}
+
+
+p {
+    margin-bottom: 20px;
 }
 */
