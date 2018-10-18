@@ -1,5 +1,6 @@
 {% extends 'places/w3base.html' %}
 {% block content %}
+
     <div class="w3-amber w3-container">
         <form method="post">
             {% csrf_token %}
@@ -11,7 +12,6 @@
                     {{ field.label_tag }}<br>
                     {{ field }}
                 </div>
-                <br>
                 {% cycle '' '</div>' %}
             {% endfor %}
             <br>

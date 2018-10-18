@@ -2,48 +2,36 @@
 {% block content %}
     {% load static %}
     {% load leaflet_tags %}
+    <div class="w3-panel w3-light-blue w3-center">
+        {% if user.is_authenticated %}
+            <a href="{% url 'places:new' %}" class="w3-button"><i
+                    class="fas fa-plus w3-large w3-text-green"></i>
+            </a>
+        {% else %}
+            <h8>Just click on the next places to be in your hood or click the search icon for a different location
+                ... or see our message clicking the info symbol
+            </h8>
+        {% endif %}
+    </div>
     <div class="w3-row w3-center">
         {% for place in places %}
             {% if forloop.counter == 1 %}
-                {% include 'places/place_card.html' %}
+                {% include 'places/place_card.html' with card_color="w3-light-blue" %}
             {% elif forloop.counter == 2 %}
                 {% include 'places/place_card.html' with card_color="w3-grey" %}
-                <div class="w3-col s12 m4 l3 w3-light-blue w3-round-large w3-margin-bottom">
+                <div class="w3-col s12 m4 w3-light-blue w3-margin-bottom w3-hide-large">
                     {% leaflet_map "yourmap" callback="window.map_init_basic" %}
                 </div>
             {% elif forloop.counter == 3 or forloop.counter == 6 %}
-                {% include 'places/place_card.html' with card_color="w3-black" %}
+                {% include 'places/place_card.html' with card_color="w3-amber" %}
+            {% elif forloop.counter == 5 or forloop.counter == 8 %}
+                {% include 'places/place_card.html' with card_color="w3-orange" %}
             {% else %}
-                {% include 'places/place_card.html' with card_color="w3-black" %}
+                {% include 'places/place_card.html' with card_color="w3-lime" %}
             {% endif %}
-
         {% empty %}
             <h1>Error</h1>
         {% endfor %}
-        <div class="w3-col s6 m4 l3 w3-round-large w3-black w3-margin-bottom" style="min-height: 302px">
-            {% if user.is_authenticated %}
-                <a href="{% url 'places:new' %}" class="w3-btn w3-amber">Add place</a>
-            {% endif %}
-        </div>
-        <script type="text/javascript">
-            function map_init_basic(map, options) {
-                map.on('locationfound', onLocationFound);
-                map.on('locationerror', onLocationError);
-                map.locate({setView: true, maxZoom: 16});
 
-                function onLocationFound(e) {
-                    var radius = e.accuracy / 2;
-
-                    L.marker(e.latlng).addTo(map)
-                        .bindPopup("You are within " + radius + " meters from this point").openPopup();
-
-                    L.circle(e.latlng, radius).addTo(map);
-                }
-
-                function onLocationError(e) {
-                    alert(e.message);
-                }
-            }
-        </script>
     </div>
 {% endblock %}

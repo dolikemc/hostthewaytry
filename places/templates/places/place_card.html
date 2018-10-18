@@ -1,20 +1,18 @@
 <a href="{% url 'places:detail' place.id %}">
-
-    <div class="w3-col s6 m4 l3 w3-round-large w3-margin-bottom {{ card_color|default:"w3-black" }}"
+    <div class="w3-col s6 m4 l3 w3-margin-bottom w3-leftbar w3-rightbar w3-border-black
+        {{ card_color|default:"w3-light-blue" }}"
          style="min-height: 300px">
         <!-- todo: all overview information in the card-->
         <div>
-
+            <br>
             <h8>{{ place.name }}</h8>
 
-            <div class="w3-center">
+            <div class="w3-center w3-padding">
                 <img class="w3-image"
                      src="static/img/{{ place.picture }}"
                      alt="'Picture of the Place'">
             </div>
-
-
-            <div class="w3-container w3-center">
+            <div class="w3-container w3-center w3-padding">
                 {% if place.private_bathroom == 1 %}
                     <i class="fas fa-bath w3-large"> private {{ place.bathrooms }}</i>
                 {% else %}
