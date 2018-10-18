@@ -10,7 +10,7 @@
     <div class="w3-row-padding">
         <div class="w3-container w3-third w3-center">
 
-            <img src="{% static 'img/' %}{{ place.picture }}" alt="Picture" style="height: 200px; width: 200px">
+            <img src="/places/static/img/{{ place.picture }}" alt="Picture" style="height: 200px; width: 200px">
             {% if place.description == '' %}
                 <p>You will be in a beautiful place together with {{ place.who_lives_her | lower }}. </p>
             {% else %}
