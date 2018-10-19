@@ -4,7 +4,7 @@ import logging
 # django moduls
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.forms import ModelForm, inlineformset_factory, modelformset_factory
+from django.forms import ModelForm, modelformset_factory
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
@@ -76,7 +76,7 @@ def add_administrator_to_place(request: HttpRequest, place_id: int) -> HttpRespo
         user.save()
         return redirect('places:detail', pk=place_id)
     logger.warning(form.errors)
-    return render(request, 'places/create_place.html', {'form': form})
+    return render(request, 'places/create_detail.html', {'form': form})
 
 
 class EditPlace(ModelForm):
@@ -141,7 +141,6 @@ def create_new_place_v1(request: HttpRequest) -> HttpResponse:
         return redirect('places:detail', pk=place.pk)
     logger.warning(form.errors)
     return render(request, 'places/create_place.html', {'form': form})
-
 
 
 # todo: use Styling required or erroneous form rows Form.error_css_class Form.required_css_class

@@ -2,7 +2,23 @@
 {% block content %}
     {% load static %}
     {% load leaflet_tags %}
-    <button onclick="goBack()"><i class="fa fa-backward w3-xlarge w3-text-grey"></i></button>
+
+    <div class="w3-bar">
+        <a href="#" onclick="goBack()" class="w3-button w3-bar-item"><i
+                class="fa fa-backward w3-large"></i></a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'places:add_user' place_id=place.id %}" class="w3-button w3-bar-item"><i
+                    class="fas fa-plus w3-large w3-text-green"></i> admin</a>
+            <a href="{% url 'places:create_room' place=place.id %}" class="w3-button w3-bar-item"><i
+                    class="fas fa-plus w3-large w3-text-green"></i> room</a>
+            <a href="{% url 'places:create_price' place=place.id %}" class="w3-button w3-bar-item"><i
+                    class="fas fa-plus w3-large w3-text-green"></i> price</a>
+            <a href="{% url 'places:update_place' pk=place.id %}" class="w3-button w3-bar-item"><i
+                    class="fas fa-edit w3-large w3-text-green"></i> place</a>
+        {% endif %}
+    </div>
+
+
 
     <div class="w3-panel w3-center w3-amber">
         <h1>{{ place.name }}</h1>
@@ -10,39 +26,37 @@
     <div class="w3-row-padding">
         <div class="w3-container w3-third w3-center">
 
-            <img src="/places/static/img/{{ place.picture }}" alt="Picture" style="height: 200px; width: 200px">
-            {% if place.description == '' %}
-                <p>You will be in a beautiful place together with {{ place.who_lives_her | lower }}. </p>
-            {% else %}
-                <p>{{ place.description }}</p>
-            {% endif %}
-        </div>
-        <div class="w3-container w3-third">
-            {% if place.private_bathroom == 1 %}
-                <i class="fas fa-bath w3-large"> private {{ place.bathrooms }}</i>
-            {% else %}
-                <i class="fas fa-bath w3-large">{{ place.bathrooms }}</i>
-            {% endif %}
-            <i class="fa fa-bed w3-large">{{ place.beds }}</i>
-            {% if place.smoking == 1 %}
-                <i class="fas fa-smoking w3-large w3-text-green"></i>
-            {% else %}
-                <i class="fas fa-smoking-ban w3-large w3-text-red"></i>
-            {% endif %}
-            <i class="fas fa-coffee w3-large w3-text-brown">{{ place.meals }}</i>
-            {% if place.wifi %}
-                <i class="fas fa-wifi w3-latge w3-text-blue"></i>
-            {% else %}
-                <p>No WiFi</p>
-            {% endif %}
-            <br>
-            {% if user.is_authenticated %}
-                <a href="{% url 'places:add_user' place_id=place.id %}" class="w3-button w3-amber">+A</a>
-                <a href="{% url 'places:create_room' place=place.id %}" class="w3-button w3-amber">+R</a>
-                <a href="{% url 'places:create_price' place=place.id %}" class="w3-button w3-amber">+P</a>
-                <a href="{% url 'places:update_place' pk=place.id %}" class="w3-button w3-amber">Change</a>
+            <img src="/places/static/img/{{ place.picture }}" alt="Picture" style="max-height: 300px; width: 100%">
 
-            {% endif %}
+        </div>
+        <div class="w3-third w3-padding">
+            <div class="w3-bar">
+                {% if place.description == '' %}
+                    <p>You will be in a beautiful place together with {{ place.who_lives_her | capfirst }}. </p>
+                {% else %}
+                    <p>{{ place.description }}</p>
+                {% endif %}
+            </div>
+            <div class="w3-bar">
+                {% if place.private_bathroom == 1 %}
+                    <i class="fas fa-bath w3-large w3-bar-item"> private {{ place.bathrooms }}</i>
+                {% else %}
+                    <i class="fas fa-bath w3-large w3-bar-item">{{ place.bathrooms }}</i>
+                {% endif %}
+                <i class="fa fa-bed w3-large w3-bar-item">{{ place.beds }}</i>
+                {% if place.smoking == 1 %}
+                    <i class="fas fa-smoking w3-large w3-bar-item w3-text-green"></i>
+                {% else %}
+                    <i class="fas fa-smoking-ban w3-large w3-bar-item w3-text-red"></i>
+                {% endif %}
+                <i class="fas fa-coffee w3-large w3-bar-item w3-text-brown">{{ place.meals }}</i>
+                {% if place.wifi %}
+                    <i class="fas fa-wifi w3-latge w3-bar-item w3-text-blue"></i>
+                {% else %}
+                    <p>No WiFi</p>
+                {% endif %}
+            </div>
+
         </div>
         <div class="w3-container w3-third">
             {% leaflet_map "detail_map" callback="window.map_init_place" %}

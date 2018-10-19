@@ -2,14 +2,17 @@
 {% block content %}
     {% load static %}
     {% load leaflet_tags %}
-    <div class="w3-panel w3-light-blue w3-center">
+    <div class="w3-panel w3-black w3-center w3-text-green">
         {% if user.is_authenticated %}
+            <h8>
+                Hi {{ user }}, add another place if you want!
+            </h8>
             <a href="{% url 'places:new' %}" class="w3-button"><i
                     class="fas fa-plus w3-large w3-text-green"></i>
             </a>
         {% else %}
-            <h8>Just click on the next places to be in your hood or click the search icon for a different location
-                ... or see our message clicking the info symbol
+            <h8>
+                Places in your neighbourhood:
             </h8>
         {% endif %}
     </div>
