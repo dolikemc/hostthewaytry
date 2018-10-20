@@ -1,16 +1,26 @@
 {% extends 'places/w3base.html' %}
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-        </table>
-        <table>
-            {{ formset.as_table }}
-        </table>
-        <table>
-            {{ room_formset.as_table }}
-        </table>
-        <button type="submit" class="" w3-button w3-amber>Save</button>
-    </form>
+    <div class="w3-amber w3-container">
+        <form method="post" enctype="multipart/form-data">
+            <div class="w3-bar">
+                <button onclick="goBack()" class="w3-button w3-bar-item"><i class="fa fa-backward w3-large"></i>
+                </button>
+                {% if user.is_authenticated %}
+                    <button type="submit" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i>
+                    </button>
+                {% endif %}
+            </div>
+            {% csrf_token %}
+            <table>
+                {{ form.as_table }}
+            </table>
+            <table>
+                {{ formset.as_table }}
+            </table>
+            <table>
+                {{ room_formset.as_table }}
+            </table>
+
+        </form>
+    </div>
 {% endblock %}
