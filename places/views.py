@@ -16,6 +16,10 @@ from .models import Place, Price, Room
 logger: logging.Logger = logging.getLogger(__name__)
 
 
+# kind of default rooms added to a new place
+# todo: define constants fro default room adder
+
+
 class IndexView(generic.ListView):
     template_name = 'places/index.html'
     context_object_name = 'places'
@@ -40,12 +44,11 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 
 class NewPlaceMinimal(ModelForm):
     """form for the minimum of information creating a new place"""
-    required_css_class = 'w3-light-blue'
 
     class Meta:
         model = Place
         fields = ['name', 'picture', 'description', 'laundry', 'parking',
-                  'wifi', 'own_key', 'separate_entrance', 'who_lives_here']
+                  'wifi', 'own_key', 'separate_entrance']
         # user = User()
 
 
@@ -118,9 +121,38 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         group.save()
         user.save()
         place.save()
+        kind_of_place: int = int(request.POST.get('kind_of_place', 0))
+        logger.warning(f'kind of place: {kind_of_place}')
+
+        if kind_of_place == 1:
+            Room.objects.create(place_id=place.id, room_number='your room', beds=2,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+        elif kind_of_place == 2:
+            Room.objects.create(place_id=place.id, room_number='01', beds=2,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+            Room.objects.create(place_id=place.id, room_number='02', beds=3,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+        elif kind_of_place == 3:
+            Room.objects.create(place_id=place.id, room_number='01', beds=2,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+            Room.objects.create(place_id=place.id, room_number='02', beds=2,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+            Room.objects.create(place_id=place.id, room_number='03', beds=6,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+        elif kind_of_place == 4:
+            Room.objects.create(place_id=place.id, room_number='01', beds=2,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+            Room.objects.create(place_id=place.id, room_number='02', beds=3,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+            Room.objects.create(place_id=place.id, room_number='03', beds=3,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+            Room.objects.create(place_id=place.id, room_number='04', beds=6,
+                                price_per_person=request.POST.get('std_price', '0.0'))
+        else:
+            logger.warning(f"No room std selection available: {kind_of_place}")
         return redirect('places:detail', pk=place.pk)
     logger.warning(form.errors)
-    return render(request, 'places/create_place.html', {'form': form})
+    return render(request, 'places/create_place_minimal.html', {'form': form})
 
 
 @login_required

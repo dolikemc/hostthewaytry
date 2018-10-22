@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pathlib import Path
 
 from PIL import Image
@@ -226,6 +227,58 @@ class NewPlaceProcess(TestCase):
         user: User = User.objects.first()
         self.assertEqual(user.groups.first(), group)
 
+    def test_create_std_place(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        fp = SimpleUploadedFile(name='IMG_3745.JPG',
+                                content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
+                                content_type='image/jpeg')
+        response = self.client.post('/places/new/', data={'name': 'New place',
+                                                          'picture': fp,
+                                                          'kind_of_place': 1,
+                                                          'std_price': 12.6})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
+        group: Group = Group.objects.first()
+        self.assertEqual(group.id, 1)
+        self.assertEqual(group.name, 'New place')
+        place: Place = Place.objects.first()
+        self.assertEqual(place.id, 1)
+        self.assertEqual(place.group_id, group.id)
+        self.assertTrue(place.latitude > 0)
+        user: User = User.objects.first()
+        self.assertEqual(user.groups.first(), group)
+        room: Room = Room.objects.first()
+        self.assertIsInstance(room, Room)
+        self.assertEqual(room.place_id, 1)
+        self.assertEqual(room.beds, 2)
+        self.assertEqual(room.price_per_person, Decimal("12.60"))
+
+    def test_create_bigger_place(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        fp = SimpleUploadedFile(name='IMG_3745.JPG',
+                                content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
+                                content_type='image/jpeg')
+        response = self.client.post('/places/new/', data={'name': 'New place',
+                                                          'picture': fp,
+                                                          'kind_of_place': 3,
+                                                          'breakfast_included': 'no',
+                                                          'std_price': 18.6})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
+        group: Group = Group.objects.first()
+        self.assertEqual(group.id, 1)
+        self.assertEqual(group.name, 'New place')
+        place: Place = Place.objects.first()
+        self.assertEqual(place.id, 1)
+        self.assertEqual(place.group_id, group.id)
+        self.assertTrue(place.latitude > 0)
+        user: User = User.objects.first()
+        self.assertEqual(user.groups.first(), group)
+        room: Room = Room.objects.last()
+        self.assertIsInstance(room, Room)
+        self.assertEqual(room.place_id, 1)
+        self.assertEqual(room.beds, 6)
+        self.assertEqual(room.price_per_person, Decimal("18.60"))
 
 class EditPlace(TestCase):
     def setUp(self):

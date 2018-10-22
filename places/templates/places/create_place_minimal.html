@@ -1,0 +1,95 @@
+{% extends 'places/w3base.html' %}
+{% block content %}
+    <form method="post" class="w3-container" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="w3-bar">
+            <button onclick="goBack()" class="w3-button w3-bar-item"><i class="fa fa-backward w3-large"></i>
+            </button>
+            {% if user.is_authenticated %}
+                <button type="submit" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i>
+                </button>
+            {% endif %}
+        </div>
+        <div class="w3-row-padding">
+            <div class="w3-threequarter ">
+                {{ form.name.errors }}
+                {{ form.name.label_tag }}<br>
+                {{ form.name }}
+            </div>
+            <div class="w3-quarter"></div>
+        </div>
+        <div class="w3-row-padding">
+            <div class="w3-threequarter">
+                {{ form.description.errors }}
+                {{ form.description.label_tag }}<br>
+                {{ form.description }}
+            </div>
+            <div class="w3-quarter"></div>
+        </div>
+        <div class="w3-row-padding">
+            <div class="w3-threequarter ">
+                {{ form.picture.errors }}
+                {{ form.picture.label_tag }}<br>
+                {{ form.picture }}
+
+            </div>
+            <div class="w3-quarter"></div>
+        </div>
+        <div class="w3-row-padding">
+            <div class="w3-threequarter ">
+                <label for="id_std_price">Standard price for a bed (you can change it later)::</label><br>
+                <input value="10,00" name="std_price" type="number" step="0.1" required id="id_std_price"> €
+            </div>
+            <div class="w3-quarter ">
+                <label class="w3-label" for="">Breakfast included?</label><br>
+                <input type="checkbox" id="id_breakfast_included" checked name="breakfast_included">
+            </div>
+        </div>
+        <div class="w3-row-padding">
+            <div class="w3-threequarter ">
+                <label class="w3-label" for="id_kind_of_place">Select a default room setup (you change it
+                    later):</label>
+                <select class="w3-select" name="kind_of_place" id="id_kind_of_place">
+                    <option value="1">One room to rent with 2 beds</option>
+                    <option value="2">Two rooms with 2-3 beds</option>
+                    <option value="3">Three rooms with 2-6 beds</option>
+                    <option value="4">Four rooms with 2-6 beds</option>
+                    <option value="5">More than four rooms to rent</option>
+                </select>
+            </div>
+            <div class="w3-quarter ">
+                {{ form.separate_entrance.errors }}
+                {{ form.separate_entrance.label_tag }}<br>
+                {{ form.separate_entrance }}
+            </div>
+        </div>
+        <div class="w3-row-padding">
+            <div class="w3-quarter ">
+                {{ form.wifi.errors }}
+                {{ form.wifi.label_tag }}<br>
+                {{ form.wifi }}
+            </div>
+            <div class="w3-quarter ">
+                {{ form.own_key.errors }}
+                {{ form.own_key.label_tag }}<br>
+                {{ form.own_key }}
+
+            </div>
+            <div class="w3-quarter ">
+                {{ form.laundry.errors }}
+                {{ form.laundry.label_tag }}<br>
+                {{ form.laundry }}
+
+            </div>
+            <div class="w3-quarter ">
+                {{ form.parking.errors }}
+                {{ form.parking.label_tag }}<br>
+                {{ form.parking }}
+
+            </div>
+        </div>
+        <div class="w3-row-padding">
+
+        </div>
+    </form>
+{% endblock %}
