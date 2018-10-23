@@ -1,5 +1,6 @@
 # import the logging library
 import logging
+from decimal import Decimal
 
 # django moduls
 from django.contrib.auth.decorators import login_required
@@ -121,35 +122,11 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         group.save()
         user.save()
         place.save()
-        kind_of_place: int = int(request.POST.get('kind_of_place', 0))
+        kind_of_place: place.HOST_CATEGORY = request.POST.get('kind_of_place', 'TI')
         logger.warning(f'kind of place: {kind_of_place}')
 
-        if kind_of_place == 1:
-            Room.objects.create(place_id=place.id, room_number='your room', beds=2,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-        elif kind_of_place == 2:
-            Room.objects.create(place_id=place.id, room_number='01', beds=2,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-            Room.objects.create(place_id=place.id, room_number='02', beds=3,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-        elif kind_of_place == 3:
-            Room.objects.create(place_id=place.id, room_number='01', beds=2,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-            Room.objects.create(place_id=place.id, room_number='02', beds=2,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-            Room.objects.create(place_id=place.id, room_number='03', beds=6,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-        elif kind_of_place == 4:
-            Room.objects.create(place_id=place.id, room_number='01', beds=2,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-            Room.objects.create(place_id=place.id, room_number='02', beds=3,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-            Room.objects.create(place_id=place.id, room_number='03', beds=3,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-            Room.objects.create(place_id=place.id, room_number='04', beds=6,
-                                price_per_person=request.POST.get('std_price', '0.0'))
-        else:
-            logger.warning(f"No room std selection available: {kind_of_place}")
+        place.add_std_rooms_and_prices(std_price=Decimal(request.POST.get('std_price', '0.0')),
+                                       category=kind_of_place)
         return redirect('places:detail', pk=place.pk)
     logger.warning(form.errors)
     return render(request, 'places/create_place_minimal.html', {'form': form})

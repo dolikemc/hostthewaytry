@@ -38,13 +38,11 @@
                 {% endif %}
             </div>
             <div class="w3-bar">
-                {% if place.private_bathroom == 1 %}
-                    <i class="fas fa-bath w3-large w3-bar-item"> private {{ place.bathrooms }}</i>
-                {% else %}
-                    <i class="fas fa-bath w3-large w3-bar-item">{{ place.bathrooms }}</i>
+                {% if place.private_bathroom %}
+                    <i class="fas fa-bath w3-large w3-bar-item"></i>
                 {% endif %}
                 <i class="fa fa-bed w3-large w3-bar-item">{{ place.beds }}</i>
-                {% if place.smoking == 1 %}
+                {% if place.smoking %}
                     <i class="fas fa-smoking w3-large w3-bar-item w3-text-green"></i>
                 {% else %}
                     <i class="fas fa-smoking-ban w3-large w3-bar-item w3-text-red"></i>

@@ -1,18 +1,21 @@
 import logging
 import sys
 from datetime import date
+from decimal import Decimal
 from io import BytesIO
 
 from PIL import Image
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
+from django.db.models import Avg, Sum
 from django.urls import reverse
 
 from .image_filed_extend import ImageFieldExtend
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
+current_year = date.today().year
 
 
 class GeoName(models.Model):
@@ -45,7 +48,7 @@ class GeoName(models.Model):
     ascii_name = models.CharField(max_length=200, help_text='name of geographical point in plain ascii characters')
     alternate_names = models.CharField(max_length=1000,
                                        help_text='comma separated, ascii names automatically transliterated, '
-                                                 'convenience attribute from alternatename table')
+                                                 'convenience attribute from alternate name table')
     latitude = models.DecimalField(max_digits=13, decimal_places=10, help_text='latitude in decimal degrees')
     longitude = models.DecimalField(max_digits=13, decimal_places=10, help_text='longitude in decimal degrees')
     feature_class = models.CharField(max_length=1, help_text='see http://www.geonames.org/export/codes.html')
@@ -98,36 +101,48 @@ class Place(models.Model):
     ALWAYS_ON_TOP = 'AW'
     PRIORITY_TYPES = ((NO_ANSWER, "No special category"), (ALWAYS_ON_TOP, "Alwasy on top"))
 
-    name = models.CharField(max_length=200, help_text='Name of your place')
-    # if blank we try to use email data
+    TINY = "TI"
+    SMALL = "SM"
+    MEDIUM = "ME"
+    LARGE = "LA"
+    HOTEL = "HO"
+    HOST_CATEGORY = ((TINY, "One room to rent with 2 beds"), (SMALL, "Two rooms with 2-3 beds"),
+                     (MEDIUM, "Three rooms with 2-6 beds"), (LARGE, "Four rooms with 2-6 beds"),
+                     (HOTEL, "More than four rooms to rent "))
+
+    name = models.CharField(max_length=200, help_text='Name of your place', null=False)
+    description = models.CharField(max_length=500, default='', blank=True,
+                                   help_text='What else would you like to tell your guests?')
+
     contact_type = models.CharField(max_length=2, help_text='What kind of contact you can offer your guest?',
                                     choices=CONTACT_TYPES, default=NO_ANSWER)
     # address could be filled with geo location data
     street = models.CharField(max_length=100, help_text='Street', blank=True)
     city = models.CharField(max_length=100, help_text='City', blank=True)
-
     country = models.CharField(max_length=2, help_text='Country Code', blank=True)
     address_add = models.CharField(max_length=200, help_text='Additional address information', blank=True)
+
     # contact data
     phone = models.CharField(max_length=30, help_text='Phone number', blank=True)
     mobile = models.CharField(max_length=20, help_text='Mobile number', blank=True)
+    website = models.URLField(help_text='Website of the place', blank=True)
 
     # information about you
     languages = models.CharField(max_length=100, help_text='Which languages do you speak?', default='EN')
     who_lives_here = models.CharField(max_length=200, help_text='Who lives in your house?', blank=True)
-    # information about rooms
-    rooms = models.PositiveSmallIntegerField(help_text='How many rooms do you rent?', default=1)
-    beds = models.PositiveSmallIntegerField(help_text='How many beds do you have?', default=2)
-    maximum_of_guests = models.PositiveSmallIntegerField(help_text='How many guests can stay in yourt house?',
-                                                         default=1)
-    bathrooms = models.PositiveSmallIntegerField(help_text='How many bathrooms do you have?', default=1)
+
+    # information about the place
     common_kitchen = models.BooleanField(
         help_text='Do guests have access to your kitchen and can use it for preparing food?', default=False)
     outdoor_place = models.BooleanField(help_text='Do you have a garden, aterrace or a balcony?', default=False)
-    smoking = models.BooleanField(help_text='Is smoking allowed in the house?', default=False)
-    pets = models.BooleanField(help_text='Are peds wellcome?', default=True)
-    family = models.BooleanField(help_text='Is your house suitable families/kids?', default=True)
-    handicapped_enabled = models.BooleanField(help_text='Is your house suitable for handicapped guests?', default=False)
+    parking = models.BooleanField(help_text='Do you have parking at your house?', default=False)
+    wifi = models.BooleanField(help_text='Do you have (free) WiFi at your house?', default=True)
+    own_key = models.BooleanField(help_text='Do guests have their own key to the house?', default=False)
+    separate_entrance = models.BooleanField(help_text='Is there a separate entrance to the house for guests?',
+                                            default=False)
+    max_stay = models.PositiveIntegerField(default=365, help_text='What is the maximum stay?')
+    min_stay = models.PositiveIntegerField(default=1, help_text='What is the minimum stay?')
+
     # about meal
     meals = models.CharField(max_length=2, help_text='How many meals per day your serve?', choices=MEALS,
                              default=NO_MEAL)
@@ -137,24 +152,17 @@ class Place(models.Model):
     # other flags
     laundry = models.BooleanField(
         help_text='Do you have laundry facilities at your house guests can use (washer/dryer)?', default=False)
-    parking = models.BooleanField(help_text='Do you have parking at your house?', default=False)
-    wifi = models.BooleanField(help_text='Do you have (free) WiFi at your house?', default=True)
-    own_key = models.BooleanField(help_text='Do guests have their own key to the house?', default=False)
-    separate_entrance = models.BooleanField(help_text='Is there a separate entrance to the house for guests?',
-                                            default=False)
-    description = models.CharField(max_length=500, default='', blank=True,
-                                   help_text='What else would you like to tell your gusets?')
+
     # location data
     # todo: define a proper sub class of models.ImageFiled with a resizing pres_save method
     picture = models.ImageField(help_text='Picture of your place',
                                 upload_to='',
                                 blank=True)
-    longitude = models.FloatField(
-        help_text='Where is your place (longitude)? Could be taken from the picture meta data', null=True, blank=True)
-    latitude = models.FloatField(help_text='Where is your place (latitude)? Could be taken from the picture meta data',
-                                 null=True, blank=True)
-    max_stay = models.PositiveIntegerField(default=365, help_text='What is the maximum stay?')
-    min_stay = models.PositiveIntegerField(default=1, help_text='What is the mimum stay?')
+    longitude = models.FloatField(help_text='Where is your place (longitude)?', null=True, blank=True)
+    latitude = models.FloatField(help_text='Where is your place (latitude)?', null=True, blank=True)
+
+    # services
+    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
     currencies = models.CharField(max_length=50, default='€', help_text='What currencies do you accept?')
     check_out_time = models.PositiveIntegerField(default=12, help_text='Check out time')
     check_in_time = models.PositiveIntegerField(default=14, help_text='Check in time')
@@ -162,7 +170,7 @@ class Place(models.Model):
                                           help_text='Can you pick up your guests from the airport, train station or '
                                                     'bus stop')
     # payed priority
-    priority_value = models.PositiveSmallIntegerField(default=0, blank=True, null=True)
+    priority_value = models.PositiveSmallIntegerField(default=0, blank=True, null=True, editable=False)
     priority_valid_until = models.DateTimeField(blank=True, null=True)
     priority_category = models.CharField(max_length=2, choices=PRIORITY_TYPES, default=NO_ANSWER, blank=True, null=True)
 
@@ -173,7 +181,66 @@ class Place(models.Model):
     reviewed = models.BooleanField(editable=False, default=False)
     deleted = models.BooleanField(editable=False, default=False)
 
-    def __str__(self):
+    @property
+    def average_price(self) -> Decimal:
+        return self.room_set.aggregate(Avg('price_per_person'))['price_per_person__avg']
+
+    @property
+    def beds(self) -> int:
+        return self.room_set.aggregate(Sum('beds'))['beds__sum']
+
+    @property
+    def pets(self) -> bool:
+        return self.room_set.filter(pets=True).count() > 0
+
+    @property
+    def smoking(self) -> bool:
+        return self.room_set.filter(smoking=True).count() > 0
+
+    @property
+    def private_bathroom(self) -> bool:
+        return self.bathrooms > 0
+
+    @property
+    def bathrooms(self) -> int:
+        return self.room_set.filter(bathroom=True).count()
+
+    def add_std_rooms_and_prices(self, std_price: Decimal, category: HOST_CATEGORY = 'TI') -> bool:
+        if category == self.TINY:
+            Room.objects.create(place_id=self.id, room_number='your room', beds=2,
+                                price_per_person=std_price)
+            return True
+        if category == self.SMALL:
+            Room.objects.create(place_id=self.id, room_number='01', beds=2,
+                                price_per_person=std_price)
+            Room.objects.create(place_id=self.id, room_number='02', beds=3,
+                                price_per_person=std_price)
+            return True
+        if category == self.MEDIUM:
+            Room.objects.create(place_id=self.id, room_number='01', beds=2,
+                                price_per_person=std_price)
+            Room.objects.create(place_id=self.id, room_number='02', beds=3,
+                                price_per_person=std_price)
+            Room.objects.create(place_id=self.id, room_number='03', beds=6,
+                                price_per_person=std_price)
+            return True
+        if category == self.LARGE:
+            Room.objects.create(place_id=self.id, room_number='01', beds=2,
+                                price_per_person=std_price)
+            Room.objects.create(place_id=self.id, room_number='02', beds=3,
+                                price_per_person=std_price)
+            Room.objects.create(place_id=self.id, room_number='03', beds=3,
+                                price_per_person=std_price)
+            Room.objects.create(place_id=self.id, room_number='04', beds=6,
+                                price_per_person=std_price)
+            return True
+
+        return False
+
+    def create_user_group(self, user: User) -> bool:
+        return True
+
+    def __str__(self) -> str:
         return f"{self.name} ({self.country})"
 
     def save(self, **kwargs):
@@ -208,19 +275,13 @@ class Place(models.Model):
             pass
         except ValueError:
             pass
-        super(Place, self).save(**kwargs)
+        return super(Place, self).save(**kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('places:detail', kwargs={'pk': self.pk})
 
 
 class Price(models.Model):
-    CATEGORY_C_PER_NIGHT = 'CN'
-    CATEGORY_C_PER_ROOM = 'CR'
-    CATEGORY_B_PER_NIGHT = 'BN'
-    CATEGORY_B_PER_ROOM = 'BR'
-    CATEGORY_A_PER_NIGHT = 'AN'
-    CATEGORY_A_PER_ROOM = 'AR'
     CLEANING_FEE = 'CL'
     BREAKFAST = 'BR'
     BREAKFAST_LUNCH = 'BL'
@@ -228,48 +289,35 @@ class Price(models.Model):
     ALL_MEALS = 'AM'
 
     PRICE_CATEGORIES = (
-        (CATEGORY_C_PER_NIGHT, 'Regular price per night'),
-        (CATEGORY_C_PER_ROOM, 'Regular price per room'),
-        (CATEGORY_B_PER_NIGHT, 'Special price per night'),
-        (CATEGORY_B_PER_ROOM, 'Special price per room'),
-        (CATEGORY_A_PER_NIGHT, 'Top price per night'),
-        (CATEGORY_A_PER_ROOM, 'Top price per room'),
         (CLEANING_FEE, 'Cleaning fee'),
         (BREAKFAST, 'Price for breakfast'),
         (BREAKFAST_LUNCH, 'Price for breakfast and lunch'),
         (BREAKFAST_DINNER, 'Price for breakfast and dinner'),
         (ALL_MEALS, 'Price for three meals'))
-    place = models.ForeignKey(to=Place, on_delete=models.DO_NOTHING)
+    place = models.ForeignKey(to=Place, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, blank=True,
                                    help_text='Description of this price')
     value = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
                                 max_digits=9)
-    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
     category = models.CharField(max_length=2, help_text='For what is the price for?',
                                 choices=PRICE_CATEGORIES, default=CLEANING_FEE)
-    valid_from = models.DateField(help_text='Price is valid from this date', default=date(2018, 1, 1))
-    valid_to = models.DateField(help_text='Price is valid to this date', default=date(2018, 12, 31))
+
     # technical data
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     reviewed = models.BooleanField(editable=False, default=False)
     deleted = models.BooleanField(editable=False, default=False)
 
-    def __str__(self):
-        return f"{self.place} - {self.category} - {self.value}{self.currency}"
+    def __str__(self) -> str:
+        return f"{self.place} - {self.category} - {self.value}{self.place.currency}"
 
 
 class Room(models.Model):
-    place = models.ForeignKey(to=Place, on_delete=models.DO_NOTHING)
+    place = models.ForeignKey(to=Place, on_delete=models.CASCADE)
+
+    # room equipment
     room_number = models.CharField(help_text='Room number/identifier', default='01', max_length=50)
     beds = models.PositiveIntegerField(help_text='Number of beds in this room', default=2)
-    price_per_person = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
-                                           max_digits=9, max_length=12)
-    price_per_room = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
-                                         max_digits=9, max_length=12)
-    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
-    valid_from = models.DateField(help_text='Price is valid from this date', default=date(2018, 1, 1))
-    valid_to = models.DateField(help_text='Price is valid to this date', default=date(2018, 12, 31))
     bathroom = models.BooleanField(help_text='Do this room have a private bathroom?', default=True)
     kitchen = models.BooleanField(help_text='Do this room  have a private kitchen?', default=False)
     outdoor_place = models.BooleanField(help_text='Do this room have a garden, a terrace or a balcony?', default=False)
@@ -278,11 +326,20 @@ class Room(models.Model):
     pets = models.BooleanField(help_text='Are peds wellcome?', default=True)
     family = models.BooleanField(help_text='Is this room suitable families/kids?', default=True)
     handicapped_enabled = models.BooleanField(help_text='Is this room suitable for handicapped guests?', default=False)
+
+    # prices and validity
+    price_per_person = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
+                                           max_digits=9, max_length=12)
+    price_per_room = models.DecimalField(help_text='Price for the current category', decimal_places=2, default=0.00,
+                                         max_digits=9, max_length=12)
+    valid_from = models.DateField(help_text='Price is valid from this date', default=date(current_year, 1, 1))
+    valid_to = models.DateField(help_text='Price is valid to this date', default=date(current_year, 12, 31))
+
     # technical data
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     reviewed = models.BooleanField(editable=False, default=False)
     deleted = models.BooleanField(editable=False, default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.place} - {self.room_number} - ({self.beds})"

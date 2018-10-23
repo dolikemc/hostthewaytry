@@ -43,10 +43,9 @@ class CreateScreen(TestCase):
             'password': 'secret'}
         User.objects.create_user(**self.credentials, is_staff=True)
         self.std_data = {'name': ['Da'], 'contact_type': ['NA'], 'street': [''], 'city': [''], 'country': ['dE'],
-                         'address_add': [''], 'phone': [''], 'mobile': [''],
-                         'languages': ['EN'], 'who_lives_here': [''], 'rooms': ['1'], 'beds': ['2'],
-                         'maximum_of_guests': ['1'], 'bathrooms': ['1'], 'room_add': [''], 'pets': ['on'],
-                         'family': ['on'], 'meals': ['NO'], 'meal_example': [''], 'wifi': ['on'], 'description': [''],
+                         'address_add': [''], 'phone': [''], 'mobile': [''], 'description': [''],
+                         'languages': ['EN'], 'who_lives_here': [''], 'currency': ['EUR'],
+                         'maximum_of_guests': ['1'], 'meals': ['NO'], 'meal_example': [''], 'wifi': ['on'],
                          'max_stay': ['365'], 'min_stay': ['1'], 'currencies': ['€'], 'check_out_time': ['12'],
                          'check_in_time': ['14']}
 
@@ -234,7 +233,7 @@ class NewPlaceProcess(TestCase):
                                 content_type='image/jpeg')
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': fp,
-                                                          'kind_of_place': 1,
+                                                          'kind_of_place': 'TI',
                                                           'std_price': 12.6})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
@@ -260,7 +259,7 @@ class NewPlaceProcess(TestCase):
                                 content_type='image/jpeg')
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': fp,
-                                                          'kind_of_place': 3,
+                                                          'kind_of_place': 'ME',
                                                           'breakfast_included': 'no',
                                                           'std_price': 18.6})
         self.assertEqual(response.status_code, 302)
@@ -280,6 +279,7 @@ class NewPlaceProcess(TestCase):
         self.assertEqual(room.beds, 6)
         self.assertEqual(room.price_per_person, Decimal("18.60"))
 
+
 class EditPlace(TestCase):
     def setUp(self):
         self.client = Client()
@@ -297,10 +297,9 @@ class EditPlace(TestCase):
                          'form-MAX_NUM_FORMS': ['1'], 'form-0-name': ['TestCase'], 'form-0-contact_first_name': [''],
                          'form-0-contact_last_name': ['owner'], 'form-0-contact_type': ['NA'], 'form-0-street': [''],
                          'form-0-city': [''], 'form-0-country': [''], 'form-0-address_add': [''], 'form-0-phone': [''],
-                         'form-0-mobile': [''], 'form-0-email': ['hosttheway@gmail.com'], 'form-0-email_alt': [''],
-                         'form-0-languages': ['EN'], 'form-0-who_lives_here': [''], 'form-0-rooms': ['1'],
-                         'form-0-beds': ['2'], 'form-0-maximum_of_guests': ['1'], 'form-0-bathrooms': ['1'],
-                         'form-0-room_add': [''], 'form-0-pets': ['on'], 'form-0-family': ['on'],
+                         'form-0-mobile': [''], 'form-0-maximum_of_guests': ['1'],
+                         'form-0-languages': ['EN'], 'form-0-who_lives_here': [''],
+                         'form-0-room_add': [''], 'form-0-currency': ['EUR'],
                          'form-0-meals': ['NO'], 'form-0-meal_example': [''], 'form-0-wifi': ['on'],
                          'form-0-description': [''], 'form-0-picture': [''], 'form-0-longitude': ['43.511005555555556'],
                          'form-0-latitude': ['16.444283333333335'], 'form-0-max_stay': ['365'],
@@ -308,8 +307,8 @@ class EditPlace(TestCase):
                          'form-0-check_in_time': ['14'], 'form-0-id': ['1'], 'price-TOTAL_FORMS': ['1'],
                          'price-INITIAL_FORMS': ['0'], 'price-MIN_NUM_FORMS': ['0'], 'price-MAX_NUM_FORMS': ['3'],
                          'price-0-place': ['1'], 'price-0-description': [''], 'price-0-value': ['0.0'],
-                         'price-0-currency': ['EUR'], 'price-0-category': ['CL'], 'price-0-valid_from': ['2018-01-01'],
-                         'price-0-valid_to': ['2018-12-31'], 'price-0-id': [''], 'room-TOTAL_FORMS': ['1'],
+                         'price-0-currency': ['EUR'], 'price-0-category': ['CL'], 'price-0-id': [''],
+                         'room-TOTAL_FORMS': ['1'],
                          'room-INITIAL_FORMS': ['0'], 'room-MIN_NUM_FORMS': ['0'], 'room-MAX_NUM_FORMS': ['1'],
                          'room-0-place': ['1'], 'room-0-room_number': ['01'], 'room-0-beds': ['2'],
                          'room-0-price_per_person': ['0.0'], 'room-0-price_per_room': ['0.0'],
@@ -359,3 +358,17 @@ class AddUser(TestCase):
         self.assertEqual(response.url, '/places/1/')
         user = User.objects.filter(groups__in=[1]).first()
         self.assertIsInstance(user, User)
+
+
+class PlaceModel(TestCase):
+    def test_properties(self):
+        place = Place.objects.create(name='test')
+        room = Room.objects.create(price_per_person=12.5, room_number='01', beds=2, place_id=place.id)
+        place.room_set.add(room)
+        room2 = Room.objects.create(price_per_person=13.5, room_number='02', beds=3, place_id=place.id)
+        place.room_set.add(room2)
+        self.assertEqual(place.average_price, Decimal(13.0))
+        self.assertEqual(place.bathrooms, 2)
+        self.assertTrue(place.private_bathroom)
+        self.assertFalse(place.smoking)
+        self.assertEqual(place.beds, 5)

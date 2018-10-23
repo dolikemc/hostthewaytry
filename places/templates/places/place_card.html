@@ -13,10 +13,8 @@
                      alt="'Picture of the Place'">
             </div>
             <div class="w3-container w3-center w3-padding">
-                {% if place.private_bathroom == 1 %}
-                    <i class="fas fa-bath w3-large"> private {{ place.bathrooms }}</i>
-                {% else %}
-                    <i class="fas fa-bath w3-large">{{ place.bathrooms }}</i>
+                {% if place.private_bathroom %}
+                    <i class="fas fa-bath w3-large"> </i>
                 {% endif %}
                 <i class="fa fa-bed w3-large">{{ place.beds }}</i>
                 <!-- not in the overview
