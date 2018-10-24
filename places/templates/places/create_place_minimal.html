@@ -35,18 +35,19 @@
                 {{ form.picture.errors }}
                 {{ form.picture.label_tag }}<br>
                 {{ form.picture }}
-
             </div>
             <div class="w3-quarter"></div>
         </div>
         <div class="w3-row-padding">
             <div class="w3-threequarter ">
-                <label for="id_std_price">Standard price for a bed (you can change it later)::</label><br>
-                <input value="10,00" name="std_price" type="number" step="0.1" required id="id_std_price"> €
+                {{ form.std_price.errors }}
+                {{ form.std_price.label_tag }}<br>
+                {{ form.std_price }}€
             </div>
             <div class="w3-quarter ">
-                <label class="w3-label" for="">Breakfast included?</label><br>
-                <input type="checkbox" id="id_breakfast_included" checked name="breakfast_included">
+                {{ form.breakfast_included.errors }}
+                {{ form.breakfast_included.label_tag }}<br>
+                {{ form.breakfast_included }}
             </div>
         </div>
         <div class="w3-row-padding">
@@ -71,23 +72,19 @@
                 {{ form.own_key.errors }}
                 {{ form.own_key.label_tag }}<br>
                 {{ form.own_key }}
-
             </div>
             <div class="w3-quarter ">
                 {{ form.laundry.errors }}
                 {{ form.laundry.label_tag }}<br>
                 {{ form.laundry }}
-
             </div>
             <div class="w3-quarter ">
                 {{ form.parking.errors }}
                 {{ form.parking.label_tag }}<br>
                 {{ form.parking }}
-
             </div>
         </div>
         <div class="w3-row-padding">
-
         </div>
     </form>
 {% endblock %}

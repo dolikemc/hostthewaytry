@@ -2,6 +2,7 @@
 import logging
 from decimal import Decimal
 
+from django import forms
 # django modules
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
@@ -47,6 +48,8 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 
 class NewPlaceMinimal(ModelForm):
     """form for the minimum of information creating a new place"""
+    breakfast_included = forms.BooleanField(initial=True)
+    std_price = forms.DecimalField(decimal_places=2, label="Standard price for one night and one person")
 
     class Meta:
         model = Place
