@@ -2,68 +2,25 @@
 import logging
 from decimal import Decimal
 
-from django import forms
 # django modules
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.db.transaction import atomic
-from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
-from django.views import generic
 
+from .forms import AddUser, NewPlaceMinimal, AddRoomToPlace, AddPriceToPlace, EditPlaceView
 # my models
-from .models import Place, Price, Room
+from .models import Place, Room
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
-
-
-class IndexView(generic.ListView):
-    template_name = 'places/index.html'
-    context_object_name = 'places'
-
-    def get_queryset(self):
-        # todo: measure of distance
-        return Place.objects.order_by('-latitude')
-
-
-class EditPlaceView(ModelForm):
-    class Meta:
-        model = Place
-        fields = '__all__'
-
-
-class DetailView(generic.DetailView):
-    template_name = 'places/detail.html'
-    context_object_name = 'place'
-    model = Place
 
 
 def base_layout(request: HttpRequest) -> HttpResponse:
     """ method to store base layout via service worker"""
     template = 'places/w3base.html'
     return render(request, template)
-
-
-class NewPlaceMinimal(ModelForm):
-    """form for the minimum of information creating a new place"""
-    breakfast_included = forms.BooleanField(initial=True)
-    std_price = forms.DecimalField(decimal_places=2, label="Standard price for one night and one person")
-
-    class Meta:
-        model = Place
-        fields = ['name', 'picture', 'description', 'laundry', 'parking',
-                  'wifi', 'own_key', 'separate_entrance', 'category', 'country']
-        # user = User()
-
-
-class AddUser(ModelForm):
-    """add an administrator to a place"""
-
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'username', 'password', 'email']
 
 
 @login_required
@@ -86,15 +43,6 @@ def add_administrator_to_place(request: HttpRequest, place_id: int) -> HttpRespo
         return redirect('places:detail', pk=place_id)
     logger.warning(form.errors)
     return render(request, 'places/create_detail.html', {'form': form})
-
-
-class EditPlace(ModelForm):
-    """edit and create standard class for a place"""
-
-    class Meta:
-        model = Place
-        exclude = ['longitude', 'latitude']
-        # user = User(is_staff=True)
 
 
 @atomic
@@ -127,17 +75,6 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
     return render(request, 'places/create_place_minimal.html', {'form': form})
 
 
-# todo: use Styling required or erroneous form rows Form.error_css_class Form.required_css_class
-
-class AddPriceToPlace(ModelForm):
-    """add a price entry to the given place, therefore the place refernce is excluded"""
-    required_css_class = 'w3-amber w3-input'
-
-    class Meta:
-        model = Price
-        exclude = ['place']
-
-
 @login_required
 def create_new_price(request: HttpRequest, place: int) -> HttpResponse:
     """ new price added to a by id given place"""
@@ -154,13 +91,6 @@ def create_new_price(request: HttpRequest, place: int) -> HttpResponse:
         return redirect('places:detail', pk=price.place_id)
     logger.warning(form.errors)
     return render(request, 'places/create_detail.html', {'form': form})
-
-
-class AddRoomToPlace(ModelForm):
-    class Meta:
-        model = Room
-        exclude = ['place']
-        localized_fields = ['valid_from', 'valid_to']
 
 
 @login_required

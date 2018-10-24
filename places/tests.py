@@ -45,10 +45,10 @@ class CreateScreen(TestCase):
         User.objects.create_user(**self.credentials, is_staff=True)
         self.std_data = {'name': ['Da'], 'contact_type': ['NA'], 'street': [''], 'city': [''], 'country': ['dE'],
                          'address_add': [''], 'phone': [''], 'mobile': [''], 'description': [''],
-                         'languages': ['EN'], 'who_lives_here': [''], 'currency': ['EUR'],
+                         'languages': ['EN'], 'who_lives_here': [''], 'currency': ['EUR'], 'std_price': ['12.20'],
                          'maximum_of_guests': ['1'], 'meals': ['NO'], 'meal_example': [''], 'wifi': ['on'],
                          'max_stay': ['365'], 'min_stay': ['1'], 'currencies': ['€'], 'check_out_time': ['12'],
-                         'check_in_time': ['14'], 'category': ['NA'], }
+                         'check_in_time': ['14'], 'category': ['NA'], 'breakfast_included': ['on']}
 
     def test_use_template(self):
         self.assertTrue(self.client.login(**self.credentials))
@@ -216,7 +216,10 @@ class NewPlaceProcess(TestCase):
         fp = SimpleUploadedFile(name='IMG_3745.JPG',
                                 content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
                                 content_type='image/jpeg')
-        response = self.client.post('/places/new/', data={'name': 'New place', 'picture': fp, 'category': 'NA'})
+        response = self.client.post('/places/new/', data={'name': 'New place', 'picture': fp,
+                                                          'category': 'NA', 'std_price': '12.20',
+                                                          'breakfast_included': 'on'
+                                                          })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
         group: Group = Group.objects.first()
@@ -237,7 +240,8 @@ class NewPlaceProcess(TestCase):
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': fp,
                                                           'category': 'TI',
-                                                          'std_price': 12.6})
+                                                          'std_price': 12.6,
+                                                          'breakfast_included': 'on'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
         group: Group = Group.objects.first()
