@@ -24,7 +24,11 @@
                 {{ form.description.label_tag }}<br>
                 {{ form.description }}
             </div>
-            <div class="w3-quarter"></div>
+            <div class="w3-quarter">
+                {{ form.country.errors }}
+                {{ form.country.label_tag }}<br>
+                {{ form.country }}
+            </div>
         </div>
         <div class="w3-row-padding">
             <div class="w3-threequarter ">

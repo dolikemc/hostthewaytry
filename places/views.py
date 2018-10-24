@@ -2,7 +2,7 @@
 import logging
 from decimal import Decimal
 
-# django moduls
+# django modules
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.db.transaction import atomic
@@ -51,7 +51,7 @@ class NewPlaceMinimal(ModelForm):
     class Meta:
         model = Place
         fields = ['name', 'picture', 'description', 'laundry', 'parking',
-                  'wifi', 'own_key', 'separate_entrance', 'category']
+                  'wifi', 'own_key', 'separate_entrance', 'category', 'country']
         # user = User()
 
 
@@ -112,6 +112,8 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         form = NewPlaceMinimal()
     if form.is_valid():
         place: Place = form.save(commit=False)
+        place.country = str.upper(place.country)
+        place.languages = str.upper(place.languages)
         group: Group = place.create_user_group(user)
         group.save()
         user.save()
@@ -120,26 +122,6 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         return redirect('places:detail', pk=place.pk)
     logger.warning(form.errors)
     return render(request, 'places/create_place_minimal.html', {'form': form})
-
-
-@login_required
-def create_new_place_v1(request: HttpRequest) -> HttpResponse:
-    """create a new place old version"""
-    if request.method == 'POST':
-        logger.debug(request.POST)
-        logger.debug(str(request.FILES))
-        form = EditPlace(request.POST, request.FILES)
-    else:
-        form = EditPlace()
-    if form.is_valid():
-        place = form.save(commit=False)
-        # make a few up shifts
-        place.country = str.upper(place.country)
-        place.languages = str.upper(place.languages)
-        place.save()
-        return redirect('places:detail', pk=place.pk)
-    logger.warning(form.errors)
-    return render(request, 'places/create_place.html', {'form': form})
 
 
 # todo: use Styling required or erroneous form rows Form.error_css_class Form.required_css_class
