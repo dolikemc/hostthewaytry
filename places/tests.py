@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
 
@@ -47,7 +48,7 @@ class CreateScreen(TestCase):
                          'languages': ['EN'], 'who_lives_here': [''], 'currency': ['EUR'],
                          'maximum_of_guests': ['1'], 'meals': ['NO'], 'meal_example': [''], 'wifi': ['on'],
                          'max_stay': ['365'], 'min_stay': ['1'], 'currencies': ['€'], 'check_out_time': ['12'],
-                         'check_in_time': ['14']}
+                         'check_in_time': ['14'], 'category': ['NA'], }
 
     def test_use_template(self):
         self.assertTrue(self.client.login(**self.credentials))
@@ -213,7 +214,7 @@ class NewPlaceProcess(TestCase):
         fp = SimpleUploadedFile(name='IMG_3745.JPG',
                                 content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
                                 content_type='image/jpeg')
-        response = self.client.post('/places/new/', data={'name': 'New place', 'picture': fp})
+        response = self.client.post('/places/new/', data={'name': 'New place', 'picture': fp, 'category': 'NA'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
         group: Group = Group.objects.first()
@@ -233,7 +234,7 @@ class NewPlaceProcess(TestCase):
                                 content_type='image/jpeg')
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': fp,
-                                                          'kind_of_place': 'TI',
+                                                          'category': 'TI',
                                                           'std_price': 12.6})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
@@ -259,7 +260,7 @@ class NewPlaceProcess(TestCase):
                                 content_type='image/jpeg')
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': fp,
-                                                          'kind_of_place': 'ME',
+                                                          'category': 'ME',
                                                           'breakfast_included': 'no',
                                                           'std_price': 18.6})
         self.assertEqual(response.status_code, 302)
@@ -278,6 +279,16 @@ class NewPlaceProcess(TestCase):
         self.assertEqual(room.place_id, 1)
         self.assertEqual(room.beds, 6)
         self.assertEqual(room.price_per_person, Decimal("18.60"))
+        self.assertEqual(place.valid_rooms().count(), 3)
+        place.room_set.add(Room.objects.create(place_id=place.id, price_per_person=0.0, valid_from=date.today()))
+        self.assertEqual(place.valid_rooms().count(), 3)
+        place.room_set.add(
+            Room.objects.create(place_id=place.id, price_per_person=20.0, valid_from=date.today() + timedelta(days=8)))
+        self.assertEqual(place.valid_rooms().count(), 3)
+        place.room_set.add(Room.objects.create(place_id=place.id, price_per_person=20.0, valid_from=date.today()))
+        self.assertEqual(place.valid_rooms().count(), 4)
+        self.assertEqual(place.price_high, Decimal('20.0'))
+        self.assertEqual(place.price_low, Decimal('18.6'))
 
 
 class EditPlace(TestCase):
@@ -299,7 +310,7 @@ class EditPlace(TestCase):
                          'form-0-city': [''], 'form-0-country': [''], 'form-0-address_add': [''], 'form-0-phone': [''],
                          'form-0-mobile': [''], 'form-0-maximum_of_guests': ['1'],
                          'form-0-languages': ['EN'], 'form-0-who_lives_here': [''],
-                         'form-0-room_add': [''], 'form-0-currency': ['EUR'],
+                         'form-0-room_add': [''], 'form-0-currency': ['EUR'], 'form-0-category': ['NA'],
                          'form-0-meals': ['NO'], 'form-0-meal_example': [''], 'form-0-wifi': ['on'],
                          'form-0-description': [''], 'form-0-picture': [''], 'form-0-longitude': ['43.511005555555556'],
                          'form-0-latitude': ['16.444283333333335'], 'form-0-max_stay': ['365'],

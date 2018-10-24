@@ -46,17 +46,10 @@
             </div>
         </div>
         <div class="w3-row-padding">
-            <!-- todo: generate from model place host_category-->
             <div class="w3-threequarter ">
-                <label class="w3-label" for="id_kind_of_place">Select a default room setup (you can change it
-                    later):</label>
-                <select class="w3-select" name="kind_of_place" id="id_kind_of_place">
-                    <option value="TI">One room to rent with 2 beds</option>
-                    <option value="SM">Two rooms with 2-3 beds</option>
-                    <option value="ME">Three rooms with 2-6 beds</option>
-                    <option value="LA">Four rooms with 2-6 beds</option>
-                    <option value="HO">More than four rooms to rent</option>
-                </select>
+                {{ form.category.errors }}
+                {{ form.category.label_tag }}<br>
+                {{ form.category }}
             </div>
             <div class="w3-quarter ">
                 {{ form.separate_entrance.errors }}

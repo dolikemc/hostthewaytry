@@ -1,20 +1,23 @@
 import logging
 import sys
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from io import BytesIO
+from typing import List
 
 from PIL import Image
 from django.contrib.auth.models import Group, User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
-from django.db.models import Avg, Sum
+from django.db.models import Avg, Sum, Min, Max
 from django.urls import reverse
 
 from .image_filed_extend import ImageFieldExtend
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
+
+# date depended constant used for defaults
 current_year = date.today().year
 
 
@@ -46,20 +49,19 @@ class GeoName(models.Model):
     geo_name_id = models.PositiveIntegerField(primary_key=True, help_text='integer id of record in geonames database')
     name = models.CharField(max_length=200, help_text='name of geographical point (utf8)')
     ascii_name = models.CharField(max_length=200, help_text='name of geographical point in plain ascii characters')
-    alternate_names = models.CharField(max_length=1000,
-                                       help_text='comma separated, ascii names automatically transliterated, '
-                                                 'convenience attribute from alternate name table')
+    alternate_names = models.CharField(
+        max_length=1000, help_text='comma separated, ascii names automatically transliterated, '
+                                   'convenience attribute from alternate name table')
     latitude = models.DecimalField(max_digits=13, decimal_places=10, help_text='latitude in decimal degrees')
     longitude = models.DecimalField(max_digits=13, decimal_places=10, help_text='longitude in decimal degrees')
     feature_class = models.CharField(max_length=1, help_text='see http://www.geonames.org/export/codes.html')
     feature_code = models.CharField(max_length=10, help_text='see http://www.geonames.org/export/codes.html')
     country_code = models.CharField(max_length=2, help_text='ISO-3166 2-letter country code')
-    alternate_country_codes = models.CharField(max_length=200,
-                                               help_text='alternate country codes, comma separated, ISO-3166 2-letter '
-                                                         'country code')
-    admin_1_code = models.CharField(max_length=20,
-                                    help_text='fipscode (subject to change to iso code), see exceptions below, '
-                                              'see file admin1Codes.txt for display names of this code')
+    alternate_country_codes = models.CharField(
+        max_length=200, help_text='alternate country codes, comma separated, ISO-3166 2-letter country code')
+    admin_1_code = models.CharField(
+        max_length=20, help_text='fipscode (subject to change to iso code), see exceptions below, '
+                                 'see file admin1Codes.txt for display names of this code')
     admin_2_code = models.CharField(max_length=80,
                                     help_text='code for the second administrative division, a county in the US, '
                                               'see file admin2Codes.txt')
@@ -67,10 +69,11 @@ class GeoName(models.Model):
     admin_4_code = models.CharField(max_length=20, help_text='code for fourth level administrative division')
     population = models.PositiveIntegerField(null=True, blank=True)
     elevation = models.PositiveIntegerField(null=True, blank=True)
-    dem = models.PositiveIntegerField(null=True, blank=True, help_text='digital elevation model, srtm3 or gtopo30, '
-                                                                       'average elevation of 3''x3'' (ca 90mx90m) or '
-                                                                       '30''x30'' (ca 900mx900m) area in meters, '
-                                                                       'integer. srtm processed by cgiar/ciat')
+    dem = models.PositiveIntegerField(null=True, blank=True,
+                                      help_text='digital elevation model, srtm3 or gtopo30, '
+                                                'average elevation of 3''x3'' (ca 90mx90m) or '
+                                                '30''x30'' (ca 900mx900m) area in meters, '
+                                                'integer. srtm processed by cgiar/ciat')
     timezone = models.CharField(max_length=40, help_text='the iana timezone id (see file timeZone.txt)')
     modification_date = models.CharField(max_length=10, help_text='date of last modification in yyyy-MM-dd format')
 
@@ -99,16 +102,17 @@ class Place(models.Model):
 
     NO_ANSWER = 'NA'
     ALWAYS_ON_TOP = 'AW'
-    PRIORITY_TYPES = ((NO_ANSWER, "No special category"), (ALWAYS_ON_TOP, "Alwasy on top"))
+    PRIORITY_TYPES = ((NO_ANSWER, "No special category"), (ALWAYS_ON_TOP, "Always on top"))
 
     TINY = "TI"
     SMALL = "SM"
     MEDIUM = "ME"
     LARGE = "LA"
     HOTEL = "HO"
+    NOT_AVAILABLE = "NA"
     HOST_CATEGORY = ((TINY, "One room to rent with 2 beds"), (SMALL, "Two rooms with 2-3 beds"),
                      (MEDIUM, "Three rooms with 2-6 beds"), (LARGE, "Four rooms with 2-6 beds"),
-                     (HOTEL, "More than four rooms to rent "))
+                     (HOTEL, "More than four rooms to rent "), (NOT_AVAILABLE, "n/a"))
 
     name = models.CharField(max_length=200, help_text='Name of your place', null=False)
     description = models.CharField(max_length=500, default='', blank=True,
@@ -142,6 +146,8 @@ class Place(models.Model):
                                             default=False)
     max_stay = models.PositiveIntegerField(default=365, help_text='What is the maximum stay?')
     min_stay = models.PositiveIntegerField(default=1, help_text='What is the minimum stay?')
+    category = models.CharField(max_length=2, help_text='Category of your place', choices=HOST_CATEGORY,
+                                default=NOT_AVAILABLE)
 
     # about meal
     meals = models.CharField(max_length=2, help_text='How many meals per day your serve?', choices=MEALS,
@@ -155,9 +161,7 @@ class Place(models.Model):
 
     # location data
     # todo: define a proper sub class of models.ImageFiled with a resizing pres_save method
-    picture = models.ImageField(help_text='Picture of your place',
-                                upload_to='',
-                                blank=True)
+    picture = models.ImageField(help_text='Picture of your place', upload_to='', blank=True)
     longitude = models.FloatField(help_text='Where is your place (longitude)?', null=True, blank=True)
     latitude = models.FloatField(help_text='Where is your place (latitude)?', null=True, blank=True)
 
@@ -166,9 +170,9 @@ class Place(models.Model):
     currencies = models.CharField(max_length=50, default='€', help_text='What currencies do you accept?')
     check_out_time = models.PositiveIntegerField(default=12, help_text='Check out time')
     check_in_time = models.PositiveIntegerField(default=14, help_text='Check in time')
-    pick_up_service = models.BooleanField(default=False,
-                                          help_text='Can you pick up your guests from the airport, train station or '
-                                                    'bus stop')
+    pick_up_service = models.BooleanField(
+        default=False, help_text='Can you pick up your guests from the airport, train station or bus stop')
+
     # payed priority
     priority_value = models.PositiveSmallIntegerField(default=0, blank=True, null=True, editable=False)
     priority_valid_until = models.DateTimeField(blank=True, null=True)
@@ -202,21 +206,32 @@ class Place(models.Model):
         return self.bathrooms > 0
 
     @property
+    def price_low(self) -> Decimal:
+        return self.valid_rooms().aggregate(Min('price_per_person'))['price_per_person__min']
+
+    @property
+    def price_high(self) -> Decimal:
+        return self.valid_rooms().aggregate(Max('price_per_person'))['price_per_person__max']
+
+    def valid_rooms(self) -> List:
+        return self.room_set.filter(valid_from__lte=date.today() + timedelta(days=7)).filter(price_per_person__gt=0.0)
+
+    @property
     def bathrooms(self) -> int:
         return self.room_set.filter(bathroom=True).count()
 
-    def add_std_rooms_and_prices(self, std_price: Decimal, category: HOST_CATEGORY = 'TI') -> bool:
-        if category == self.TINY:
+    def add_std_rooms_and_prices(self, std_price: Decimal) -> bool:
+        if self.category == self.TINY:
             Room.objects.create(place_id=self.id, room_number='your room', beds=2,
                                 price_per_person=std_price)
             return True
-        if category == self.SMALL:
+        if self.category == self.SMALL:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,
                                 price_per_person=std_price)
             return True
-        if category == self.MEDIUM:
+        if self.category == self.MEDIUM:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,
@@ -224,7 +239,7 @@ class Place(models.Model):
             Room.objects.create(place_id=self.id, room_number='03', beds=6,
                                 price_per_person=std_price)
             return True
-        if category == self.LARGE:
+        if self.category == self.LARGE:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,
@@ -237,14 +252,23 @@ class Place(models.Model):
 
         return False
 
-    def create_user_group(self, user: User) -> bool:
-        return True
+    def create_user_group(self, user: User) -> Group:
+        index, group_name = 0, self.name
+        while Group.objects.filter(name=group_name).count() > 0:
+            group_name = self.name + str(index)
+            index += 1
+        group = Group.objects.create(name=group_name)
+        self.group = group
+        user.groups.add(group)
+        return group
 
     def __str__(self) -> str:
         return f"{self.name} ({self.country})"
 
     def save(self, **kwargs):
         self.country = str.upper(self.country)
+        self.currency = str.upper(self.currency)
+        self.currencies = str.upper(self.currencies)
 
         # Opening the uploaded image
         try:
@@ -294,6 +318,7 @@ class Price(models.Model):
         (BREAKFAST_LUNCH, 'Price for breakfast and lunch'),
         (BREAKFAST_DINNER, 'Price for breakfast and dinner'),
         (ALL_MEALS, 'Price for three meals'))
+
     place = models.ForeignKey(to=Place, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, blank=True,
                                    help_text='Description of this price')

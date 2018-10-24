@@ -21,7 +21,7 @@
 
 
     <div class="w3-panel w3-center w3-amber">
-        <h1>{{ place.name }}</h1>
+        <h3>{{ place.name }}</h3>
     </div>
     <div class="w3-row-padding">
         <div class="w3-container w3-third w3-center">
@@ -38,10 +38,12 @@
                 {% endif %}
             </div>
             <div class="w3-bar">
+
+                <i class="fa fa-bed w3-large w3-bar-item">  {{ place.beds }}</i>
                 {% if place.private_bathroom %}
                     <i class="fas fa-bath w3-large w3-bar-item"></i>
                 {% endif %}
-                <i class="fa fa-bed w3-large w3-bar-item">{{ place.beds }}</i>
+
                 {% if place.smoking %}
                     <i class="fas fa-smoking w3-large w3-bar-item w3-text-green"></i>
                 {% else %}
@@ -51,14 +53,38 @@
                 {% if place.wifi %}
                     <i class="fas fa-wifi w3-latge w3-bar-item w3-text-blue"></i>
                 {% else %}
-                    <p>No WiFi</p>
+                    <div class="w3-bar-item>">No WiFi</div>
                 {% endif %}
             </div>
-
+            <div class="w3-container">
+                Price per person:
+                {% if place.price_low == place.price_high %}
+                    {{ place.price_low.normalize }} {{ place.currency }}
+                {% else %}
+                    {{ place.price_low.normalize }} - {{ place.price_high.normalize }} {{ place.currency }}
+                {% endif %}
+            </div>
         </div>
         <div class="w3-container w3-third">
             {% leaflet_map "detail_map" callback="window.map_init_place" %}
         </div>
+        <div class="w3-panel w3-center">
+            <h4>Prices</h4>
+        </div>
+        <table class="w3-table w3-bordered">
+            <tr class="w3-amber">
+                <th>Category</th>
+                <th>Price</th>
+                <th>Description</th>
+            </tr>
+            {% for price in place.price_set.all %}
+                <tr>
+                    <td>{{ price.get_category_display }}</td>
+                    <td>{{ price.value }} {{ place.currency }}</td>
+                    <td>{{ price.description }}</td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 
 {% endblock %}

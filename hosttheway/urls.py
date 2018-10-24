@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.staticfiles import views
 from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +26,6 @@ urlpatterns = [
     path('', include('pwa.urls')),
     path('accounts/login/', admin.site.login)
 
-]
+              ] + static(settings.STATIC_URL, document_root=settings.BASE_DIR)
+
+# todo: make index.html available

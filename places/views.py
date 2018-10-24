@@ -5,7 +5,8 @@ from decimal import Decimal
 # django moduls
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.forms import ModelForm, modelformset_factory
+from django.db.transaction import atomic
+from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
@@ -17,10 +18,6 @@ from .models import Place, Price, Room
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-# kind of default rooms added to a new place
-# todo: define constants fro default room adder
-
-
 class IndexView(generic.ListView):
     template_name = 'places/index.html'
     context_object_name = 'places'
@@ -30,7 +27,12 @@ class IndexView(generic.ListView):
         return Place.objects.order_by('-latitude')
 
 
-# todo: load prices and room information to be displayed in the form
+class EditPlaceView(ModelForm):
+    class Meta:
+        model = Place
+        fields = '__all__'
+
+
 class DetailView(generic.DetailView):
     template_name = 'places/detail.html'
     context_object_name = 'place'
@@ -49,7 +51,7 @@ class NewPlaceMinimal(ModelForm):
     class Meta:
         model = Place
         fields = ['name', 'picture', 'description', 'laundry', 'parking',
-                  'wifi', 'own_key', 'separate_entrance']
+                  'wifi', 'own_key', 'separate_entrance', 'category']
         # user = User()
 
 
@@ -92,6 +94,7 @@ class EditPlace(ModelForm):
         # user = User(is_staff=True)
 
 
+@atomic
 @login_required
 def create_new_place(request: HttpRequest) -> HttpResponse:
     """cover the create new place process.
@@ -104,29 +107,16 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
     logger.debug(user)
     if request.method == 'POST':
         logger.debug(request.POST)
-
-        group_name = request.POST.get('name', 'auto')
-        index = 0
-        while Group.objects.filter(name=group_name).count() > 0:
-            group_name = group_name + str(index)
-            index += 1
-        group = Group.objects.create(name=group_name)
-        user.groups.add(group)
         form = NewPlaceMinimal(request.POST, request.FILES)
     else:
-        group = Group()
         form = NewPlaceMinimal()
     if form.is_valid():
-        place = form.save(commit=False)
-        place.group_id = group.id
+        place: Place = form.save(commit=False)
+        group: Group = place.create_user_group(user)
         group.save()
         user.save()
         place.save()
-        kind_of_place: place.HOST_CATEGORY = request.POST.get('kind_of_place', 'TI')
-        logger.warning(f'kind of place: {kind_of_place}')
-
-        place.add_std_rooms_and_prices(std_price=Decimal(request.POST.get('std_price', '0.0')),
-                                       category=kind_of_place)
+        place.add_std_rooms_and_prices(std_price=Decimal(request.POST.get('std_price', '0.0')))
         return redirect('places:detail', pk=place.pk)
     logger.warning(form.errors)
     return render(request, 'places/create_place_minimal.html', {'form': form})
@@ -208,38 +198,28 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
 
 @login_required
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:
-    room_form_set = modelformset_factory(model=Room, fields='__all__', max_num=1)
-    price_form_set = modelformset_factory(model=Price, fields='__all__', max_num=3)
-    place_form_set = modelformset_factory(model=Place, fields='__all__', max_num=1)
     logger.debug(request.POST)
+    place: Place = Place.objects.get(id=pk)
+    place.room_set.all()
+    place.price_set.all()
     if request.method == 'POST':
-        room_form_set = room_form_set(request.POST, request.FILES,
-                                      queryset=Room.objects.filter(place_id__exact=pk),
-                                      prefix='room')
-        price_form_set = price_form_set(request.POST, request.FILES,
-                                        queryset=Price.objects.filter(place_id__exact=pk),
-                                        prefix='price')
-        place_form_set = place_form_set(request.POST, request.FILES, queryset=Place.objects.filter(id=pk), )
-        if room_form_set.is_valid() and price_form_set.is_valid() and place_form_set.is_valid():
+
+        form = EditPlaceView(request.POST, request.FILES, instance=place)
+        if form.is_valid():
             # todo: do something with the cleaned_data on the formsets.
 
-            room_form_set.save()
-            place_form_set.save()
-            price_form_set.save()
+            form.save()
             return redirect('places:detail', pk=pk)
-        logger.debug(room_form_set.errors)
-        logger.warning(price_form_set.errors)
-        logger.warning(place_form_set.errors)
-    else:
-        room_form_set = room_form_set(prefix='room', queryset=Room.objects.filter(place_id__exact=pk), )
-        price_form_set = price_form_set(prefix='price', queryset=Price.objects.filter(place_id__exact=pk), )
-        place_form_set = place_form_set(queryset=Place.objects.filter(id=pk), )
 
-    return render(request, 'places/create_place.html', {
-        'formset': price_form_set,
-        'room_formset': room_form_set,
-        'form': place_form_set,
-    })
+        logger.warning(form.errors)
+    else:
+        form = EditPlaceView(instance=place)
+        logger.debug(place)
+        logger.debug(place.room_set.all())
+
+    return render(request, 'places/create_place.html', {'form': form,
+                                                        'rooms': place.room_set.all(),
+                                                        'prices': place.price_set.all()})
 
 
 def show_intro(request: HttpRequest) -> HttpResponse:

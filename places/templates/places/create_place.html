@@ -14,11 +14,49 @@
             <table>
                 {{ form.as_table }}
             </table>
-            <table>
-                {{ formset.as_table }}
+            <div class="w3-panel w3-center">
+                <h4>Prices</h4>
+            </div>
+            <table class="w3-table w3-bordered">
+                <tr class="w3-amber">
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                {% for price in prices %}
+                    <tr>
+                        <td>{{ price.get_category_display }}</td>
+                        <td>{{ price.value }} {{ place.currency }}</td>
+                        <td>{{ price.description }}</td>
+                        <td><a href="#" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i></a></td>
+                        <td><a href="#" class="w3-button w3-bar-item"><i
+                                class="fa fa-cross w3-text-red w3-large"></i></a></td>
+                    </tr>
+                {% endfor %}
             </table>
-            <table>
-                {{ room_formset.as_table }}
+            <div class="w3-panel w3-center">
+                <h4>Room Info</h4>
+            </div>
+            <table class="w3-table w3-bordered">
+                <tr class="w3-amber">
+                    <th>Number</th>
+                    <th>Price</th>
+                    <th>#Beds</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                {% for room in rooms %}
+                    <tr>
+                        <td>{{ room.room_number }}</td>
+                        <td>{{ room.price_per_person }} {{ place.currency }}</td>
+                        <td>{{ room.beds }}</td>
+                        <td><a href="#" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i></a></td>
+                        <td><a href="#" class="w3-button w3-bar-item"><i
+                                class="fa fa-cross w3-text-red w3-large"></i></a></td>
+                    </tr>
+                {% endfor %}
             </table>
 
         </form>
