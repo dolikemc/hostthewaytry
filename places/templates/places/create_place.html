@@ -11,9 +11,16 @@
                 {% endif %}
             </div>
             {% csrf_token %}
-            <table>
-                {{ form.as_table }}
-            </table>
+            {% for field in form %}
+                {% cycle '<div class="w3-row-padding">' '' %}
+
+                <div class="w3-half ">
+                    {{ field.errors }}
+                    {{ field.label_tag }}<br>
+                    {{ field }}
+                </div>
+                {% cycle '' '</div>' %}
+            {% endfor %}
             <div class="w3-panel w3-center">
                 <h4>Prices</h4>
             </div>
@@ -30,9 +37,10 @@
                         <td>{{ price.get_category_display }}</td>
                         <td>{{ price.value }} {{ place.currency }}</td>
                         <td>{{ price.description }}</td>
-                        <td><a href="#" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i></a></td>
-                        <td><a href="#" class="w3-button w3-bar-item"><i
-                                class="fa fa-cross w3-text-red w3-large"></i></a></td>
+                        <td><a href="{% url 'places:update_price' pk=price.id %}" class="w3-button w3-bar-item"><i
+                                class="fa fa-save w3-large"></i></a></td>
+                        <td><a href="{% url 'places:delete_price' pk=price.id %}" class="w3-button w3-bar-item"><i
+                                class="fa fa-times w3-text-red w3-large"></i></a></td>
                     </tr>
                 {% endfor %}
             </table>
@@ -41,6 +49,7 @@
             </div>
             <table class="w3-table w3-bordered">
                 <tr class="w3-amber">
+                    <th>Id</th>
                     <th>Number</th>
                     <th>Price</th>
                     <th>#Beds</th>
@@ -49,12 +58,14 @@
                 </tr>
                 {% for room in rooms %}
                     <tr>
+                        <td>{{ room.id }}</td>
                         <td>{{ room.room_number }}</td>
                         <td>{{ room.price_per_person }} {{ place.currency }}</td>
                         <td>{{ room.beds }}</td>
-                        <td><a href="#" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i></a></td>
-                        <td><a href="#" class="w3-button w3-bar-item"><i
-                                class="fa fa-cross w3-text-red w3-large"></i></a></td>
+                        <td><a href="{% url 'places:update_room' pk=room.id %}" class="w3-button w3-bar-item"><i
+                                class="fa fa-save w3-large"></i></a></td>
+                        <td><a href="{% url 'places:delete_room' pk=room.id %}" class="w3-button w3-bar-item"><i
+                                class="fa fa-times w3-text-red w3-large"></i></a></td>
                     </tr>
                 {% endfor %}
             </table>

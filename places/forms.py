@@ -5,6 +5,7 @@ import logging
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import ModelForm
+from django.shortcuts import reverse
 from django.views import generic
 
 # my models
@@ -21,6 +22,48 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         # todo: measure of distance
         return Place.objects.order_by('-latitude')
+
+
+class DeletePrice(generic.DeleteView):
+    model = Price
+
+    def get_success_url(self):
+        return reverse('places:update_place', kwargs={'pk': self.object.place.id})
+
+    def get(self, *args, **kwargs):
+        return self.post(*args, **kwargs)
+
+
+class EditPrice(generic.UpdateView):
+    template_name = 'places/create_detail.html'
+    context_object_name = 'form'
+    model = Price
+    fields = '__all__'
+    pk_url_kwarg = 'place_id'
+
+    def get_success_url(self):
+        return reverse('places:update_place', kwargs={'pk': self.object.place.id})
+
+
+class DeleteRoom(generic.DeleteView):
+    model = Room
+
+    def get_success_url(self):
+        return reverse('places:update_place', kwargs={'pk': self.object.place.id})
+
+    def get(self, *args, **kwargs):
+        return self.post(*args, **kwargs)
+
+
+class EditRoom(generic.UpdateView):
+    template_name = 'places/create_detail.html'
+    context_object_name = 'form'
+    model = Room
+    fields = '__all__'
+    localized_fields = ['valid_from', 'valid_to']
+
+    def get_success_url(self):
+        return reverse('places:update_place', kwargs={'pk': self.object.place.id})
 
 
 class EditPlaceView(ModelForm):

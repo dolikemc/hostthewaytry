@@ -295,6 +295,13 @@ class NewPlaceProcess(TestCase):
         self.assertEqual(place.valid_rooms().count(), 4)
         self.assertEqual(place.price_high, Decimal('20.0'))
         self.assertEqual(place.price_low, Decimal('18.6'))
+        place.room_set.add(
+            Room.objects.create(place_id=place.id, price_per_person=20.0, valid_to=date.today() - timedelta(days=8)))
+        self.assertEqual(place.valid_rooms().count(), 4)
+
+    def tearDown(self):
+        for p in Path("./places/static/img/").glob("IMG_3745_*.JPG"):
+            p.unlink()
 
 
 class EditPlace(TestCase):
@@ -334,7 +341,7 @@ class EditPlace(TestCase):
 
     def test_update_place(self):
         self.assertTrue(self.client.login(**self.credentials))
-        response = self.client.post('/places/update/1/', data=self.std_data)
+        response = self.client.post('/places/update/place/1/', data=self.std_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
         place = Place.objects.get(pk=1)

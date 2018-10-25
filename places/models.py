@@ -3,6 +3,7 @@ import sys
 from datetime import date, timedelta
 from decimal import Decimal
 from io import BytesIO
+from os.path import isfile
 from typing import List
 
 from PIL import Image
@@ -214,7 +215,8 @@ class Place(models.Model):
         return self.valid_rooms().aggregate(Max('price_per_person'))['price_per_person__max']
 
     def valid_rooms(self) -> List:
-        return self.room_set.filter(valid_from__lte=date.today() + timedelta(days=7)).filter(price_per_person__gt=0.0)
+        return self.room_set.filter(valid_from__lte=date.today() + timedelta(days=7), price_per_person__gt=0.0,
+                                    valid_to__gte=date.today())
 
     @property
     def bathrooms(self) -> int:
@@ -266,6 +268,7 @@ class Place(models.Model):
         return f"{self.name} ({self.country})"
 
     def save(self, **kwargs):
+
         self.country = str.upper(self.country)
         self.currency = str.upper(self.currency)
         self.currencies = str.upper(self.currencies)
@@ -281,6 +284,10 @@ class Place(models.Model):
                     self.latitude is None or self.latitude == 0:
                 (self.longitude, self.latitude) = img_ext.get_lat_lon(im)
 
+            if isfile('places/static/img/' + self.picture.name):
+                logger.debug("File already exits")
+                return super(Place, self).save(**kwargs)
+
             output = BytesIO()
 
             # todo: keep orientation
@@ -291,7 +298,7 @@ class Place(models.Model):
             im.save(output, format='JPEG', quality=100)
             output.seek(0)
 
-            # change the image field value to be the newley modifed image value
+            # change the image field value to be the newly modifed image value
             self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
                                                 'image/jpeg',
                                                 sys.getsizeof(output), None)
