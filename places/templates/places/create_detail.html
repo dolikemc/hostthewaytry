@@ -14,7 +14,7 @@
             {% csrf_token %}
             {% for field in form %}
                 {% if field.name == 'place' %}
-                    {{ field.value }} - {{ field.name }} - {{ field.label }}
+                    <!--{{ field.value }} - {{ field.name }} - {{ field.label }}-->
                 {% else %}
                     {% cycle '<div class="w3-row-padding">' '' %}
                     <div class="w3-half ">

@@ -115,11 +115,11 @@ class AddPriceToPlace(ModelForm):
 
     class Meta:
         model = Price
-        fields = '__all__'
+        exclude = ['place']
 
 
 class AddRoomToPlace(ModelForm):
     class Meta:
         model = Room
-        fields = '__all__'
+        exclude = ['place']
         localized_fields = ['valid_from', 'valid_to']
