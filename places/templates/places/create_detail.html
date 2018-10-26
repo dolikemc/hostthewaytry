@@ -3,8 +3,9 @@
     <div class="w3-amber w3-container">
         <form method="post">
             <div class="w3-bar">
-                <button onclick="goBack()" class="w3-button w3-bar-item"><i class="fa fa-backward w3-large"></i>
-                </button>
+                <a href="{% url 'places:detail' 1 %}" class="w3-button w3-bar-item"><i
+                        class="fa fa-backward w3-large"></i>
+                </a>
                 {% if user.is_authenticated %}
                     <button type="submit" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i>
                     </button>
@@ -12,14 +13,17 @@
             </div>
             {% csrf_token %}
             {% for field in form %}
-                {% cycle '<div class="w3-row-padding">' '' %}
-
-                <div class="w3-half ">
-                    {{ field.errors }}
-                    {{ field.label_tag }}<br>
-                    {{ field }}
-                </div>
-                {% cycle '' '</div>' %}
+                {% if field.name == 'place' %}
+                    {{ field.value }} - {{ field.name }} - {{ field.label }}
+                {% else %}
+                    {% cycle '<div class="w3-row-padding">' '' %}
+                    <div class="w3-half ">
+                        {{ field.errors }}
+                        {{ field.label_tag }}<br>
+                        {{ field }}
+                    </div>
+                    {% cycle '' '</div>' %}
+                {% endif %}
             {% endfor %}
 
         </form>

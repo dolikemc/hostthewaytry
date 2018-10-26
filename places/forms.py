@@ -38,8 +38,9 @@ class EditPrice(generic.UpdateView):
     template_name = 'places/create_detail.html'
     context_object_name = 'form'
     model = Price
-    fields = '__all__'
-    pk_url_kwarg = 'place_id'
+    fields = ['category', 'value', 'description', ]
+
+    # pk_url_kwarg = 'place_id', , 'reviewed', 'deleted'
 
     def get_success_url(self):
         return reverse('places:update_place', kwargs={'pk': self.object.place.id})
@@ -59,7 +60,8 @@ class EditRoom(generic.UpdateView):
     template_name = 'places/create_detail.html'
     context_object_name = 'form'
     model = Room
-    fields = '__all__'
+    fields = ['room_number', 'beds', 'bathroom', 'kitchen', 'outdoor_place', 'room_add', 'smoking', 'pets', 'family',
+              'handicapped_enabled', 'price_per_person', 'price_per_room', ]
     localized_fields = ['valid_from', 'valid_to']
 
     def get_success_url(self):
@@ -113,11 +115,11 @@ class AddPriceToPlace(ModelForm):
 
     class Meta:
         model = Price
-        exclude = ['place']
+        fields = '__all__'
 
 
 class AddRoomToPlace(ModelForm):
     class Meta:
         model = Room
-        exclude = ['place']
+        fields = '__all__'
         localized_fields = ['valid_from', 'valid_to']
