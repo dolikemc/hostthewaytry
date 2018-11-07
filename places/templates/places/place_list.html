@@ -15,7 +15,7 @@
                 <td>{{ place.id }}</td>
                 <td>{{ place.name }}</td>
                 <td>{{ place.country }}</td>
-                <td>{{ place.description }}</td>
+                <td>{{ place.generated_description }}</td>
                 <td>{{ place.created_on }}</td>
                 <td><a href="{% url 'places:update-place' place.id %}">Edit</a></td>
                 <td>

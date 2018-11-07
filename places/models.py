@@ -12,6 +12,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.db.models import Avg, Sum, Min, Max
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from .image_filed_extend import ImageFieldExtend
 
@@ -192,6 +193,8 @@ class Place(models.Model):
 
     @property
     def beds(self) -> int:
+        if self.room_set.all().count() == 0:
+            return 0
         return self.room_set.aggregate(Sum('beds'))['beds__sum']
 
     @property
@@ -221,6 +224,20 @@ class Place(models.Model):
     @property
     def bathrooms(self) -> int:
         return self.room_set.filter(bathroom=True).count()
+
+    @property
+    def generated_description(self) -> str:
+        logger.debug(f"Length of description: {len(self.description)}")
+        if self.description is None or self.description.isspace() or len(self.description) <= 0:
+            text = _("You will be in a beautiful place")
+            if self.beds > 1:
+                text += _(" together with people from all around the world.")
+            else:
+                text += '.'
+            if self.private_bathroom:
+                text += _(' You will have your own bathroom.')
+            return text
+        return _(self.description)
 
     def add_std_rooms_and_prices(self, std_price: Decimal) -> bool:
         if self.category == self.TINY:

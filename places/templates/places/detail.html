@@ -31,11 +31,7 @@
         </div>
         <div class="w3-third w3-padding">
             <div class="w3-bar">
-                {% if place.description == '' %}
-                    <p>You will be in a beautiful place together with {{ place.who_lives_her | capfirst }}. </p>
-                {% else %}
-                    <p>{{ place.description }}</p>
-                {% endif %}
+                {{ place.generated_description }}
             </div>
             <div class="w3-bar">
 
