@@ -184,7 +184,7 @@ class Place(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     reviewed = models.BooleanField(editable=False, default=False)
-    deleted = models.BooleanField(editable=False, default=False)
+    deleted = models.BooleanField(default=False)
 
     @property
     def average_price(self) -> Decimal:

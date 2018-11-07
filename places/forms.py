@@ -15,6 +15,13 @@ from .models import Place, Price, Room
 logger: logging.Logger = logging.getLogger(__name__)
 
 
+class ReviewList(generic.ListView):
+    context_object_name = 'places'
+
+    def get_queryset(self):
+        return Place.objects.filter(reviewed__exact=0).order_by('created_on')
+
+
 class IndexView(generic.ListView):
     template_name = 'places/index.html'
     context_object_name = 'places'
@@ -28,7 +35,7 @@ class DeletePrice(generic.DeleteView):
     model = Price
 
     def get_success_url(self):
-        return reverse('places:update_place', kwargs={'pk': self.object.place.id})
+        return reverse('update-place', kwargs={'pk': self.object.place.id})
 
     def get(self, *args, **kwargs):
         return self.post(*args, **kwargs)
@@ -43,14 +50,14 @@ class EditPrice(generic.UpdateView):
     # pk_url_kwarg = 'place_id', , 'reviewed', 'deleted'
 
     def get_success_url(self):
-        return reverse('places:update_place', kwargs={'pk': self.object.place.id})
+        return reverse('update-place', kwargs={'pk': self.object.place.id})
 
 
 class DeleteRoom(generic.DeleteView):
     model = Room
 
     def get_success_url(self):
-        return reverse('places:update_place', kwargs={'pk': self.object.place.id})
+        return reverse('update-place', kwargs={'pk': self.object.place.id})
 
     def get(self, *args, **kwargs):
         return self.post(*args, **kwargs)
@@ -65,7 +72,7 @@ class EditRoom(generic.UpdateView):
     localized_fields = ['valid_from', 'valid_to']
 
     def get_success_url(self):
-        return reverse('places:update_place', kwargs={'pk': self.object.place.id})
+        return reverse('update-place', kwargs={'pk': self.object.place.id})
 
 
 class EditPlaceView(ModelForm):

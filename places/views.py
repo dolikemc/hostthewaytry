@@ -112,6 +112,16 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
 
 
 @login_required
+def place_reviewed(request: HttpRequest, pk: int) -> HttpResponse:
+    place: Place = Place.objects.get(id=pk)
+    # todo: delete check box is not working
+    place.deleted = request.POST.get('deleted', False)
+    place.reviewed = True
+    place.save()
+    return redirect('places:review-places')
+
+
+@login_required
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     logger.debug(request.POST)
     place: Place = Place.objects.get(id=pk)

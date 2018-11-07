@@ -37,9 +37,9 @@
                         <td>{{ price.get_category_display }}</td>
                         <td>{{ price.value }} {{ place.currency }}</td>
                         <td>{{ price.description }}</td>
-                        <td><a href="{% url 'places:update_price' pk=price.id %}" class="w3-button w3-bar-item"><i
+                        <td><a href="{% url 'places:update-price' pk=price.id %}" class="w3-button w3-bar-item"><i
                                 class="fa fa-save w3-large"></i></a></td>
-                        <td><a href="{% url 'places:delete_price' pk=price.id %}" class="w3-button w3-bar-item"><i
+                        <td><a href="{% url 'places:delete-price' pk=price.id %}" class="w3-button w3-bar-item"><i
                                 class="fa fa-times w3-text-red w3-large"></i></a></td>
                     </tr>
                 {% endfor %}
@@ -62,9 +62,9 @@
                         <td>{{ room.room_number }}</td>
                         <td>{{ room.price_per_person }} {{ place.currency }}</td>
                         <td>{{ room.beds }}</td>
-                        <td><a href="{% url 'places:update_room' pk=room.id %}" class="w3-button w3-bar-item"><i
+                        <td><a href="{% url 'places:update-room' pk=room.id %}" class="w3-button w3-bar-item"><i
                                 class="fa fa-save w3-large"></i></a></td>
-                        <td><a href="{% url 'places:delete_room' pk=room.id %}" class="w3-button w3-bar-item"><i
+                        <td><a href="{% url 'places:delete-room' pk=room.id %}" class="w3-button w3-bar-item"><i
                                 class="fa fa-times w3-text-red w3-large"></i></a></td>
                     </tr>
                 {% endfor %}

@@ -38,7 +38,7 @@ SECRET_KEY = 'y6r_9lfz$af-egoz-fb@-9-wybc6@3a*5+=ibj1-wds#pfj^(e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['hostthewaytry.pythonanywhere.com', '127.0.0.1']
+ALLOWED_HOSTS = ['hostthewaytry.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 ROOT_URLCONF = 'hosttheway.urls'

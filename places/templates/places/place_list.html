@@ -1,0 +1,34 @@
+{% extends "places/w3base.html" %}
+{% block content %}
+    <table class="w3-table-all w3-text-black">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Country</th>
+            <th>Description</th>
+            <th>CreatedOn</th>
+            <th></th>
+            <th>Publish</th>
+        </tr>
+        {% for place in places %}
+            <tr>
+                <td>{{ place.id }}</td>
+                <td>{{ place.name }}</td>
+                <td>{{ place.country }}</td>
+                <td>{{ place.description }}</td>
+                <td>{{ place.created_on }}</td>
+                <td><a href="{% url 'places:update-place' place.id %}">Edit</a></td>
+                <td>
+                    <form method="post" action="{% url 'places:publish-place' place.id %}">
+                        {% csrf_token %}
+                        <label for="deleted-{{ place.id }}">Deleted?</label>
+                        <input type="checkbox" value="{{ place.deleted }}" id="deleted-{{ place.id }}">
+                        <button type="submit" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
