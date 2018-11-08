@@ -1,5 +1,6 @@
 {% extends 'places/w3base.html' %}
 {% block content %}
+    {% load l10n %}
     {% load static %}
     {% load leaflet_tags %}
 
@@ -62,7 +63,7 @@
             </div>
         </div>
         <div class="w3-container w3-third">
-            {% leaflet_map "detail_map" callback="window.map_init_place" %}
+            {% leaflet_map "detail_map" callback="window.map_init_place" settings_overrides='' %}
         </div>
         <div class="w3-panel w3-center">
             <h4>Prices</h4>
@@ -82,5 +83,15 @@
             {% endfor %}
         </table>
     </div>
+    <script type="text/javascript">
+        {% localize off %}
+            var longitude = {{ place.longitude }};
+            var latitude = {{ place.latitude }};
 
+            function map_init_place(map, options) {
+                map.setView([longitude, latitude], 16);
+                L.marker([longitude, latitude]).addTo(map);
+            };
+        {% endlocalize %}
+    </script>
 {% endblock %}

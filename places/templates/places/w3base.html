@@ -94,12 +94,6 @@
         }
     }
 
-    function map_init_place(map, options) {
-        {% if place %}
-            map.setView([{{ place.longitude }}, {{ place.latitude }}], 16);
-            L.marker([{{ place.longitude }}, {{ place.latitude }}]).addTo(map);
-        {% endif %}
-    };
 
     function goBack() {
         window.history.back();
