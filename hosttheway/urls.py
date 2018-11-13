@@ -13,18 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles import views
 from django.urls import path, include
-from django.conf.urls.static import static
-from django.conf import settings
+from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('places/', include('places.urls')),
-    path('places/places/static/img/', views.serve),
-    path('', include('pwa.urls')),
-    path('accounts/login/', admin.site.login)
+                  path('', TemplateView.as_view(template_name='index.html')),
+                  path('admin/', admin.site.urls),
+                  path('places/', include('places.urls')),
+                  path('places/places/static/img/', views.serve),
+                  path('accounts/login/', admin.site.login)
 
               ] + static(settings.STATIC_URL, document_root=settings.BASE_DIR)
 

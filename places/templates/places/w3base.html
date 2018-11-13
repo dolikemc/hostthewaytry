@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <title>HOST THE WAY</title>
-{% load pwa %}
+
 {% load static %}
 {% load leaflet_tags %}
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% progressive_web_app_meta %}
     <link rel="stylesheet" type="text/css" href="{% static 'places/style.css' %}">
     {% leaflet_css %}
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -93,6 +92,7 @@
             <!--alert(e.message);-->
         }
     }
+
     function goBack() {
         window.history.back();
     }

@@ -1,0 +1,82 @@
+{% load i18n static %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<title>{% block title %}{% endblock %}</title>
+{% load static %}
+{% load leaflet_tags %}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'places/style.css' %}">
+    {% leaflet_css %}
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+          integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    {% leaflet_js %}
+</head>
+
+<body>
+<header>
+    {% block breadcrumbs %}
+        <div class="breadcrumbs">
+            <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+            {% if title %} &rsaquo; {{ title }}{% endif %}
+        </div>
+    {% endblock %}
+
+    {% block navigation %}
+        <div class="w3-top">
+            <div class="w3-bar w3-black w3-xlarge" style="margin:auto">
+                <a href="#" class="w3-bar-item w3-button">
+                    <div class="w3-padding-16"><i class="fa fa-cog"></i></div>
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="/admin/logout/?next=/places/" class="w3-bar-item w3-button">
+                        <div class="w3-padding-16"><i class="fa fa-key w3-text-green"></i></div>
+                    </a>
+                {% else %}
+                    <a href="/admin/login/?next=/places/" class="w3-bar-item w3-button">
+                        <div class="w3-padding-16"><i class="fa fa-key w3-text-grey"></i></div>
+                    </a>
+                {% endif %}
+                <a href="#" class="w3-bar-item w3-button">
+                    <div class="w3-padding-16"><i class="fa fa-search w3-text-grey"></i></div>
+                </a>
+                <a href="{% url 'places:intro' %}" class="w3-bar-item w3-button">
+                    <div class="w3-padding-16"><i class="fa fa-info"></i></div>
+                </a>
+                <a href="{% url 'places:index' %}" class="w3-bar-item w3-button w3-right">
+                    <div class="w3-padding-16"><i class="fa fa-home"></i></div>
+                </a>
+            </div>
+
+
+            <div class="w3-panel w3-center">
+                <div class="w3-tag w3-tiny w3-red">H</div>
+                <div class="w3-tag w3-tiny w3-light-blue">O</div>
+                <div class="w3-tag w3-tiny w3-lime">S</div>
+                <div class="w3-tag w3-tiny w3-blue">T</div>
+                <div class="w3-tag w3-tiny w3-grey">*</div>
+                <div class="w3-tag w3-tiny w3-brown">T</div>
+                <div class="w3-tag w3-tiny w3-orange">H</div>
+                <div class="w3-tag w3-tiny w3-light-blue">E</div>
+                <div class="w3-tag w3-tiny w3-grey">*</div>
+                <div class="w3-hide-large w3-hide-medium"></div>
+                <div class="w3-tag w3-tiny w3-lime">W</div>
+                <div class="w3-tag w3-tiny w3-amber">A</div>
+                <div class="w3-tag w3-tiny w3-light-blue">Y</div>
+            </div>
+        </div>
+    {% endblock %}
+
+</header>
+<div class="w3-main w3-padding w3-content" style="margin-top:170px">
+    {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+    {% block content %}
+    {% endblock %}
+</div>
+
+<footer class="w3-bar w3-b0ttom">
+    <div class="w3-padding-16 w3-bar-item"><i class="fa fa-copyright"></i> christoph.buchetmann</div>
+</footer>
+</body>
+</html>

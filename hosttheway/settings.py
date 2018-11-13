@@ -14,6 +14,8 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+"""
 # pwa
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'places/static/js', 'service_worker.js')
 PWA_APP_NAME = 'TravelTheWay'
@@ -21,13 +23,14 @@ PWA_APP_DESCRIPTION = 'My Progressive Web App'
 PWA_APP_ROOT_URL = '/places'
 PWA_APP_THEME_COLOR = '#aaa'
 PWA_APP_DISPLAY = 'standalone'
-PWA_APP_START_URL = '/places'
+PWA_APP_START_URL = '/'
 PWA_APP_ICONS = [
     {
         'src': '/static/places/icon.ico',
         'sizes': '160x160'
     }
 ]
+"""
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -50,7 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'places.apps.PlacesConfig',
-    'pwa',
+    'participant.apps.ParticipantConfig',
     'leaflet',
 ]
 
@@ -70,8 +73,7 @@ ROOT_URLCONF = 'hosttheway.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
