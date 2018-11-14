@@ -52,8 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'traveller.apps.TravellerConfig',
     'places.apps.PlacesConfig',
-    'participant.apps.ParticipantConfig',
     'leaflet',
 ]
 

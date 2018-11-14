@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 
+from traveller.views import create_place_admin, register
 from . import views
 from .forms import DetailView, IndexView, EditRoom, EditPrice, DeletePrice, DeleteRoom, ReviewList
 
@@ -12,7 +13,8 @@ urlpatterns = [
                   path('reviewed/<int:pk>', views.place_reviewed, name='publish-place'),
                   path('new/', views.create_new_place, name='create-place'),
                   path('price/<int:place>/', views.create_new_price, name='create-price'),
-                  path('user/<int:place_id>/', views.add_administrator_to_place, name='create-user'),
+                  path('register/<int:place_id>/', register, name='register-user'),
+                  path('user/<int:place_id>/<int:user_id>/', create_place_admin, name='create-user'),
                   path('room/<int:place>/', views.create_new_room, name='create-room'),
                   path('<int:pk>/', DetailView.as_view(), name='detail'),
                   path('update/place/<int:pk>/', views.update_place, name='update-place'),
