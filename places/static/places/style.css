@@ -15,7 +15,7 @@ html, body {
 }
 
 #container {
-
+    background-color: #000000;
     height: 100%;
     width: 100%;
     font-size: 1em;
@@ -23,6 +23,7 @@ html, body {
 }
 
 #content {
+    background-color: #000000;
     font-size: 1em;
 }
 
@@ -55,7 +56,7 @@ body, h1, h2, h3, h4, h5, h6, h7, h8 {
 }
 
 #changelist table {
-    color: cornflowerblue;
+    color: #000000;
 }
 
 .submit-row p.deletelink-box {

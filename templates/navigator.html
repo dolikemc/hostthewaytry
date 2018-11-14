@@ -1,7 +1,7 @@
 {% load static %}
 
-<div class="w3-container w3-black">
-    <div class="w3-bar w3-black w3-xlarge" style="margin:auto">
+
+<div class="w3-bar w3-black w3-xlarge" style="margin:auto">
         {% if user.is_authenticated %}
             <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-text-red">
                 <div class="w3-padding-16"><i class="fa fa-cog"></i></div>
@@ -38,4 +38,4 @@
     <div class="w3-panel w3-center">
         <img src="{% static 'img/logo.png' %}" alt="Logo">
     </div>
-</div>
+
