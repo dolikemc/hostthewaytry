@@ -1,0 +1,39 @@
+{% load static %}
+
+<div class="w3-bar w3-black w3-xlarge" style="margin:auto">
+    {% if user.is_authenticated %}
+        <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-text-red">
+            <div class="w3-padding-16"><i class="fa fa-cog"></i></div>
+        </a>
+        <a href="{% url 'places:register-worker' %}" class="w3-bar-item w3-button w3-text-blue">
+            <div class="w3-padding-16"><i class="fa fa-address-book"></i></div>
+        </a>
+        <a href="/admin/places/place/?reviewed__exact=0" class="w3-bar-item w3-button w3-text-orange">
+            <div class="w3-padding-16"><i class="fa fa-eye-slash"></i></div>
+        </a>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <a href="{% url 'admin:logout' %}" class="w3-bar-item w3-button">
+            <div class="w3-padding-16"><i class="fa fa-key w3-text-green"></i></div>
+        </a>
+    {% else %}
+        <a href="{% url 'admin:login' %}" class="w3-bar-item w3-button">
+            <div class="w3-padding-16"><i class="fa fa-key w3-text-grey"></i></div>
+        </a>
+    {% endif %}
+    <a href="#" class="w3-bar-item w3-button">
+        <div class="w3-padding-16"><i class="fa fa-search w3-text-grey"></i></div>
+    </a>
+    {% if user.is_authenticated %}
+    {% else %}
+        <a href="{% url 'places:intro' %}" class="w3-bar-item w3-button">
+            <div class="w3-padding-16"><i class="fa fa-info"></i></div>
+        </a>
+    {% endif %}
+    <a href="{% url 'places:index' %}" class="w3-bar-item w3-button w3-right">
+        <div class="w3-padding-16"><i class="fa fa-home"></i></div>
+    </a>
+</div>
+<div class="w3-panel w3-center">
+    <img src="{% static 'img/logo.png' %}" alt="Logo">
+</div>

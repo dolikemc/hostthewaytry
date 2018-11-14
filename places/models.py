@@ -3,6 +3,7 @@ import sys
 from datetime import date, timedelta
 from decimal import Decimal
 from io import BytesIO
+from math import sqrt, pow
 from os.path import isfile
 from typing import List
 
@@ -186,6 +187,10 @@ class Place(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     reviewed = models.BooleanField(editable=False, default=False)
     deleted = models.BooleanField(default=False)
+
+    def distance(self, latitude: float, longitude: float) -> float:
+        return sqrt(pow(self.latitude - latitude, 2) +
+                    pow(self.longitude - longitude, 2), 2)
 
     @property
     def average_price(self) -> Decimal:

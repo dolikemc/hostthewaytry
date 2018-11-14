@@ -18,7 +18,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 # Create your views here.
 @login_required
-def create_place_admin(request: HttpRequest, place_id: int, user_id: int) -> HttpResponse:
+def update_traveller(request: HttpRequest, place_id: int, user_id: int) -> HttpResponse:
     user: User = User.objects.get(id=user_id)
     traveller: Traveller = Traveller.objects.get(id=user.traveller.id)
 
@@ -43,24 +43,35 @@ def create_place_admin(request: HttpRequest, place_id: int, user_id: int) -> Htt
                    'traveller_form': traveller_form})
 
 
-def register(request: HttpRequest, place_id: int) -> HttpResponse:
+def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
     """create a new user and add him to the admin group of the place"""
     if request.method == 'POST':
-        f = UserCreationForm(request.POST)
-        if f.is_valid():
-            user: User = f.save(commit=False)
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user: User = form.save(commit=False)
             user.save()
             messages.success(request, 'Account created successfully')
-            if place_id > 0:
-                place: Place = Place.objects.get(id=place_id)
-                user.groups.add(place.group)
-                user.save()
-                return redirect('places:create-user', place_id=place_id, user_id=user.id)
-            # worker call change form
 
-            return redirect('places:create-user', place_id=0, user_id=user.id)
-
+            place: Place = Place.objects.get(id=place_id)
+            user.groups.add(place.group)
+            user.save()
+            return redirect('places:create-user', place_id=place_id, user_id=user.id)
     else:
-        f = UserCreationForm()
+        form = UserCreationForm()
 
-    return render(request, 'traveller/register.html', {'form': f})
+    return render(request, 'traveller/register.html', {'form': form})
+
+
+def register_worker(request: HttpRequest, ) -> HttpResponse:
+    """create a new user and add him to the admin group of the place"""
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user: User = form.save(commit=False)
+            user.save()
+            messages.success(request, 'Account created successfully')
+            return redirect('places:create-user', place_id=0, user_id=user.id)
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'traveller/register.html', {'form': form})

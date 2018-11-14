@@ -29,7 +29,8 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         # todo: measure of distance
         return Place.objects.filter(deleted__exact=False,
-                                    reviewed__exact=True).order_by('-latitude')
+                                    reviewed__exact=True
+                                    ).order_by('-latitude')
 
 
 class DeletePrice(generic.DeleteView):
