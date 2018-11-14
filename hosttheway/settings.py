@@ -170,3 +170,5 @@ LOGGING = {
             },
     },
 }
+
+# AUTH_USER_MODEL = 'participant.Participant' # new

@@ -35,7 +35,7 @@ class DeletePrice(generic.DeleteView):
     model = Price
 
     def get_success_url(self):
-        return reverse('update-place', kwargs={'pk': self.object.place.id})
+        return reverse('places:update-place', kwargs={'pk': self.object.place.id})
 
     def get(self, *args, **kwargs):
         return self.post(*args, **kwargs)
@@ -50,14 +50,14 @@ class EditPrice(generic.UpdateView):
     # pk_url_kwarg = 'place_id', , 'reviewed', 'deleted'
 
     def get_success_url(self):
-        return reverse('update-place', kwargs={'pk': self.object.place.id})
+        return reverse('places:update-place', kwargs={'pk': self.object.place.id})
 
 
 class DeleteRoom(generic.DeleteView):
     model = Room
 
     def get_success_url(self):
-        return reverse('update-place', kwargs={'pk': self.object.place.id})
+        return reverse('places:update-place', kwargs={'pk': self.object.place.id})
 
     def get(self, *args, **kwargs):
         return self.post(*args, **kwargs)
@@ -72,7 +72,7 @@ class EditRoom(generic.UpdateView):
     localized_fields = ['valid_from', 'valid_to']
 
     def get_success_url(self):
-        return reverse('update-place', kwargs={'pk': self.object.place.id})
+        return reverse('places:update-place', kwargs={'pk': self.object.place.id})
 
 
 class EditPlaceView(ModelForm):

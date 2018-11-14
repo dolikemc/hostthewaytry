@@ -19,7 +19,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 def base_layout(request: HttpRequest) -> HttpResponse:
     """ method to store base layout via service worker"""
-    template = 'places/w3base.html'
+    template = 'base.html'
     return render(request, template)
 
 

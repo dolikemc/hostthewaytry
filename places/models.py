@@ -117,7 +117,7 @@ class Place(models.Model):
                      (HOTEL, "More than four rooms to rent "), (NOT_AVAILABLE, "n/a"))
 
     name = models.CharField(max_length=200, help_text='Name of your place', null=False)
-    description = models.CharField(max_length=500, default='', blank=True,
+    description = models.TextField(max_length=1024, default='', blank=True,
                                    help_text='What else would you like to tell your guests?')
 
     contact_type = models.CharField(max_length=2, help_text='What kind of contact you can offer your guest?',

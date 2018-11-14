@@ -15,11 +15,11 @@ html, body {
 }
 
 #container {
-    background-color: #000000;
+
     height: 100%;
     width: 100%;
     font-size: 1em;
-    color: #ffffff;
+
 }
 
 #content {
@@ -52,6 +52,14 @@ body, h1, h2, h3, h4, h5, h6, h7, h8 {
 
 #changelist #changelist-search img {
     width: 20px;
+}
+
+#changelist table {
+    color: cornflowerblue;
+}
+
+.submit-row p.deletelink-box {
+    box-sizing: unset;
 }
 
 /*
