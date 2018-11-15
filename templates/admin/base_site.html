@@ -1,44 +1,28 @@
 {% extends "admin/base.html" %}
-{% load static leaflet_tags %}
+
 {% block extrastyle %}
-    <link rel="stylesheet" type="text/css" href="{% static 'places/style.css' %}">
-    {% leaflet_css %}
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    {% leaflet_js %}
-{% endblock %}
-{% block extrahead %}
-    <script type="text/javascript">
-        function map_init_basic(map, options) {
-            map.on('locationfound', onLocationFound);
-            map.on('locationerror', onLocationError);
-            map.locate({setView: true, maxZoom: 16});
-
-            function onLocationFound(e) {
-                var radius = e.accuracy / 2;
-
-                L.marker(e.latlng).addTo(map)
-                    .bindPopup("You are within " + radius + " meters from this point").openPopup();
-
-                L.circle(e.latlng, radius).addTo(map);
-            }
-
-            function onLocationError(e) {
-                <!--alert(e.message);-->
-            }
+    <style>
+        #header {
+            height: auto;
+            background: #000000;
         }
 
-        function goBack() {
-            window.history.back();
+        .submit-row p.deletelink-box {
+            box-sizing: unset;
         }
-    </script>
+    </style>
 {% endblock %}
 
-{% block title %}{{ title }} | {{ site_title|default:'Host The Way site admin' }}{% endblock %}
+{% block title %}
+    {{ title }} | {{ site_title|default:_('HotTheWay site admin') }}
+{% endblock %}
 
 {% block branding %}
-    <h1 id="site-name"><a href="{% url 'admin:index' %}">Host The Way Admin Site</a></h1>
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('HostTheWay administration') }}</a>
+    </h1>
 {% endblock %}
 
 {% block nav-global %}

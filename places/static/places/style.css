@@ -7,7 +7,10 @@ html, body {
 }
 
 #header {
-    height: 210px;
+    padding: 10px 40px;
+    line-height: 40px;
+    overflow: hidden;
+    height: auto;
     background-color: #000000;
     width: 100%;
     font-size: 1em;
@@ -59,8 +62,20 @@ body, h1, h2, h3, h4, h5, h6, h7, h8 {
     color: #000000;
 }
 
-.submit-row p.deletelink-box {
-    box-sizing: unset;
+.module {
+    border: none;
+    background: #fff;
+    margin: 0 2px 30px 30px;
+    padding: .35em .625em .75em;
+    display: block;
+    margin-inline-start: 2px;
+    margin-inline-end: 2px;
+    padding-block-start: 0.35em;
+    padding-inline-start: 0.75em;
+    padding-inline-end: 0.75em;
+    padding-block-end: 0.625em;
+    min-inline-size: min-content;
+
 }
 
 /*
