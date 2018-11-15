@@ -47,6 +47,8 @@ def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
     """create a new user and add him to the admin group of the place"""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
+        logging.debug(request.POST)
+
         if form.is_valid():
             user: User = form.save(commit=False)
             user.save()
@@ -65,6 +67,7 @@ def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
 def register_worker(request: HttpRequest, ) -> HttpResponse:
     """create a new user and add him to the admin group of the place"""
     if request.method == 'POST':
+        logging.debug(request.POST)
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user: User = form.save(commit=False)

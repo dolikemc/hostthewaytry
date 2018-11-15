@@ -3,6 +3,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from PIL import Image
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
@@ -111,6 +112,7 @@ class ListScreen(TestCase):
         # Issue a GET request.
         response: HttpResponse = self.client.get('/places/')
         self.assertContains(response, 'places', status_code=200)
+        print(str(response.content))
         self.assertInHTML('<title>HOST THE WAY</title>', str(response.content))
 
     def test_index_template(self):
@@ -361,10 +363,10 @@ class AddUser(TestCase):
 
     def test_add_admin_to_place(self):
         self.assertTrue(self.client.login(**self.credentials))
-        response = self.client.post('/places/user/1/', data=
-        {'email': 'a@b.de', 'password': 'zegwugr643267', 'first_name': 'f', 'last_name': 'l', 'username': 'fl'})
+        pwd = make_password('zegwugr643267')
+        response = self.client.post('/places/register/1/', {'password1': pwd, 'password2': pwd, 'username': 'fl'})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/places/1/')
+        self.assertEqual(response.url, '/places/user/1/2/')
         user = User.objects.filter(groups__in=[1]).first()
         self.assertIsInstance(user, User)
 
