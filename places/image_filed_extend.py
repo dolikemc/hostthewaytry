@@ -58,3 +58,35 @@ class ImageFieldExtend(models.ImageField):
                 lon = self._convert_to_degress(exif_data["GPS"][piexif.GPSIFD.GPSLongitude])
         logging.debug(lat, lon)
         return lat, lon
+
+    def get_orientation(self, im: Image = None) -> int:
+        if "0th" in self.get_exif_data(im):
+            if piexif.ImageIFD.Orientation in self.get_exif_data(im)["0th"]:
+                return self.get_exif_data(im)["0th"][piexif.ImageIFD.Orientation]
+        return 0
+
+    def save(self, im: Image):
+        exif_bytes = piexif.dump(self.get_exif_data(im))
+        im.save(self.name, exif_bytes)
+
+    def correct_orientation(self, orientation: int, im: Image = None) -> Image:
+        if im is None:
+            im = Image.open(self.name)
+        if orientation == 1 or "0th" not in self.get_exif_data(im):
+            return im
+        self.get_exif_data(im)["0th"][piexif.ImageIFD.Orientation] = 1
+        if orientation == 2:
+            return im.transpose(Image.FLIP_LEFT_RIGHT)
+        if orientation == 3:
+            return im.rotate(180)
+        if orientation == 4:
+            return im.rotate(180).transpose(Image.FLIP_LEFT_RIGHT)
+        if orientation == 5:
+            return im.rotate(-90, expand=True).transpose(Image.FLIP_LEFT_RIGHT)
+        if orientation == 6:
+            return im.rotate(-90, expand=True)
+        if orientation == 7:
+            return im.rotate(90, expand=True).transpose(Image.FLIP_LEFT_RIGHT)
+        if orientation == 8:
+            return im.rotate(90, expand=True)
+        return im

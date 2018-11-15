@@ -312,9 +312,10 @@ class Place(models.Model):
 
             output = BytesIO()
 
-            # todo: keep orientation
             im = im.resize((200, 200))
-            # print(im.info)
+
+            # correct orientation
+            im = img_ext.correct_orientation(img_ext.get_orientation(im), im)
 
             # after modifications, save it to the output
             im.save(output, format='JPEG', quality=100)

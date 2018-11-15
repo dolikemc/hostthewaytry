@@ -37,6 +37,19 @@ class ExifData(TestCase):
         self.assertAlmostEquals(data[1], 11.5763, 4)
         self.assertAlmostEquals(data[0], 48.1367, 4)
 
+    def test_orientation_wrong(self):
+        file = ImageFieldExtend(
+            name='./places/static/img/IMG_3745.JPG')
+        fp = Image.open(file.name)
+        self.assertEqual(6, file.get_orientation(fp))
+        file.correct_orientation(6, fp)
+
+    def test_orientation(self):
+        file = ImageFieldExtend(
+            name='./places/static/img/orig.jpg')
+        fp = Image.open(file.name)
+        self.assertEqual(0, file.get_orientation(fp))
+
 
 class CreateScreen(TestCase):
     def setUp(self):
