@@ -7,7 +7,6 @@ from math import sqrt, pow
 from os.path import isfile
 from typing import List
 
-from PIL import Image
 from django.contrib.auth.models import Group, User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
@@ -15,7 +14,7 @@ from django.db.models import Avg, Sum, Min, Max
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from .image_filed_extend import ImageFieldExtend
+from .util.file import ImageX
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -297,32 +296,33 @@ class Place(models.Model):
 
         # Opening the uploaded image
         try:
-            # copied from https://djangosnippets.org/snippets/10597/
-            im = Image.open(self.picture)
-
-            # read lat and long
-            img_ext = ImageFieldExtend(self.picture)
-            if self.longitude is None or self.longitude == 0 or \
-                    self.latitude is None or self.latitude == 0:
-                (self.longitude, self.latitude) = img_ext.get_lat_lon(im)
 
             if isfile('places/static/img/' + self.picture.name):
-                logger.debug("File already exits")
-                return super(Place, self).save(**kwargs)
+                logger.debug(f"File {self.picture.name} already exits")
+                # return super(Place, self).save(**kwargs)
 
-            output = BytesIO()
+            # copied from https://djangosnippets.org/snippets/10597/
+            im: ImageX = ImageX(self.picture.name)
+            im.open(self.picture)
 
-            im = im.resize((200, 200))
+            if self.longitude is None or self.longitude == 0 or \
+                    self.latitude is None or self.latitude == 0:
+                self.longitude = im.latitude
+                self.latitude = im.longitude
 
-            # correct orientation
-            im = img_ext.correct_orientation(img_ext.get_orientation(im), im)
+            im.resize()
+            im.correct_orientation()
 
             # after modifications, save it to the output
-            im.save(output, format='JPEG', quality=100)
+            output = BytesIO()
+            im.image.save(output, format='JPEG', quality=100)
+            im.close()
+
             output.seek(0)
 
             # change the image field value to be the newly modifed image value
-            self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
+            self.picture = InMemoryUploadedFile(output, 'ImageField',
+                                                "%s.jpg" % self.picture.name.split('.')[0],
                                                 'image/jpeg',
                                                 sys.getsizeof(output), None)
         except FileNotFoundError:

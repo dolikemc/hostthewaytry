@@ -2,53 +2,58 @@ from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-from PIL import Image
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
 from django.test import TestCase, Client
 
-from .image_filed_extend import ImageFieldExtend
 from .models import Place, Price, Room
+from .util.file import ImageX
 
 
 class ExifData(TestCase):
     def test_no_location(self):
-        file = ImageFieldExtend(
-            name='./places/static/img/hosttheway.jpg')
-
-        data = file.get_lat_lon()
-        self.assertEqual(data, (None, None))
+        file = ImageX(name='./places/static/img/hosttheway.jpg')
+        self.assertTrue(file.open())
+        self.assertEqual(file.longitude, 0.00)
 
     def test_file_location(self):
-        file = ImageFieldExtend(
-            name='./places/static/img/IMG_3745.JPG')
-
-        data = file.get_lat_lon()
-        self.assertAlmostEquals(data[0], 48.1367, 4)
-        self.assertAlmostEquals(data[1], 11.5763, 4)
-
-    def test_file_location_already_open(self):
-        file = ImageFieldExtend(
-            name='./places/static/img/IMG_3745.JPG')
-        fp = Image.open(file.name)
-        data = file.get_lat_lon(fp)
-        self.assertAlmostEquals(data[1], 11.5763, 4)
-        self.assertAlmostEquals(data[0], 48.1367, 4)
+        file = ImageX(name='./places/static/img/IMG_3745.JPG')
+        self.assertTrue(file.open())
+        self.assertAlmostEquals(file.latitude, 48.1367, 4)
+        self.assertAlmostEquals(file.longitude, 11.5763, 4)
 
     def test_orientation_wrong(self):
-        file = ImageFieldExtend(
-            name='./places/static/img/IMG_3745.JPG')
-        fp = Image.open(file.name)
-        self.assertEqual(6, file.get_orientation(fp))
-        file.correct_orientation(6, fp)
+        file = ImageX(name='./places/static/img/IMG_3745.JPG')
+        self.assertTrue(file.open())
+        self.assertEqual(6, file.orientation)
+        file.correct_orientation()
+        self.assertEqual(1, file.orientation)
+        file.resize()
+        self.assertEqual(1, file.orientation)
 
     def test_orientation(self):
-        file = ImageFieldExtend(
-            name='./places/static/img/orig.jpg')
-        fp = Image.open(file.name)
-        self.assertEqual(0, file.get_orientation(fp))
+        file = ImageX(name='./places/static/img/orig.jpg')
+        self.assertTrue(file.open())
+        self.assertEqual(0, file.orientation)
+
+    def test_save_method(self):
+        Place.objects.create(name='Test')
+        place = Place.objects.get(id=1)
+        place.picture = SimpleUploadedFile(name='IMG_3745.JPG',
+                                           content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
+                                           content_type='image/jpeg')
+        place.picture.name = 'IMG_3745_X.JPG'
+        place.save()
+        place = Place.objects.get(id=1)
+        self.assertIsInstance(place, Place)
+        self.assertGreater(place.latitude, 0)
+        # print(place.latitude)
+
+    def tearDown(self):
+        for p in Path("./places/static/img/").glob("IMG_3745_*.JPG"):
+            p.unlink()
 
 
 class CreateScreen(TestCase):
@@ -242,8 +247,8 @@ class NewPlaceProcess(TestCase):
         self.assertEqual(group.name, 'New place')
         place: Place = Place.objects.first()
         self.assertEqual(place.id, 1)
-        self.assertEqual(place.group_id, group.id)
-        self.assertTrue(place.latitude > 0)
+        self.assertGreaterEqual(place.group_id, group.id)
+        self.assertTrue(place.latitude, 0)
         user: User = User.objects.first()
         self.assertEqual(user.groups.first(), group)
 
@@ -265,7 +270,7 @@ class NewPlaceProcess(TestCase):
         place: Place = Place.objects.first()
         self.assertEqual(place.id, 1)
         self.assertEqual(place.group_id, group.id)
-        self.assertTrue(place.latitude > 0)
+        self.assertGreater(place.latitude, 0)
         user: User = User.objects.first()
         self.assertEqual(user.groups.first(), group)
         room: Room = Room.objects.first()
@@ -292,7 +297,7 @@ class NewPlaceProcess(TestCase):
         place: Place = Place.objects.first()
         self.assertEqual(place.id, 1)
         self.assertEqual(place.group_id, group.id)
-        self.assertTrue(place.latitude > 0)
+        self.assertGreater(place.latitude, 0)
         user: User = User.objects.first()
         self.assertEqual(user.groups.first(), group)
         room: Room = Room.objects.last()
