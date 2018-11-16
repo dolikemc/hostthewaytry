@@ -3,48 +3,32 @@
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
 <head>
+    <title>{% block title %}HOST THE WAY{% endblock title %}</title>
+    {% block head_favicon %}
+        <link rel="icon" type="image/png" href="{% static 'img/icon.ico' %}">
+    {% endblock head_favicon %}
+    {% block head_meta %}
+        {% block head_meta_charset %}
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        {% endblock head_meta_charset %}
+    {% endblock head_meta %}
+    {% block head_css %}
+        {% block head_css_site %}
+            <link rel="stylesheet" type="text/css" href="{% static 'places/style.css' %}">
+            <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+                  integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+                  crossorigin="anonymous">
+            {% leaflet_css %}
+        {% endblock head_css_site %}
+        {% block head_css_section %}{% endblock head_css_section %}
+        {% block head_css_page %}{% endblock head_css_page %}
+    {% endblock head_css %}
 
-    {% leaflet_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'places/style.css' %}">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-          integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     {% block extrastyle %}{% endblock %}
-
     {% block extrahead %}{% endblock %}
-    {% block javascript %}
-        {% leaflet_js %}
-        <script type="text/javascript">
-            function map_init_basic(map, options) {
-                map.on('locationfound', onLocationFound);
-                map.on('locationerror', onLocationError);
-                map.locate({setView: true, maxZoom: 16});
-
-                function onLocationFound(e) {
-                    var radius = e.accuracy / 2;
-
-                    L.marker(e.latlng).addTo(map)
-                        .bindPopup("You are within " + radius + " meters from this point").openPopup();
-
-                    L.circle(e.latlng, radius).addTo(map);
-                }
-
-                function onLocationError(e) {
-                    <!--alert(e.message);-->
-                }
-            }
-
-            function goBack() {
-                window.history.back();
-            }
-        </script>
-    {% endblock %}
-    {% block extrascript %}{% endblock %}
     {% block responsive %}
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}">
-        {% if LANGUAGE_BIDI %}
-            <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}
     {% endblock %}
     {% block blockbots %}
         <meta name="robots" content="NONE,NOARCHIVE">
@@ -53,7 +37,7 @@
 <body>
 <div id="container" class="w3-container">
     <div id="header">
-        {% block title %}
+        {% block bodytitle %}
             {{ title }}
         {% endblock %}
     </div>
@@ -72,7 +56,15 @@
         {% endblock %}
     </div>
 </div>
-
 </body>
+{# Set of blocks that can be used to display JavaScript files #}
+{% block footer_javascript %}
+    {% block footer_javascript_site %}
+        {% leaflet_js %}
+        <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+    {% endblock footer_javascript_site %}
+    {% block footer_javascript_section %}{% endblock footer_javascript_section %}
+    {% block footer_javascript_page %}{% endblock footer_javascript_page %}
+{% endblock footer_javascript %}
 </html>
 

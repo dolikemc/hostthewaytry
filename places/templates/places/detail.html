@@ -84,6 +84,9 @@
             {% endfor %}
         </table>
     </div>
+
+{% endblock %}
+{% block footer_javascript_page %}
     <script type="text/javascript">
         {% localize off %}
             var longitude = {{ place.longitude }};
