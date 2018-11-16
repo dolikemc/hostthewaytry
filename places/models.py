@@ -231,7 +231,6 @@ class Place(models.Model):
 
     @property
     def generated_description(self) -> str:
-        logger.debug(f"Length of description: {len(self.description)}")
         if self.description is None or self.description.isspace() or len(self.description) <= 0:
             text = _("You will be in a beautiful place")
             if self.beds > 1:
