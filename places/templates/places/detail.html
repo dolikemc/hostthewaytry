@@ -93,8 +93,8 @@
             var latitude = {{ place.latitude }};
 
             function map_init_place(map, options) {
-                map.setView([longitude, latitude], 16);
-                L.marker([longitude, latitude]).addTo(map);
+                map.setView([latitude, longitude], 16);
+                L.marker([latitude, longitude]).addTo(map);
             };
         {% endlocalize %}
     </script>

@@ -61,13 +61,13 @@ class ImageX:
 
     @property
     def latitude(self) -> float:
-        if "GPS" in self.exif_data:
+        if "GPS" in self.exif_data and len(self.exif_data["GPS"]) >= piexif.GPSIFD.GPSLatitude:
             return self._convert_to_degress(self.exif_data["GPS"][piexif.GPSIFD.GPSLatitude])
         return 0.0
 
     @property
     def longitude(self) -> float:
-        if "GPS" in self.exif_data:
+        if "GPS" in self.exif_data and len(self.exif_data["GPS"]) >= piexif.GPSIFD.GPSLongitude:
             return self._convert_to_degress(self.exif_data["GPS"][piexif.GPSIFD.GPSLongitude])
         return 0.0
 

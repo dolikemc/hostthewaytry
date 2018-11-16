@@ -307,8 +307,8 @@ class Place(models.Model):
 
             if self.longitude is None or self.longitude == 0 or \
                     self.latitude is None or self.latitude == 0:
-                self.longitude = im.latitude
-                self.latitude = im.longitude
+                self.latitude = im.latitude
+                self.longitude = im.longitude
 
             # makes a proper image for the portal
             im.resize()
