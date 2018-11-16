@@ -14,7 +14,7 @@ from django.db.models import Avg, Sum, Min, Max
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from util.file import ImageX
+from utils.file import ImageX
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -162,7 +162,6 @@ class Place(models.Model):
         help_text='Do you have laundry facilities at your house guests can use (washer/dryer)?', default=False)
 
     # location data
-    # todo: define a proper sub class of models.ImageFiled with a resizing pres_save method
     picture = models.ImageField(help_text='Picture of your place', upload_to='', blank=True)
     longitude = models.FloatField(help_text='Where is your place (longitude)?', null=True, blank=True)
     latitude = models.FloatField(help_text='Where is your place (latitude)?', null=True, blank=True)

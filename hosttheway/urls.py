@@ -28,5 +28,3 @@ urlpatterns = [
                   path('accounts/login/', admin.site.login)
 
               ] + static(settings.STATIC_URL, document_root=settings.BASE_DIR)
-
-# todo: make index.html available

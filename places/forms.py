@@ -15,13 +15,6 @@ from .models import Place, Price, Room
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-class ReviewList(generic.ListView):
-    context_object_name = 'places'
-
-    def get_queryset(self):
-        return Place.objects.filter(reviewed__exact=0).order_by('created_on')
-
-
 class IndexView(generic.ListView):
     template_name = 'places/index.html'
     context_object_name = 'places'

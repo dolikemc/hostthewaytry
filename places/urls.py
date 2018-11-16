@@ -4,14 +4,12 @@ from django.urls import path
 
 from traveller.views import update_traveller, register_user, register_worker
 from . import views
-from .forms import DetailView, IndexView, EditRoom, EditPrice, DeletePrice, DeleteRoom, ReviewList
+from .forms import DetailView, IndexView, EditRoom, EditPrice, DeletePrice, DeleteRoom
 
 app_name = 'places'
 urlpatterns = \
     [
         path('', IndexView.as_view(), name='index'),
-        path('review/', ReviewList.as_view(), name='review-places'),
-        path('reviewed/<int:pk>', views.place_reviewed, name='publish-place'),
         path('new/', views.create_new_place, name='create-place'),
         path('price/<int:place>/', views.create_new_price, name='create-price'),
         path('register/<int:place_id>/', register_user, name='register-user'),

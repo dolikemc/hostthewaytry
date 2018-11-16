@@ -22,29 +22,6 @@ def base_layout(request: HttpRequest) -> HttpResponse:
     template = 'base.html'
     return render(request, template)
 
-
-@login_required
-def add_administrator_to_place(request: HttpRequest, place_id: int) -> HttpResponse:
-    """create a new user and add him to the admin group of the place"""
-    if request.method == 'POST':
-        logging.debug(request.POST)
-        form = AddUser(request.POST, request.FILES)
-    else:
-        form = AddUser()
-
-    if form.is_valid():
-        user = form.save(commit=False)
-        place: Place = Place.objects.get(id=place_id)
-
-        # todo: add permissions
-        user.save()
-        user.groups.add(place.group)
-        user.save()
-        return redirect('places:detail', pk=place_id)
-    logger.warning(form.errors)
-    return render(request, 'places/create_detail.html', {'form': form})
-
-
 @atomic
 @login_required
 def create_new_place(request: HttpRequest) -> HttpResponse:
@@ -109,17 +86,6 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
         return redirect('places:detail', pk=room.place_id)
     logger.warning(form.errors)
     return render(request, 'places/create_detail.html', {'form': form})
-
-
-@login_required
-def place_reviewed(request: HttpRequest, pk: int) -> HttpResponse:
-    place: Place = Place.objects.get(id=pk)
-    # todo: delete check box is not working
-    place.deleted = request.POST.get('deleted', False)
-    place.reviewed = True
-    place.save()
-    return redirect('places:review-places')
-
 
 @login_required
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:
