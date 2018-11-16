@@ -8,8 +8,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
 from django.test import TestCase, Client
 
-from .models import Place, Price, Room
-from .util.file import ImageX
+from places.models import Place, Price, Room
+from util.file import ImageX
 
 
 class ExifData(TestCase):

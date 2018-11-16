@@ -14,7 +14,7 @@ from django.db.models import Avg, Sum, Min, Max
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from .util.file import ImageX
+from util.file import ImageX
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -310,12 +310,13 @@ class Place(models.Model):
                 self.longitude = im.latitude
                 self.latitude = im.longitude
 
+            # makes a proper image for the portal
             im.resize()
             im.correct_orientation()
 
             # after modifications, save it to the output
             output = BytesIO()
-            im.image.save(output, format='JPEG', quality=100)
+            im.save(output)
             im.close()
 
             output.seek(0)

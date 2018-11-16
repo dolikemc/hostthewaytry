@@ -9,6 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class ImageX:
+    """ Supports only JPEG form see https://pillow.readthedocs.io
+
+    """
+
     def __init__(self, name: str):
         self.name: str = name
         self.image: Image = None
@@ -74,9 +78,16 @@ class ImageX:
                 return self.exif_data["0th"][piexif.ImageIFD.Orientation]
         return 0
 
-    def save(self):
+    def save(self, fp=None, **kwargs) -> bool:
         exif_bytes = piexif.dump(self.exif_data)
-        self.image.save(self.name, exif_bytes)
+        if fp is None:
+            fp = self.name
+        try:
+            self.image.save(fp, format='JPEG', quality=100, exif=exif_bytes, **kwargs)
+            return True
+        except FileNotFoundError as exc:
+            logger.warning(exc)
+            return False
 
     def correct_orientation(self) -> Image:
         if self.orientation <= 1:
