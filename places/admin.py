@@ -2,6 +2,10 @@ from django.contrib import admin
 
 from .models import Place, Price, GeoName, Room
 
+admin.site.site_header = "HOST THE WAY"
+admin.site.site_title = "Host The Way"
+admin.site.index_title = ""
+
 
 class PlaceAdmin(admin.ModelAdmin):
     model = Place
