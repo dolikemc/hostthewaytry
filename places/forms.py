@@ -104,7 +104,6 @@ class NewPlaceMinimal(LoginRequiredMixin, ModelForm):
         model = Place
         fields = ['name', 'picture', 'description', 'laundry', 'parking',
                   'wifi', 'own_key', 'separate_entrance', 'category', 'country']
-        # user = User()
 
 
 class AddPriceToPlace(LoginRequiredMixin, ModelForm):
