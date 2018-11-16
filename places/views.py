@@ -9,7 +9,7 @@ from django.db.transaction import atomic
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
-from .forms import AddUser, NewPlaceMinimal, AddRoomToPlace, AddPriceToPlace, EditPlaceView
+from .forms import NewPlaceMinimal, AddRoomToPlace, AddPriceToPlace, EditPlaceView
 # my models
 from .models import Place, Room
 
@@ -22,6 +22,7 @@ def base_layout(request: HttpRequest) -> HttpResponse:
     template = 'base.html'
     return render(request, template)
 
+
 @atomic
 @login_required
 def create_new_place(request: HttpRequest) -> HttpResponse:
@@ -29,8 +30,6 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         first create a new user group
         than add the current user id to the group
         at last create a place just with the name, a picture and the user group id"""
-
-    # todo: make access to request.user safe
     user = User.objects.get(pk=request.user.id)
     logger.debug(user)
     if request.method == 'POST':
@@ -86,6 +85,7 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
         return redirect('places:detail', pk=room.place_id)
     logger.warning(form.errors)
     return render(request, 'places/create_detail.html', {'form': form})
+
 
 @login_required
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:

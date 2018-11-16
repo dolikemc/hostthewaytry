@@ -52,6 +52,9 @@ class CreateScreen(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
 
+    def tearDown(self):
+        for p in Path("./places/static/img").glob("IMG_3745_*.jpg"):
+            p.unlink()
 
 class ListScreen(TestCase):
     def setUp(self):
@@ -82,7 +85,7 @@ class ListScreen(TestCase):
         self.assertTemplateUsed(response, template_name='places/index.html')
 
     def tearDown(self):
-        for p in Path("./places/static/img/").glob("hosttheway_*.jpg"):
+        for p in Path("./places/static/img").glob("hosttheway_*.jpg"):
             p.unlink()
 
 
@@ -264,7 +267,7 @@ class NewPlaceProcess(TestCase):
         self.assertEqual(place.valid_rooms().count(), 4)
 
     def tearDown(self):
-        for p in Path("./places/static/img/").glob("IMG_3745_*.JPG"):
+        for p in Path("./places/static/img/").glob("IMG_3745_*.jpg"):
             p.unlink()
 
 

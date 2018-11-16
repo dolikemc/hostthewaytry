@@ -3,7 +3,7 @@ import logging
 
 # django modules
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
 from django.shortcuts import reverse
 from django.views import generic
@@ -26,7 +26,7 @@ class IndexView(generic.ListView):
                                     ).order_by('-latitude')
 
 
-class DeletePrice(generic.DeleteView):
+class DeletePrice(LoginRequiredMixin, generic.DeleteView):
     model = Price
 
     def get_success_url(self):
@@ -36,7 +36,7 @@ class DeletePrice(generic.DeleteView):
         return self.post(*args, **kwargs)
 
 
-class EditPrice(generic.UpdateView):
+class EditPrice(LoginRequiredMixin, generic.UpdateView):
     template_name = 'places/create_detail.html'
     context_object_name = 'form'
     model = Price
@@ -48,7 +48,7 @@ class EditPrice(generic.UpdateView):
         return reverse('places:update-place', kwargs={'pk': self.object.place.id})
 
 
-class DeleteRoom(generic.DeleteView):
+class DeleteRoom(LoginRequiredMixin, generic.DeleteView):
     model = Room
 
     def get_success_url(self):
@@ -58,7 +58,7 @@ class DeleteRoom(generic.DeleteView):
         return self.post(*args, **kwargs)
 
 
-class EditRoom(generic.UpdateView):
+class EditRoom(LoginRequiredMixin, generic.UpdateView):
     template_name = 'places/create_detail.html'
     context_object_name = 'form'
     model = Room
@@ -70,10 +70,23 @@ class EditRoom(generic.UpdateView):
         return reverse('places:update-place', kwargs={'pk': self.object.place.id})
 
 
-class EditPlaceView(ModelForm):
+class EditPlaceView(LoginRequiredMixin, ModelForm):
     class Meta:
         model = Place
-        fields = '__all__'
+        fields = ['name', 'contact_type', 'website', 'languages', 'who_lives_here', 'currency',
+                  'picture', 'description', 'outdoor_place', 'wifi', 'separate_entrance', 'common_kitchen',
+                  'pick_up_service', 'parking', 'own_key', 'laundry', 'meals', 'meal_example',
+                  'vegan', 'vegetarian', 'check_in_time', 'check_out_time']
+
+
+class EditPlaceAddressView(LoginRequiredMixin, generic.UpdateView):
+    template_name = 'places/create_detail.html'
+    context_object_name = 'form'
+    model = Place
+    fields = ['name', 'street', 'country', 'city', 'address_add', 'mobile', 'phone']
+
+    def get_success_url(self):
+        return reverse('places:detail', kwargs={'pk': self.object.id})
 
 
 class DetailView(generic.DetailView):
@@ -82,7 +95,7 @@ class DetailView(generic.DetailView):
     model = Place
 
 
-class NewPlaceMinimal(ModelForm):
+class NewPlaceMinimal(LoginRequiredMixin, ModelForm):
     """form for the minimum of information creating a new place"""
     breakfast_included = forms.BooleanField(initial=True)
     std_price = forms.DecimalField(decimal_places=2, label="Standard price for one night and one person")
@@ -94,24 +107,7 @@ class NewPlaceMinimal(ModelForm):
         # user = User()
 
 
-class AddUser(ModelForm):
-    """add an administrator to a place"""
-
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'username', 'password', 'email']
-
-
-class EditPlace(ModelForm):
-    """edit and create standard class for a place"""
-
-    class Meta:
-        model = Place
-        exclude = ['longitude', 'latitude']
-        # user = User(is_staff=True)
-
-
-class AddPriceToPlace(ModelForm):
+class AddPriceToPlace(LoginRequiredMixin, ModelForm):
     """add a price entry to the given place, therefore the place refernce is excluded"""
     required_css_class = 'w3-amber w3-input'
 
@@ -120,7 +116,7 @@ class AddPriceToPlace(ModelForm):
         exclude = ['place']
 
 
-class AddRoomToPlace(ModelForm):
+class AddRoomToPlace(LoginRequiredMixin, ModelForm):
     class Meta:
         model = Room
         exclude = ['place']

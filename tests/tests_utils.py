@@ -47,5 +47,5 @@ class ExifData(TestCase):
         # print(place.latitude)
 
     def tearDown(self):
-        for p in Path("./places/static/img/").glob("IMG_3745_*.JPG"):
+        for p in Path("./places/static/img/").glob("IMG_3745_*.jpg"):
             p.unlink()
