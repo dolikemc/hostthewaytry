@@ -1,7 +1,7 @@
 html, body {
     background-color: #000000;
     height: 100%;
-    width: 100%;
+
     font-size: 1em;
     color: #ffffff;
 }
@@ -20,7 +20,7 @@ html, body {
 #container {
     background-color: #000000;
     height: 100%;
-    width: 100%;
+    min-width: auto;
     font-size: 1em;
 
 }
@@ -79,28 +79,20 @@ body, h1, h2, h3, h4, h5, h6, h7, h8 {
 }
 
 /*
-#first_hit {
-    height: 60%;
-    background-color: #F4B31C;
-}
-
-
-div.place {
-    width: 45%;
-    display: inline-grid;
-    object-fit: cover;
-}
-
-img.place {
-    height: 200px;
-    width: 200px;
-    display: inline-grid;
-    object-fit: cover;
-    position: center;
-}
-
-
-p {
-    margin-bottom: 20px;
-}
+[1]: All items a forced onto a single line, causing the overflow when necessary.
+[2]: Automatic overflow means a scroll bar won’t be present if it isn’t needed
+[3]: Make it smooth scrolling on iOS devices
+[4]: Hide the ugly scrollbars in Edge until the scrollable area is hovered
+[5]: Hide the scroll bar in WebKit browsers
 */
+.scroll {
+    white-space: nowrap; /* [1] */
+    overflow-x: auto; /* [2] */
+    -webkit-overflow-scrolling: touch; /* [3] */
+    -ms-overflow-style: -ms-autohiding-scrollbar; /* [4] */
+}
+
+/* [5] */
+.scroll::-webkit-scrollbar {
+    display: none;
+}

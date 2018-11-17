@@ -186,7 +186,10 @@ class Place(models.Model):
     reviewed = models.BooleanField(editable=False, default=False)
     deleted = models.BooleanField(default=False)
 
-    def distance(self, latitude: float, longitude: float) -> float:
+    @property
+    def distance(self) -> float:
+        latitude = 11
+        longitude = 48
         return sqrt(pow(self.latitude - latitude, 2) +
                     pow(self.longitude - longitude, 2), 2)
 
