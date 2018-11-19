@@ -169,50 +169,6 @@ class PriceScreen(TestCase):
         self.assertEqual(response.url, '/places/1/')
 
 
-class EditPlace(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.credentials = {
-            'username': 'testuser',
-            'password': 'secret'}
-        User.objects.create_user(**self.credentials, is_staff=True)
-        Place.objects.create(name='TestOne')
-        Place.objects.create(name='TestTwo')
-        Room.objects.create(place_id=1, room_number='01')
-        Room.objects.create(place_id=1, room_number='02')
-        Price.objects.create(place_id=1)
-        Price.objects.create(place_id=1)
-        self.std_data = {'name': ['Das Dreieck'], 'description': ['die Liebste'], 'contact_type': ['PO'],
-                         'street': [''], 'city': [''], 'country': [''], 'address_add': [''], 'phone': [''],
-                         'mobile': [''], 'website': [''], 'languages': ['EN'], 'who_lives_here': [''],
-                         'parking': ['on'], 'wifi': ['on'], 'own_key': ['on'], 'max_stay': ['365'], 'min_stay': ['1'],
-                         'category': ['SM'], 'meals': ['BR'], 'meal_example': [''], 'picture': [''], 'longitude': [''],
-                         'latitude': [''], 'currency': ['EUR'], 'currencies': ['€'], 'check_out_time': ['12'],
-                         'check_in_time': ['14'], 'priority_valid_until': [''], 'priority_category': ['NA']}
-
-    def test_setup(self):
-        response = self.client.get('/places/1/')
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get('/places/2/')
-        self.assertEqual(response.status_code, 200)
-        place = Place.objects.get(pk=1)
-        self.assertEqual(place.name, 'TestOne')
-        place = Place.objects.get(pk=2)
-        self.assertEqual(place.name, 'TestTwo')
-        rooms = Room.objects.filter(place_id=1)
-        self.assertEqual(rooms.count(), 2)
-        price = Price.objects.filter(place_id=1)
-        self.assertEqual(price.count(), 2)
-
-    def test_update_place(self):
-        self.assertTrue(self.client.login(**self.credentials))
-        response = self.client.post('/places/update/place/1/', data=self.std_data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/places/1/')
-        place = Place.objects.get(pk=1)
-        self.assertEqual(place.name, 'Das Dreieck')
-
-
 class PlaceModel(TestCase):
     def test_properties(self):
         place = Place.objects.create(name='test')

@@ -4,14 +4,14 @@ from decimal import Decimal
 
 # django modules
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Group
 from django.db.transaction import atomic
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
-from .forms import NewPlaceMinimal, AddRoomToPlace, AddPriceToPlace, EditPlaceView
+from places.forms import NewPlaceMinimal, AddRoomToPlace, AddPriceToPlace, EditPlaceView
 # my models
-from .models import Place, Room
+from places.models import Place, Room
+from traveller.models import Traveller
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
@@ -26,12 +26,9 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 @atomic
 @login_required
 def create_new_place(request: HttpRequest) -> HttpResponse:
-    """cover the create new place process.
-        first create a new user group
-        than add the current user id to the group
-        at last create a place just with the name, a picture and the user group id"""
-    user = User.objects.get(pk=request.user.id)
-    logger.debug(user)
+    """cover the create new place process."""
+    traveller = Traveller.objects.get(pk=request.user.id)
+    logger.debug(traveller)
     if request.method == 'POST':
         logger.debug(request.POST)
         form = NewPlaceMinimal(request.POST, request.FILES)
@@ -39,12 +36,11 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         form = NewPlaceMinimal()
     if form.is_valid():
         place: Place = form.save(commit=False)
+        # todo: uae clean methoad
         place.country = str.upper(place.country)
         place.languages = str.upper(place.languages)
-        group: Group = place.create_user_group(user)
-        group.save()
-        user.save()
         place.save()
+        place.traveller_set.add(traveller)
         place.add_std_rooms_and_prices(std_price=Decimal(request.POST.get('std_price', '0.0')))
         return redirect('places:detail', pk=place.pk)
     logger.warning(form.errors)
@@ -91,6 +87,9 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     logger.debug(request.POST)
     place: Place = Place.objects.get(id=pk)
+    traveller = Traveller.objects.get(pk=request.user.id)
+    if not traveller.user.is_superuser and place.traveller_set.filter(id=traveller.id).count() < 1:
+        logger.warning('no permission to change place')
     place.room_set.all()
     place.price_set.all()
     if request.method == 'POST':

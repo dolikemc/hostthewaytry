@@ -2,21 +2,20 @@ from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Permission, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 
-from places.models import Place, Room
+from places.models import Place, Room, Price
+from traveller.models import Traveller
 
 
-# noinspection PyArgumentList
 class NewPlaceProcess(TestCase):
     def setUp(self):
         self.client = Client()
         self.credentials = {
             'username': 'testuser',
             'password': 'secret'}
-        # todo: should not need stuff policies, just allowance to add places
         User.objects.create_user(**self.credentials, is_staff=True)
 
     def test_create_minimal_place(self):
@@ -30,15 +29,15 @@ class NewPlaceProcess(TestCase):
                                                           })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
-        group: Group = Group.objects.first()
-        self.assertEqual(group.id, 1)
-        self.assertEqual(group.name, 'New place')
-        place: Place = Place.objects.first()
+        traveller = Traveller.objects.get(id=1)
+        self.assertIsInstance(traveller, Traveller)
+        place = traveller.place_permission.first()
+        self.assertIsInstance(place, Place)
         self.assertEqual(place.id, 1)
-        self.assertGreaterEqual(place.group_id, group.id)
         self.assertTrue(place.latitude, 0)
-        user: User = User.objects.first()
-        self.assertEqual(user.groups.first(), group)
+        traveller: Traveller = place.traveller_set.first()
+        self.assertIsInstance(traveller, Traveller)
+        self.assertEqual('testuser', traveller.user.username)
 
     def test_create_std_place(self):
         self.assertTrue(self.client.login(**self.credentials))
@@ -52,15 +51,9 @@ class NewPlaceProcess(TestCase):
                                                           'breakfast_included': 'on'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
-        group: Group = Group.objects.first()
-        self.assertEqual(group.id, 1)
-        self.assertEqual(group.name, 'New place')
         place: Place = Place.objects.first()
         self.assertEqual(place.id, 1)
-        self.assertEqual(place.group_id, group.id)
         self.assertGreater(place.latitude, 0)
-        user: User = User.objects.first()
-        self.assertEqual(user.groups.first(), group)
         room: Room = Room.objects.first()
         self.assertIsInstance(room, Room)
         self.assertEqual(room.place_id, 1)
@@ -79,15 +72,9 @@ class NewPlaceProcess(TestCase):
                                                           'std_price': 18.6})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
-        group: Group = Group.objects.first()
-        self.assertEqual(group.id, 1)
-        self.assertEqual(group.name, 'New place')
         place: Place = Place.objects.first()
         self.assertEqual(place.id, 1)
-        self.assertEqual(place.group_id, group.id)
         self.assertGreater(place.latitude, 0)
-        user: User = User.objects.first()
-        self.assertEqual(user.groups.first(), group)
         room: Room = Room.objects.last()
         self.assertIsInstance(room, Room)
         self.assertEqual(room.place_id, 1)
@@ -108,5 +95,56 @@ class NewPlaceProcess(TestCase):
         self.assertEqual(place.valid_rooms().count(), 4)
 
     def tearDown(self):
-        for p in Path("./places/static/img/").glob("IMG_3745_*.jpg"):
+        for p in Path("static/places/img/").glob("IMG_3745_*.jpg"):
             p.unlink()
+
+
+class EditPlace(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'secret'}
+        User.objects.create_user(**self.credentials, is_staff=True)
+        group: Group = Group.objects.create(name='PlaceEditor')
+        permission: Permission = Permission.objects.filter(codename='change_place').first()
+        group.permissions.add(permission)
+        traveller: Traveller = Traveller.objects.get(id=1)
+        traveller.user.groups.add(group)
+        Place.objects.create(name='TestOne')
+        place: Place = Place.objects.get(id=1)
+        place.traveller_set.add(traveller)
+        Place.objects.create(name='TestTwo')
+        Room.objects.create(place_id=1, room_number='01')
+        Room.objects.create(place_id=1, room_number='02')
+        Price.objects.create(place_id=1)
+        Price.objects.create(place_id=1)
+        self.std_data = {'name': ['Das Dreieck'], 'description': ['die Liebste'], 'contact_type': ['PO'],
+                         'street': [''], 'city': [''], 'country': [''], 'address_add': [''], 'phone': [''],
+                         'mobile': [''], 'website': [''], 'languages': ['EN'], 'who_lives_here': [''],
+                         'parking': ['on'], 'wifi': ['on'], 'own_key': ['on'], 'max_stay': ['365'], 'min_stay': ['1'],
+                         'category': ['SM'], 'meals': ['BR'], 'meal_example': [''], 'picture': [''], 'longitude': [''],
+                         'latitude': [''], 'currency': ['EUR'], 'currencies': ['€'], 'check_out_time': ['12'],
+                         'check_in_time': ['14'], 'priority_valid_until': [''], 'priority_category': ['NA']}
+
+    def test_setup(self):
+        response = self.client.get('/places/1/')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/places/2/')
+        self.assertEqual(response.status_code, 200)
+        place = Place.objects.get(pk=1)
+        self.assertEqual(place.name, 'TestOne')
+        place = Place.objects.get(pk=2)
+        self.assertEqual(place.name, 'TestTwo')
+        rooms = Room.objects.filter(place_id=1)
+        self.assertEqual(rooms.count(), 2)
+        price = Price.objects.filter(place_id=1)
+        self.assertEqual(price.count(), 2)
+
+    def test_update_place(self):
+        self.assertTrue(self.client.login(**self.credentials))
+        response = self.client.post('/places/update/place/1/', data=self.std_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
+        place = Place.objects.get(pk=1)
+        self.assertEqual(place.name, 'Das Dreieck')
