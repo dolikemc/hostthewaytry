@@ -8,7 +8,6 @@ from places.models import Place
 
 class Traveller(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    place_permission = models.ManyToManyField(to=Place)
     picture = models.ImageField(blank=True, null=True)
     alt_email = models.EmailField(blank=True, null=True)
     street = models.CharField(blank=True, null=True, max_length=128)
@@ -23,6 +22,14 @@ class Traveller(models.Model):
 
     def __str__(self):
         return f"{self.user.email} {self.user.username}"
+
+
+class PlaceAccount(models.Model):
+    place = models.ForeignKey(to=Place, null=True, blank=True, on_delete=models.DO_NOTHING)
+    traveller = models.ForeignKey(to=Traveller, null=True, blank=True, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f"{self.traveller.user.username} <-> {self.place.name}"
 
 
 @receiver(post_save, sender=User)

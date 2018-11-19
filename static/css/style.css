@@ -1,0 +1,98 @@
+html, body {
+    background-color: #000000;
+    height: 100%;
+
+    font-size: 1em;
+    color: #ffffff;
+}
+
+#header {
+    padding: 10px 40px;
+    line-height: 40px;
+    overflow: hidden;
+    height: auto;
+    background-color: #000000;
+    width: 100%;
+    font-size: 1em;
+    color: #ffffff;
+}
+
+#container {
+    background-color: #000000;
+    height: 100%;
+    min-width: auto;
+    font-size: 1em;
+
+}
+
+#content {
+    background-color: #000000;
+    font-size: 1em;
+}
+
+#osm {
+    font-size: 0.7em;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
+body, h1, h2, h3, h4, h5, h6, h7, h8 {
+    font-family: "Roboto", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif
+}
+
+.w3-bar-block .w3-bar-item {
+    padding: 20px
+}
+
+#changelist #changelist-search img {
+    width: 20px;
+}
+
+#changelist table {
+    color: #000000;
+}
+
+.module {
+    border: none;
+    background: #fff;
+    margin: 0 2px 30px 30px;
+    padding: .35em .625em .75em;
+    display: block;
+    margin-inline-start: 2px;
+    margin-inline-end: 2px;
+    padding-block-start: 0.35em;
+    padding-inline-start: 0.75em;
+    padding-inline-end: 0.75em;
+    padding-block-end: 0.625em;
+    min-inline-size: min-content;
+
+}
+
+/*
+[1]: All items a forced onto a single line, causing the overflow when necessary.
+[2]: Automatic overflow means a scroll bar won’t be present if it isn’t needed
+[3]: Make it smooth scrolling on iOS devices
+[4]: Hide the ugly scrollbars in Edge until the scrollable area is hovered
+[5]: Hide the scroll bar in WebKit browsers
+*/
+.scroll {
+    white-space: nowrap; /* [1] */
+    overflow-x: auto; /* [2] */
+    -webkit-overflow-scrolling: touch; /* [3] */
+    -ms-overflow-style: -ms-autohiding-scrollbar; /* [4] */
+}
+
+/* [5] */
+.scroll::-webkit-scrollbar {
+    display: none;
+}

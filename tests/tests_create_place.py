@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 
 from places.models import Place, Room, Price
-from traveller.models import Traveller
+from traveller.models import Traveller, PlaceAccount
 
 
 class NewPlaceProcess(TestCase):
@@ -31,11 +31,11 @@ class NewPlaceProcess(TestCase):
         self.assertEqual(response.url, '/places/1/')
         traveller = Traveller.objects.get(id=1)
         self.assertIsInstance(traveller, Traveller)
-        place = traveller.place_permission.first()
-        self.assertIsInstance(place, Place)
-        self.assertEqual(place.id, 1)
+        place_account: PlaceAccount = PlaceAccount.objects.filter(traveller_id=traveller.id).first()
+        self.assertIsInstance(place_account, PlaceAccount)
+        self.assertEqual(place_account.place_id, 1)
+        place: Place = Place.objects.get(id=1)
         self.assertTrue(place.latitude, 0)
-        traveller: Traveller = place.traveller_set.first()
         self.assertIsInstance(traveller, Traveller)
         self.assertEqual('testuser', traveller.user.username)
 
@@ -113,7 +113,7 @@ class EditPlace(TestCase):
         traveller.user.groups.add(group)
         Place.objects.create(name='TestOne')
         place: Place = Place.objects.get(id=1)
-        place.traveller_set.add(traveller)
+        PlaceAccount.objects.create(place_id=place.id, traveller_id=traveller.id)
         Place.objects.create(name='TestTwo')
         Room.objects.create(place_id=1, room_number='01')
         Room.objects.create(place_id=1, room_number='02')
