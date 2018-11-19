@@ -56,6 +56,7 @@ class CreateScreen(TestCase):
         for p in Path("./places/static/img").glob("IMG_3745_*.jpg"):
             p.unlink()
 
+
 class ListScreen(TestCase):
     def setUp(self):
         # Every test needs a client.
@@ -169,6 +170,7 @@ class PriceScreen(TestCase):
         self.assertEqual(response.url, '/places/1/')
 
 
+# noinspection PyArgumentList
 class NewPlaceProcess(TestCase):
     def setUp(self):
         self.client = Client()

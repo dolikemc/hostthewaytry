@@ -6,6 +6,7 @@ from django.dispatch import receiver
 
 class Traveller(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    permission = models.ManyToManyField(to=User, related_name='place_permission')
     picture = models.ImageField(blank=True, null=True)
     alt_email = models.EmailField(blank=True, null=True)
     street = models.CharField(blank=True, null=True, max_length=128)

@@ -8,8 +8,19 @@ from places.models import Place
 # Create your tests here.
 
 class TestTravellerMaint(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'secret'}
+        User.objects.create_user(**self.credentials, is_staff=True)
+
     def test_register(self):
-        pass
+        self.assertTrue(self.client.login(**self.credentials))
+        pwd = make_password('zegwugr643267')
+        response = self.client.post('/places/register/', {'password1': pwd, 'password2': pwd, 'username': 'fl'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/user/0/2/')
 
 
 class AddUser(TestCase):
@@ -31,3 +42,6 @@ class AddUser(TestCase):
         self.assertEqual(response.url, '/places/user/1/2/')
         user = User.objects.filter(groups__in=[1]).first()
         self.assertIsInstance(user, User)
+        response = self.client.post('/places/user/1/2/', {'email': 'a@b.de', 'first_name': 'a', 'last_name': 'b'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/places/1/')
