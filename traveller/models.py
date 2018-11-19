@@ -3,10 +3,12 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from places.models import Place
+
 
 class Traveller(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    permission = models.ManyToManyField(to=User, related_name='place_permission')
+    permission = models.ManyToManyField(to=Place, related_name='place_permission')
     picture = models.ImageField(blank=True, null=True)
     alt_email = models.EmailField(blank=True, null=True)
     street = models.CharField(blank=True, null=True, max_length=128)
