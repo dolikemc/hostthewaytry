@@ -40,7 +40,7 @@ class CreateScreen(TestCase):
     def test_post_file_load(self):
         self.assertTrue(self.client.login(**self.credentials))
         self.std_data['picture'] = SimpleUploadedFile(name='IMG_3745.JPG',
-                                                      content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
+                                                      content=open('static/places/img/IMG_3745.JPG', 'rb').read(),
                                                       content_type='image/jpeg')
         # self.assertIsInstance(self.std_data['picture'], InMemoryUploadedFile)
         self.std_data['name'] = 'test file upload'
@@ -52,7 +52,7 @@ class CreateScreen(TestCase):
         self.assertEqual(response.url, '/places/1/')
 
     def tearDown(self):
-        for p in Path("./places/static/img").glob("IMG_3745_*.jpg"):
+        for p in Path("static/places/img").glob("IMG_3745_*.jpg"):
             p.unlink()
 
 

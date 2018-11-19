@@ -22,7 +22,7 @@ class NewPlaceProcess(TestCase):
     def test_create_minimal_place(self):
         self.assertTrue(self.client.login(**self.credentials))
         fp = SimpleUploadedFile(name='IMG_3745.JPG',
-                                content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
+                                content=open('static/places/img/IMG_3745.JPG', 'rb').read(),
                                 content_type='image/jpeg')
         response = self.client.post('/places/new/', data={'name': 'New place', 'picture': fp,
                                                           'category': 'NA', 'std_price': '12.20',
@@ -43,7 +43,7 @@ class NewPlaceProcess(TestCase):
     def test_create_std_place(self):
         self.assertTrue(self.client.login(**self.credentials))
         fp = SimpleUploadedFile(name='IMG_3745.JPG',
-                                content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
+                                content=open('static/places/img/IMG_3745.JPG', 'rb').read(),
                                 content_type='image/jpeg')
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': fp,
@@ -70,7 +70,7 @@ class NewPlaceProcess(TestCase):
     def test_create_bigger_place(self):
         self.assertTrue(self.client.login(**self.credentials))
         fp = SimpleUploadedFile(name='IMG_3745.JPG',
-                                content=open('places/static/img/IMG_3745.JPG', 'rb').read(),
+                                content=open('static/places/img/IMG_3745.JPG', 'rb').read(),
                                 content_type='image/jpeg')
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': fp,

@@ -26,7 +26,7 @@ PWA_APP_DISPLAY = 'standalone'
 PWA_APP_START_URL = '/'
 PWA_APP_ICONS = [
     {
-        'src': '/static/places/icon.ico',
+        'src': '/static/places/favicon.ico',
         'sizes': '160x160'
     }
 ]
@@ -146,9 +146,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "/")
 
-MEDIA_URL = 'static/img/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'places/static/img/')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+MEDIA_URL = '/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/places/img/')
 
 LOGGING = {
     'version': 1,
