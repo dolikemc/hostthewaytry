@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, Group
 from django.test import TestCase, Client
 
 from places.models import Place
+from traveller.models import Traveller
 
 
 # Create your tests here.
@@ -13,7 +14,7 @@ class TestTravellerMaint(TestCase):
         self.credentials = {
             'username': 'testuser',
             'password': 'secret'}
-        User.objects.create_user(**self.credentials, is_staff=True)
+        User.objects.create_user(**self.credentials, is_staff=True, email='a@b.com')
 
     def test_register(self):
         self.assertTrue(self.client.login(**self.credentials))
@@ -30,7 +31,7 @@ class AddUser(TestCase):
             'username': 'testuser',
             'password': 'secret'}
         # todo: should not need stuff policies, just allowance to add places
-        User.objects.create_user(**self.credentials, is_staff=True)
+        self.user = User.objects.create_user(**self.credentials, is_staff=True, email='a@b.com')
         Group.objects.create(name='Test')
         Place.objects.create(name='Test', group_id=1)
 
@@ -45,3 +46,7 @@ class AddUser(TestCase):
         response = self.client.post('/places/user/1/2/', {'email': 'a@b.de', 'first_name': 'a', 'last_name': 'b'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
+
+    def test_traveller_string(self):
+        traveller = Traveller.objects.get(id=self.user.id)
+        self.assertEqual('a@b.com testuser', str(traveller))
