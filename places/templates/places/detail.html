@@ -6,17 +6,20 @@
         <a href="#" onclick="goBack()" class="w3-button w3-bar-item"><i
                 class="fa fa-backward w3-large"></i></a>
         {% if user.is_authenticated %}
-            <a href="{% url 'places:register-user' place_id=place.id %}"
-               class="w3-button w3-bar-item"><i
-                    class="fas fa-plus w3-large w3-text-green"></i> admin</a>
-            <a href="{% url 'places:create-room' place=place.id %}" class="w3-button w3-bar-item"><i
-                    class="fas fa-plus w3-large w3-text-green"></i> room</a>
-            <a href="{% url 'places:create-price' place=place.id %}" class="w3-button w3-bar-item"><i
-                    class="fas fa-plus w3-large w3-text-green"></i> price</a>
-            <a href="{% url 'places:update-place' pk=place.id %}" class="w3-button w3-bar-item"><i
-                    class="fas fa-edit w3-large w3-text-green"></i> place</a>
-            <a href="{% url 'places:update-place-address' pk=place.id %}" class="w3-button w3-bar-item"><i
-                    class="fas fa-edit w3-large w3-text-green"></i> address</a>
+            <a href="{% url 'places:register-user' place_id=place.id %}" id="detail-action-register"
+               class="w3-button w3-bar-item"><i class="fas fa-plus w3-large w3-text-green"></i> admin</a>
+            <a href="{% url 'places:create-room' place=place.id %}" class="w3-button w3-bar-item"
+               id="detail-action-create-room">
+                <i class="fas fa-plus w3-large w3-text-green"></i> room</a>
+            <a href="{% url 'places:create-price' place=place.id %}" class="w3-button w3-bar-item"
+               id="detail-action-create-price">
+                <i class="fas fa-plus w3-large w3-text-green"></i> price</a>
+            <a href="{% url 'places:update-place' pk=place.id %}" class="w3-button w3-bar-item"
+               id="detail-action-update-place">
+                <i class="fas fa-edit w3-large w3-text-green"></i> place</a>
+            <a href="{% url 'places:update-place-address' pk=place.id %}" class="w3-button w3-bar-item"
+               id="detail-action-update-place-address">
+                <i class="fas fa-edit w3-large w3-text-green"></i> address</a>
         {% endif %}
     </div>
     <div class="w3-panel w3-center w3-amber">

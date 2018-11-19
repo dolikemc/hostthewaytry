@@ -51,6 +51,10 @@ class CreateScreen(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
 
+    def test_distance(self):
+        place: Place = Place.objects.create(name='Lang', latitude=12, longitude=48.5)
+        self.assertAlmostEqual(place.distance(latitude=11, longitude=48), 1.118, places=2)
+
     def tearDown(self):
         for p in Path("static/places/img").glob("IMG_3745_*.jpg"):
             p.unlink()
@@ -73,7 +77,7 @@ class ListScreen(TestCase):
         # Check that the response is 200 OK.
         self.assertEqual(response.status_code, 200)
 
-    def test_divisons(self):
+    def test_division(self):
         # Issue a GET request.
         response: HttpResponse = self.client.get('/places/')
         self.assertContains(response, 'places', status_code=200)

@@ -6,8 +6,9 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 
 from places.models import Place
+from traveller.models import PlaceAccount
 
-MAX_WAIT = 10
+MAX_WAIT = 5
 
 
 class VisitorTest(StaticLiveServerTestCase):
@@ -21,10 +22,10 @@ class VisitorTest(StaticLiveServerTestCase):
             'username': 'testuser',
             'password': 'secret'}
         User.objects.create_user(**self.credentials, is_staff=True, email='a@b.com')
-        Place.objects.create(name='Test1')
-        Place.objects.create(name='Test2', latitude=11, longitude=48)
-        Place.objects.create(name='Test3', latitude=11, longitude=48)
-        Place.objects.create(name='Test4', latitude=11, longitude=48)
+        Place.objects.create(name='Test1', reviewed=True)
+        Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True)
+        Place.objects.create(name='Test3', latitude=11, longitude=48, reviewed=True)
+        Place.objects.create(name='Test4', latitude=11, longitude=48, reviewed=True)
 
     def test_set_up(self):
         self.assertEqual(4, Place.objects.all().count())
@@ -53,6 +54,60 @@ class VisitorTest(StaticLiveServerTestCase):
         logout_button.click()
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_id('navigator-logout')
+
+    def test_cannot_change_place(self):
+        self.browser.get(self.live_server_url)
+        self.do_logon()
+        self.browser.get(self.live_server_url + '/places')
+        start_time = time.time()
+        # time.sleep(20)
+        while True:
+            try:
+                place_card = self.browser.find_element_by_id('place-card-4')
+                place_card.click()
+                break
+            except (AssertionError, WebDriverException, NoSuchElementException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+        while True:
+            try:
+                change_button = self.browser.find_element_by_id('detail-action-update-place')
+                change_button.click()
+                break
+            except (AssertionError, WebDriverException, NoSuchElementException) as e:
+                print(self.browser.page_source)
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+        self.assertNotIn('HOST THE WAY', self.browser.title)
+
+    def test_can_change_place(self):
+        PlaceAccount.objects.create(place_id=1, traveller_id=1)
+        self.browser.get(self.live_server_url)
+        self.do_logon()
+        self.browser.get(self.live_server_url + '/places')
+        start_time = time.time()
+        while True:
+            try:
+                place_card = self.browser.find_element_by_id('place-card-1')
+                place_card.click()
+                break
+            except (AssertionError, WebDriverException, NoSuchElementException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+        start_time = time.time()
+        while True:
+            try:
+                change_button = self.browser.find_element_by_id('detail-action-update-place')
+                change_button.click()
+                break
+            except (AssertionError, WebDriverException, NoSuchElementException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+        self.assertIn('HOST THE WAY', self.browser.title)
 
     def tearDown(self):
         self.browser.quit()

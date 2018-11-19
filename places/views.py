@@ -5,7 +5,7 @@ from decimal import Decimal
 # django modules
 from django.contrib.auth.decorators import login_required
 from django.db.transaction import atomic
-from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
+from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render, redirect
 
 from places.forms import NewPlaceMinimal, AddRoomToPlace, AddPriceToPlace, EditPlaceView
@@ -27,8 +27,11 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 @login_required
 def create_new_place(request: HttpRequest) -> HttpResponse:
     """cover the create new place process."""
-    traveller = Traveller.objects.get(pk=request.user.id)
-    logger.debug(traveller)
+    if hasattr(request, 'user'):
+        traveller = Traveller.objects.get(pk=request.user.id)
+        logger.debug(traveller)
+    else:
+        return HttpResponseServerError()
     if request.method == 'POST':
         logger.debug(request.POST)
         form = NewPlaceMinimal(request.POST, request.FILES)
@@ -36,11 +39,9 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         form = NewPlaceMinimal()
     if form.is_valid():
         place: Place = form.save(commit=False)
-        # todo: uae clean methoad
-        place.country = str.upper(place.country)
-        place.languages = str.upper(place.languages)
         place.save()
         PlaceAccount.objects.create(place_id=place.id, traveller_id=traveller.id)
+        # noinspection PyTypeChecker,PyCallByClass
         place.add_std_rooms_and_prices(std_price=Decimal(request.POST.get('std_price', '0.0')))
         return redirect('places:detail', pk=place.pk)
     logger.warning(form.errors)
@@ -87,25 +88,23 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     logger.debug(request.POST)
     place: Place = Place.objects.get(id=pk)
-    traveller = Traveller.objects.filter(user_id__exact=request.user.id).first()
+    if hasattr(request, 'user'):
+        traveller = Traveller.objects.filter(user_id__exact=request.user.id).first()
+    else:
+        return HttpResponseServerError()
     place_account: PlaceAccount = PlaceAccount.objects.filter(traveller_id=traveller.id, place_id=place.id).first()
     logger.debug(place_account)
     logger.debug(f"He's a SuperUser: {traveller.user.is_superuser}")
-
     if not traveller.user.is_superuser and place_account is None:
         logger.warning('no permission to change place')
         return HttpResponseForbidden()
     place.room_set.all()
     place.price_set.all()
     if request.method == 'POST':
-
         form = EditPlaceView(request.POST, request.FILES, instance=place)
         if form.is_valid():
-            # todo: do something with the cleaned_data on the formsets.
-
             form.save()
             return redirect('places:detail', pk=pk)
-
         logger.warning(form.errors)
     else:
         form = EditPlaceView(instance=place)

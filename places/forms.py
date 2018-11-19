@@ -16,6 +16,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 
 class IndexView(generic.ListView):
+    model = Place
     template_name = 'places/index.html'
     context_object_name = 'places'
 
@@ -71,6 +72,11 @@ class EditRoom(LoginRequiredMixin, generic.UpdateView):
 
 
 class EditPlaceView(LoginRequiredMixin, ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        # todo: to clean
+        return cleaned_data
+
     class Meta:
         model = Place
         fields = ['name', 'contact_type', 'website', 'languages', 'who_lives_here', 'currency',
@@ -99,6 +105,12 @@ class NewPlaceMinimal(LoginRequiredMixin, ModelForm):
     """form for the minimum of information creating a new place"""
     breakfast_included = forms.BooleanField(initial=True)
     std_price = forms.DecimalField(decimal_places=2, label="Standard price for one night and one person")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cleaned_data['country'] = str.upper(self.cleaned_data.get('country', ''))
+        logger.debug(cleaned_data)
+        return cleaned_data
 
     class Meta:
         model = Place

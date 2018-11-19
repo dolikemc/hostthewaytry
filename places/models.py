@@ -186,12 +186,9 @@ class Place(models.Model):
     reviewed = models.BooleanField(editable=False, default=False)
     deleted = models.BooleanField(default=False)
 
-    @property
-    def distance(self) -> float:
-        latitude = 11
-        longitude = 48
+    def distance(self, latitude: float, longitude: float) -> float:
         return sqrt(pow(self.latitude - latitude, 2) +
-                    pow(self.longitude - longitude, 2), 2)
+                    pow(self.longitude - longitude, 2))
 
     @property
     def average_price(self) -> Decimal:
