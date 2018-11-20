@@ -8,7 +8,7 @@ from selenium.common.exceptions import NoSuchElementException, WebDriverExceptio
 from places.models import Place
 from traveller.models import PlaceAccount
 
-MAX_WAIT = 5
+MAX_WAIT = 15
 
 
 class VisitorTest(StaticLiveServerTestCase):
@@ -58,55 +58,16 @@ class VisitorTest(StaticLiveServerTestCase):
     def test_cannot_change_place(self):
         self.browser.get(self.live_server_url)
         self.do_logon()
-        self.browser.get(self.live_server_url + '/places')
-        start_time = time.time()
-        # time.sleep(20)
-        while True:
-            try:
-                place_card = self.browser.find_element_by_id('place-card-4')
-                place_card.click()
-                break
-            except (AssertionError, WebDriverException, NoSuchElementException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-        while True:
-            try:
-                change_button = self.browser.find_element_by_id('detail-action-update-place')
-                change_button.click()
-                break
-            except (AssertionError, WebDriverException, NoSuchElementException) as e:
-                print(self.browser.page_source)
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
+        change_button = self.wait_for_detail_view()
+        change_button.click()
         self.assertNotIn('HOST THE WAY', self.browser.title)
 
     def test_can_change_place(self):
         PlaceAccount.objects.create(place_id=1, traveller_id=1)
         self.browser.get(self.live_server_url)
         self.do_logon()
-        self.browser.get(self.live_server_url + '/places')
-        start_time = time.time()
-        while True:
-            try:
-                place_card = self.browser.find_element_by_id('place-card-1')
-                place_card.click()
-                break
-            except (AssertionError, WebDriverException, NoSuchElementException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-        start_time = time.time()
-        while True:
-            try:
-                change_button = self.browser.find_element_by_id('detail-action-update-place')
-                change_button.click()
-                break
-            except (AssertionError, WebDriverException, NoSuchElementException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
+        change_button = self.wait_for_detail_view()
+        change_button.click()
         self.assertIn('HOST THE WAY', self.browser.title)
 
     def tearDown(self):
@@ -126,6 +87,31 @@ class VisitorTest(StaticLiveServerTestCase):
             try:
                 self.browser.find_element_by_id('navigator-logout')
                 return
+            except (AssertionError, WebDriverException, NoSuchElementException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+
+    def wait_for_detail_view(self):
+        id = Place.objects.all().first().id
+        self.browser.get(self.live_server_url + '/places')
+        start_time = time.time()
+        while True:
+            try:
+                # place id increases after each call of setUp
+                place_card = self.browser.find_element_by_id('place-card-' + str(id))
+                place_card.click()
+                break
+            except (AssertionError, WebDriverException, NoSuchElementException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    print(self.browser.page_source)
+                    raise e
+                time.sleep(0.5)
+        start_time = time.time()
+        while True:
+            try:
+                change_button = self.browser.find_element_by_id('detail-action-update-place')
+                return change_button
             except (AssertionError, WebDriverException, NoSuchElementException) as e:
                 if time.time() - start_time > MAX_WAIT:
                     raise e
