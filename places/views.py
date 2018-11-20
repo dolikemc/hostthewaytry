@@ -3,7 +3,7 @@ import logging
 from decimal import Decimal
 
 # django modules
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.transaction import atomic
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render, redirect
@@ -84,6 +84,7 @@ def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
     return render(request, 'places/create_detail.html', {'form': form})
 
 
+@permission_required('places.change_place')
 @login_required
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     logger.debug(request.POST)
