@@ -8,9 +8,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
 
-from places.models import Place
-from traveller.models import Traveller
-from .forms import UserForm, TravellerForm
+from traveller.forms import UserForm, TravellerForm
+from traveller.models import Traveller, PlaceAccount
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
@@ -52,15 +51,13 @@ def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
         if form.is_valid():
             user: User = form.save(commit=False)
             user.save()
+            travellers = Traveller.objects.filter(user=user)
+            for traveller in travellers:
+                PlaceAccount.objects.create(place_id=place_id, traveller_id=traveller.id)
             messages.success(request, 'Account created successfully')
-
-            place: Place = Place.objects.get(id=place_id)
-            user.groups.add(place.group)
-            user.save()
             return redirect('places:create-user', place_id=place_id, user_id=user.id)
     else:
         form = UserCreationForm()
-
     return render(request, 'traveller/register.html', {'form': form})
 
 

@@ -273,16 +273,6 @@ class Place(models.Model):
 
         return False
 
-    def create_user_group(self, user: User) -> Group:
-        index, group_name = 0, self.name
-        while Group.objects.filter(name=group_name).count() > 0:
-            group_name = self.name + str(index)
-            index += 1
-        group = Group.objects.create(name=group_name)
-        self.group = group
-        user.groups.add(group)
-        return group
-
     def __str__(self) -> str:
         return f"{self.name} ({self.country})"
 

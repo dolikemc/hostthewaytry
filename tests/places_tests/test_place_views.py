@@ -1,0 +1,23 @@
+from django.http import HttpResponse
+
+from tests.places_tests.base import PlacesPreparedTest
+
+
+class SimpleViewPlaceTest(PlacesPreparedTest):
+
+    def test_on_start(self):
+        # Issue a GET request.
+        response = self.client.get('/places/')
+        # Check that the response is 200 OK.
+        self.assertEqual(response.status_code, 200)
+
+    def test_division(self):
+        # Issue a GET request.
+        response: HttpResponse = self.client.get('/places/')
+        self.assertContains(response, 'places', status_code=200)
+        print(str(response.content))
+        self.assertInHTML('<title>HOST THE WAY</title>', response.content.decode())
+
+    def test_index_template(self):
+        response = self.client.get('/places/')
+        self.assertTemplateUsed(response, template_name='places/index.html')
