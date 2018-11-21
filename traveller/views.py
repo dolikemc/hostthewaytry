@@ -2,13 +2,15 @@
 import logging
 
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render, redirect
+from django.http import *
+from django.shortcuts import redirect
+from django.shortcuts import render
 
-from traveller.forms import UserForm, TravellerForm
+from traveller.forms import UserForm, TravellerForm, LoginForm
 from traveller.models import Traveller, PlaceAccount
 
 # Get an instance of a logger
@@ -75,3 +77,20 @@ def register_worker(request: HttpRequest, ) -> HttpResponse:
         form = UserCreationForm()
 
     return render(request, 'traveller/register.html', {'form': form})
+
+
+def login_user(request: HttpRequest, ) -> HttpResponse:
+    username = password = ''
+    if request.POST:
+        form = LoginForm(request.POST)
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect('/places/')
+    else:
+        form = LoginForm()
+    return render(request, 'traveller/login.html', {'form': form})

@@ -20,11 +20,14 @@ from django.contrib.staticfiles import views
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+from traveller.views import login_user
+
 urlpatterns = [
                   path('', TemplateView.as_view(template_name='index.html')),
+                  #  path('admin/login', admin.site.login),
                   path('admin/', admin.site.urls),
                   path('places/', include('places.urls')),
                   path('places/places/static/img/', views.serve),
-                  path('accounts/login/', admin.site.login)
+                  path('accounts/login/', login_user, name='my-login'),
 
               ] + static(settings.STATIC_URL, document_root=settings.BASE_DIR)

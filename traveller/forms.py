@@ -15,3 +15,9 @@ class TravellerForm(ModelForm):
         model = Traveller
         fields = ['alt_email', 'street', 'country', 'zip', 'city', 'state',
                   'picture', 'vita']
+
+
+class LoginForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password']

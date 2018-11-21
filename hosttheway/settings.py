@@ -70,6 +70,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'hosttheway.urls'
 
+# LOGIN_REDIRECT_URL = '/places'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

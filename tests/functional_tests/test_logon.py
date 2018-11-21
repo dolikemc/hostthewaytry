@@ -10,8 +10,8 @@ class LogonTest(FunctionalTest):
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_id('navigator-logout')
         self.do_logon()
-        self.assertIn('HOST THE WAY', self.browser.title)
         self.assertTrue(self.wait_for_find_element_by_id('navigator-logout'))
+        self.assertIn('HOST THE WAY', self.browser.title)
 
     def test_can_logout(self):
         self.browser.get(self.live_server_url)
@@ -20,3 +20,9 @@ class LogonTest(FunctionalTest):
         logout_button.click()
         with self.assertRaises(NoSuchElementException):
             self.wait_for_find_element_by_id('navigator-logout')
+
+    def test_can_logon_wo_stuff(self):
+        self.browser.get(self.live_server_url)
+        self.do_logon(is_stuff=False)
+        self.assertTrue(self.wait_for_find_element_by_id('navigator-logout'))
+        self.assertIn('HOST THE WAY', self.browser.title)

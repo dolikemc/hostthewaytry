@@ -28,7 +28,7 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 def create_new_place(request: HttpRequest) -> HttpResponse:
     """cover the create new place process."""
     if hasattr(request, 'user'):
-        traveller = Traveller.objects.get(pk=request.user.id)
+        traveller = Traveller.objects.filter(user_id__exact=request.user.id).first()
         logger.debug(traveller)
     else:
         return HttpResponseServerError()

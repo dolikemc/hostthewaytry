@@ -18,9 +18,13 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.profile.set_preference("geo.prompt.testing.allow", True)
         self.browser = webdriver.Firefox(firefox_profile=self.profile)
         self.credentials = {
-            'username': 'testuser',
+            'username': 'test_user',
+            'password': 'secret'}
+        self.anonymous = {
+            'username': 'anonymous',
             'password': 'secret'}
         self.user = User.objects.create_user(**self.credentials, is_staff=True, email='a@b.com')
+        User.objects.create_user(**self.anonymous, email='anon@b.com')
         Place.objects.create(name='Test1', reviewed=True)
         Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True)
         Place.objects.create(name='Test3', latitude=11, longitude=48, reviewed=True)
@@ -30,17 +34,19 @@ class FunctionalTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def do_logon(self):
+    def do_logon(self, is_stuff: bool = True):
         logon_button = self.browser.find_element_by_id('navigator-login')
         logon_button.click()
         username = self.browser.find_element_by_id('id_username')
         password = self.browser.find_element_by_id('id_password')
-        username.send_keys(self.credentials['username'])
-        password.send_keys(self.credentials['password'])
+        if is_stuff:
+            username.send_keys(self.credentials['username'])
+            password.send_keys(self.credentials['password'])
+        else:
+            username.send_keys(self.anonymous['username'])
+            password.send_keys(self.anonymous['password'])
         submit_button = self.browser.find_element_by_id('login-form')
         submit_button.submit()
-        logout = self.wait_for_find_element_by_id('navigator-logout')
-        self.assertTrue(logout)
 
     def wait_for_find_element_by_id(self, id: str):
         start_time = time.time()

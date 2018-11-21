@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Permission, Group
+from selenium.common.exceptions import NoSuchElementException
 
 from tests.functional_tests.base import FunctionalTest
 from traveller.models import PlaceAccount
@@ -13,7 +14,8 @@ class PlacerAdminTest(FunctionalTest):
         detail_button.click()
         change_button = self.wait_for_find_element_by_id('detail-action-update-place')
         change_button.click()
-        self.assertNotIn('HOST THE WAY', self.browser.title)
+        with self.assertRaises(NoSuchElementException):
+            self.wait_for_find_element_by_id('id_who_lives_here')
 
     def test_can_change_place(self):
         PlaceAccount.objects.create(place_id=self.last_place_id, traveller_id=self.user.id)
@@ -37,7 +39,7 @@ class PlacerAdminTest(FunctionalTest):
     def test_can_register_traveller(self):
         self.browser.get(self.live_server_url)
         self.do_logon()
-        register_button = self.browser.find_element_by_id('navigator-register-worker')
+        register_button = self.wait_for_find_element_by_id('navigator-register-worker')
         register_button.click()
         self.assertIn('Create User', self.browser.title)
         username = self.browser.find_element_by_id('id_username')
