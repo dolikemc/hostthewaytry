@@ -1,8 +1,10 @@
 from pathlib import Path
 
-from django.contrib.auth.models import User, Group, Permission, AnonymousUser
+from django.contrib.auth.models import Group, Permission, AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
+
+from traveller.models import User
 
 
 class RoleMixin(object):

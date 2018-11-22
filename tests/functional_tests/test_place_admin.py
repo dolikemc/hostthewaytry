@@ -1,4 +1,3 @@
-from django.contrib.auth.models import Permission, Group
 from selenium.common.exceptions import NoSuchElementException
 
 from tests.functional_tests.base import FunctionalTest

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Place, Price, GeoName, Room
+from places.models import Place, Price, GeoName, Room
 
 admin.site.site_header = "HOST THE WAY"
 admin.site.site_title = "Host The Way"

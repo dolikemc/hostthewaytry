@@ -9,7 +9,7 @@ from django.shortcuts import reverse
 from django.views import generic
 
 # my models
-from .models import Place, Price, Room
+from places.models import Place, Price, Room
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)

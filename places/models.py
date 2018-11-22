@@ -7,7 +7,7 @@ from math import sqrt, pow
 from os.path import isfile
 from typing import List
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.db.models import Avg, Sum, Min, Max

@@ -70,7 +70,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'hosttheway.urls'
 
-# LOGIN_REDIRECT_URL = '/places'
+AUTH_USER_MODEL = 'traveller.User'
 
 TEMPLATES = [
     {

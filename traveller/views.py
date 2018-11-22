@@ -4,14 +4,12 @@ import logging
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.http import *
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from traveller.forms import UserForm, TravellerForm, LoginForm
-from traveller.models import Traveller, PlaceAccount
+from traveller.forms import UserForm, TravellerForm, LoginForm, UserCreationForm
+from traveller.models import Traveller, PlaceAccount, User
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
