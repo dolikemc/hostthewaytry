@@ -22,9 +22,9 @@ class UpdatePlaceTest(PlacesPreparedTest):
         self.assertEqual(price.count(), 1)
 
     def test_update_place(self):
+        self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         traveller: Traveller = Traveller.objects.get(id=self.user.id)
-        traveller.user.groups.add(self.place_admin_group)
         PlaceAccount.objects.create(place_id=self.last_place_id, traveller_id=traveller.id)
         response = self.client.post(f'/places/update/place/{self.last_place_id}/', data=self.std_data)
         self.assertEqual(response.status_code, 302)
@@ -33,9 +33,10 @@ class UpdatePlaceTest(PlacesPreparedTest):
         self.assertEqual(place.name, self.std_data['name'][0])
 
     def test_update_place_permission(self):
+        self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         traveller: Traveller = Traveller.objects.get(id=self.user.id)
-        traveller.user.groups.add(self.place_admin_group)
+        traveller.user.groups.add(self.group)
         response = self.client.post(f'/places/update/place/{self.last_place_id}/', data=self.std_data)
         self.assertEqual(response.status_code, 403)
 

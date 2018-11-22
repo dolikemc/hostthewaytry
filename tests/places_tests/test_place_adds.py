@@ -5,21 +5,25 @@ from tests.places_tests.base import PlacesPreparedTest
 class RoomScreen(PlacesPreparedTest):
 
     def test_form(self):
+        self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.get('/places/room/1/')
         self.assertEqual(response.status_code, 200)
 
     def test_not_logged_in(self):
+        self.set_up_place_admin()
         response = self.client.get('/places/room/1/')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/accounts/login/?next=/places/room/1/")
 
     def test_use_template(self):
+        self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.get('/places/room/1/')
         self.assertTemplateUsed(response, template_name='places/create_detail.html')
 
     def test_new_room(self):
+        self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         place = Place.objects.first()
         self.assertIsInstance(place, Place)
@@ -35,21 +39,25 @@ class RoomScreen(PlacesPreparedTest):
 class PriceScreen(PlacesPreparedTest):
 
     def test_form(self):
+        self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.get('/places/price/1/')
         self.assertEqual(response.status_code, 200)
 
     def test_not_logged_in(self):
+        self.set_up_place_admin()
         response = self.client.get('/places/price/1/')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/accounts/login/?next=/places/price/1/")
 
     def test_use_template(self):
+        self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.get('/places/price/1/')
         self.assertTemplateUsed(response, template_name='places/create_detail.html')
 
     def test_new_price(self):
+        self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         place = Place.objects.first()
         self.assertIsInstance(place, Place)

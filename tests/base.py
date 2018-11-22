@@ -1,27 +1,62 @@
 from pathlib import Path
 
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import User, Group, Permission, AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 
 
-class BaseTest(TestCase):
+class RoleMixin(object):
+    user = None
+    group = None
+
+    @property
+    def credentials(self):
+        return {'username': 'test_user', 'password': 'secret'}
+
+    def set_up_anonymous(self):
+        self.user = AnonymousUser
+        self.group = Group.objects.create(name='Anonymous')
+
+    def set_up_traveller(self):
+        self.user = User.objects.create_user(**self.credentials, is_staff=False, email='a@b.com')
+        # todo: permissions (post_comments, add_area_features)
+        self.group = Group.objects.create(name='Traveller')
+        self.user.groups.add(self.group)
+        return self.user
+
+    def set_up_place_admin(self):
+        self.user = User.objects.create_user(**self.credentials, is_staff=False, email='a@b.com')
+        self.group: Group = Group.objects.create(name='PlaceAdmin')
+        for permission in Permission.objects.filter(codename__in=['change_place', 'add_user', 'change_user']):
+            self.group.permissions.add(permission)
+        self.user.groups.add(self.group)
+        return self.user
+
+    def set_up_worker(self):
+        self.user = User.objects.create_user(**self.credentials, is_staff=False, email='a@b.com')
+        self.group: Group = Group.objects.create(name='Worker')
+        # todo: permissions (post_comments, add_area_features)
+        for permission in Permission.objects.filter(codename__in=['add_place', 'add_user', 'change_user']):
+            self.group.permissions.add(permission)
+        self.user.groups.add(self.group)
+        return self.user
+
+    def set_up_staff(self):
+        user = User.objects.create_user(**self.credentials, is_staff=True, email='a@b.com')
+        group = Group.objects.create(name='Staff')
+        for permission in Permission.objects.filter(codename__in=['change_place', 'add_user', 'change_user']):
+            group.permissions.add(permission)
+        user.groups.add(group)
+        self.user = user
+        self.group = group
+
+
+class BaseTest(TestCase, RoleMixin):
+
     def setUp(self):
         # Every test needs a client.
         self.client = Client()
-        # Stuff user
-        self.credentials = {
-            'username': 'test_user',
-            'password': 'secret'}
-        self.user = User.objects.create_user(**self.credentials, is_staff=True, email='a@b.com')
-
-        group: Group = Group.objects.create(name='PlaceAdmin')
-        permission: Permission = Permission.objects.filter(codename='change_place').first()
-        group.permissions.add(permission)
-        self.place_admin_group = group
-
         self.last_place_id = 0
-
         self.image_with_exif = 'IMG_3745.JPG'
         self.image_without_exif = 'hosttheway.jpg'
         self.image_path = 'static/places/img'

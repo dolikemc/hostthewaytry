@@ -9,6 +9,7 @@ class PlacerAdminTest(FunctionalTest):
 
     def test_cannot_change_place(self):
         self.browser.get(self.live_server_url)
+        self.set_up_traveller()
         self.do_logon()
         detail_button = self.wait_for_find_element_by_id('place-card-' + str(self.last_place_id))
         detail_button.click()
@@ -18,14 +19,8 @@ class PlacerAdminTest(FunctionalTest):
             self.wait_for_find_element_by_id('id_who_lives_here')
 
     def test_can_change_place(self):
+        self.set_up_place_admin()
         PlaceAccount.objects.create(place_id=self.last_place_id, traveller_id=self.user.id)
-        permission: Permission = Permission.objects.filter(codename='change_place').first()
-        permission_user = Permission.objects.filter(codename__endswith='_user')
-        group: Group = Group.objects.create(name='PlaceAdmin')
-        group.permissions.add(permission)
-        # for perm in permission_user:
-        #    group.permissions.add(perm)
-        self.user.groups.add(group)
         self.browser.get(self.live_server_url)
         self.do_logon()
         detail_button = self.wait_for_find_element_by_id('place-card-' + str(self.last_place_id))
@@ -38,6 +33,7 @@ class PlacerAdminTest(FunctionalTest):
 
     def test_can_register_traveller(self):
         self.browser.get(self.live_server_url)
+        self.set_up_staff()
         self.do_logon()
         register_button = self.wait_for_find_element_by_id('navigator-register-worker')
         register_button.click()

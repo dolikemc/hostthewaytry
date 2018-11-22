@@ -9,6 +9,7 @@ from traveller.models import Traveller, PlaceAccount
 class NewPlaceTest(PlacesTest):
 
     def test_create_minimal_place(self):
+        self.set_up_worker()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.post('/places/new/', data={'name': 'New place', 'picture': self.get_file_pointer(),
                                                           'category': 'NA', 'std_price': '12.20',
@@ -27,6 +28,7 @@ class NewPlaceTest(PlacesTest):
         self.assertEqual('test_user', traveller.user.username)
 
     def test_create_std_place(self):
+        self.set_up_worker()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': self.get_file_pointer(),
@@ -45,6 +47,7 @@ class NewPlaceTest(PlacesTest):
         self.assertEqual(room.price_per_person, Decimal("12.60"))
 
     def test_create_bigger_place(self):
+        self.set_up_worker()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.post('/places/new/', data={'name': 'New place',
                                                           'picture': self.get_file_pointer(),
@@ -76,11 +79,13 @@ class NewPlaceTest(PlacesTest):
         self.assertEqual(place.valid_rooms().count(), 4)
 
     def test_use_template(self):
+        self.set_up_worker()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.get('/places/new/')
         self.assertTemplateUsed(response, template_name='places/create_place_minimal.html')
 
     def test_post_minimal_data(self):
+        self.set_up_worker()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.post('/places/new/', data=self.std_data)
         place = Place.objects.first()
@@ -91,6 +96,7 @@ class NewPlaceTest(PlacesTest):
         self.assertEqual(place.country, 'DE')
 
     def test_post_file_load(self):
+        self.set_up_worker()
         self.assertTrue(self.client.login(**self.credentials))
         self.std_data['picture'] = self.get_file_pointer()
         # self.assertIsInstance(self.std_data['picture'], InMemoryUploadedFile)

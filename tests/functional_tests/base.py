@@ -1,30 +1,22 @@
 import time
 
-from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 
 from places.models import Place
+from tests.base import RoleMixin
 
 MAX_WAIT = 5
 
 
-class FunctionalTest(StaticLiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
 
     def setUp(self):
         self.profile = webdriver.FirefoxProfile()
         self.profile.set_preference("geo.prompt.testing", True)
         self.profile.set_preference("geo.prompt.testing.allow", True)
         self.browser = webdriver.Firefox(firefox_profile=self.profile)
-        self.credentials = {
-            'username': 'test_user',
-            'password': 'secret'}
-        self.anonymous = {
-            'username': 'anonymous',
-            'password': 'secret'}
-        self.user = User.objects.create_user(**self.credentials, is_staff=True, email='a@b.com')
-        User.objects.create_user(**self.anonymous, email='anon@b.com')
         Place.objects.create(name='Test1', reviewed=True)
         Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True)
         Place.objects.create(name='Test3', latitude=11, longitude=48, reviewed=True)
@@ -34,25 +26,22 @@ class FunctionalTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def do_logon(self, is_stuff: bool = True):
+    def do_logon(self):
         logon_button = self.browser.find_element_by_id('navigator-login')
         logon_button.click()
         username = self.browser.find_element_by_id('id_username')
         password = self.browser.find_element_by_id('id_password')
-        if is_stuff:
-            username.send_keys(self.credentials['username'])
-            password.send_keys(self.credentials['password'])
-        else:
-            username.send_keys(self.anonymous['username'])
-            password.send_keys(self.anonymous['password'])
+
+        username.send_keys(self.credentials['username'])
+        password.send_keys(self.credentials['password'])
         submit_button = self.browser.find_element_by_id('login-form')
         submit_button.submit()
 
-    def wait_for_find_element_by_id(self, id: str):
+    def wait_for_find_element_by_id(self, tag_id: str):
         start_time = time.time()
         while True:
             try:
-                button = self.browser.find_element_by_id(id)
+                button = self.browser.find_element_by_id(tag_id)
                 return button
             except (AssertionError, WebDriverException) as e:
                 if time.time() - start_time > MAX_WAIT:
