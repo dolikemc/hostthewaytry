@@ -5,44 +5,34 @@
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/login.css" %}">
     {{ form.media }}
 {% endblock %}
-
 {% block bodyclass %}{{ block.super }} login{% endblock %}
-
 {% block usertools %}{% endblock %}
-
 {% block nav-global %}{% endblock %}
-
 {% block content_title %}{% endblock %}
-
 {% block breadcrumbs %}{% endblock %}
-
 {% block content %}
-    {% if form.errors and not form.non_field_errors %}
-        <p class="errornote">
-            {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}
-                {% trans "Please correct the errors below." %}{% endif %}
-        </p>
-    {% endif %}
-
-    {% if form.non_field_errors %}
-        {% for error in form.non_field_errors %}
-            <p class="errornote">
-                {{ error }}
+    <div class="w3-center w3-text-green">
+        {% if form.errors and not form.non_field_errors %}
+            <p class="errornote w3-text-red">
+                {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}
+                    {% trans "Please correct the errors below." %}{% endif %}
             </p>
-        {% endfor %}
-    {% endif %}
-
-    <div id="content-main">
-
+        {% endif %}
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <p class="errornote w3-text-red">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        {% endif %}
         {% if user.is_authenticated %}
-            <p class="errornote">
+            <p class="errornote w3-text-red">
                 {% blocktrans trimmed %}
                     You are authenticated as {{ username }}, but are not authorized to
                     access this page. Would you like to login to a different account?
                 {% endblocktrans %}
             </p>
         {% endif %}
-
         <form action="{{ app_path }}" method="post" id="login-form">
             {% csrf_token %}
             {% if next %}
@@ -68,6 +58,5 @@
                 </div>
             </div>
         </form>
-
     </div>
 {% endblock %}
