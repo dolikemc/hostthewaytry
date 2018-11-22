@@ -151,12 +151,15 @@ class PlaceAccount(models.Model):
         return f"{self.traveller.user.username} <-> {self.place.name}"
 
 
+"""
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Traveller.objects.create(user=instance)
+"""
 
-
+"""
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.traveller.save()
+"""

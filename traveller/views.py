@@ -8,7 +8,7 @@ from django.http import *
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from traveller.forms import UserForm, TravellerForm, LoginForm, UserCreationForm
+from traveller.forms import UserForm, LoginForm, UserCreationForm
 from traveller.models import Traveller, PlaceAccount, User
 
 # Get an instance of a logger
@@ -19,27 +19,28 @@ logger: logging.Logger = logging.getLogger(__name__)
 @login_required
 def update_traveller(request: HttpRequest, place_id: int, user_id: int) -> HttpResponse:
     user: User = User.objects.get(id=user_id)
-    traveller: Traveller = Traveller.objects.get(id=user.traveller.id)
+    traveller: Traveller = Traveller.objects.filter(user_id__exact=user_id).first()
 
     if request.method == 'POST':
         logging.debug(request.POST)
         user_form = UserForm(request.POST, request.FILES, instance=user)
-        traveller_form = TravellerForm(request.POST, request.FILES, instance=traveller)
-        if user_form.is_valid() and traveller_form.is_valid():
+        # traveller_form = TravellerForm(request.POST, request.FILES, instance=traveller)
+        if user_form.is_valid():  # and traveller_form.is_valid():
             user_form.save(commit=True)
-            traveller_form.save(commit=True)
+            # traveller_form.save(commit=True)
             if place_id > 0:
                 return redirect('places:detail', pk=place_id)
             return redirect('admin:index')
     else:
         user_form = UserForm(instance=user)
-        traveller_form = TravellerForm(instance=traveller)
+        # traveller_form = TravellerForm(instance=traveller)
 
     logger.warning(user_form.errors)
-    logger.warning(traveller_form.errors)
+    # logger.warning(traveller_form.errors)
     return render(request, 'traveller/create_place_admin.html',
                   {'user_form': user_form,
-                   'traveller_form': traveller_form})
+                   # 'traveller_form': traveller_form
+                   })
 
 
 def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
