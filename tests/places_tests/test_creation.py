@@ -25,7 +25,7 @@ class NewPlaceTest(PlacesTest):
         place: Place = Place.objects.get(id=1)
         self.assertTrue(place.latitude, 0)
         self.assertIsInstance(traveller, User)
-        self.assertEqual('test_user', traveller.username)
+        self.assertEqual('test@user.com', traveller.email)
 
     def test_create_std_place(self):
         self.set_up_worker()

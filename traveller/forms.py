@@ -1,30 +1,24 @@
-import unicodedata
-
 from django import forms
 from django.contrib.auth import (
     password_validation,
 )
+from django.forms import EmailField
 from django.utils.translation import gettext_lazy as _
 
 from traveller.models import User
 
 
-class UsernameField(forms.CharField):
-    def to_python(self, value):
-        return unicodedata.normalize('NFKC', super().to_python(value))
-
-
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'alt_email', 'street', 'country', 'zip', 'city', 'state',
+        fields = ['full_name', 'screen_name', 'alt_email', 'street', 'country', 'zip', 'city', 'state',
                   'picture', 'vita']
 
 
 class LoginForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ['email', 'password']
 
 
 class UserCreationForm(forms.ModelForm):
@@ -50,8 +44,8 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ("username",)
-        field_classes = {'username': UsernameField}
+        fields = ("email",)
+        field_classes = {'email': EmailField}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

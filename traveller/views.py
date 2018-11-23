@@ -73,7 +73,7 @@ def register_worker(request: HttpRequest, ) -> HttpResponse:
 def login_user(request: HttpRequest, ) -> HttpResponse:
     if request.POST:
         form = LoginForm(request.POST)
-        username = request.POST['username']
+        username = request.POST['email']
         password = request.POST['password']
 
         user = authenticate(username=username, password=password)

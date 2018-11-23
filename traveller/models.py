@@ -3,7 +3,6 @@ from django.contrib.auth.models import PermissionsMixin, UnicodeUsernameValidato
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from places.models import Place
@@ -12,25 +11,25 @@ from places.models import Place
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def _create_user(self, username, email, password, **extra_fields):
+    def _create_user(self, email, password, **extra_fields):
         """
-        Create and save a user with the given username, email, and password.
+        Create and save a user with the given email and password.
         """
-        if not username:
-            raise ValueError('The given username must be set')
+        if not email:
+            raise ValueError('The given email must be set')
         email = self.normalize_email(email)
-        username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email, **extra_fields)
+        user = self.model(email=email, **extra_fields)
+        user.screen_name = email
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email=None, password=None, **extra_fields):
+    def create_user(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(self, username, email, password, **extra_fields):
+    def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -39,84 +38,28 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(email, password, **extra_fields)
 
 
-class AbstractUser(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     """
-    An abstract base class implementing a fully featured User model with
-    admin-compliant permissions.
-
-    Username and password are required. Other fields are optional.
+    Email and password are required. Other fields are optional.
     """
     username_validator = UnicodeUsernameValidator()
 
-    username = models.CharField(
-        _('username'),
-        max_length=150,
-        unique=True,
-        help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-        validators=[username_validator],
-        error_messages={
-            'unique': _("A user with that username already exists."),
-        },
-    )
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=150, blank=True)
-    email = models.EmailField(_('email address'), blank=True)
+    email = models.EmailField(_('email address'), unique=True,
+                              error_messages={
+                                  'unique': _("This email already exists."),
+                              },
+                              )
+    full_name = models.CharField(_('full name'), max_length=128, blank=True)
+    screen_name = models.CharField(_('screen name'), max_length=32, blank=True)
+    unique_name = models.CharField(_('unique name'), max_length=64, unique=True, null=True)
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
         help_text=_('Designates whether the user can log into this admin site.'),
     )
-    is_active = models.BooleanField(
-        _('active'),
-        default=True,
-        help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
-    )
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-
-    objects = UserManager()
-
-    EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
-
-    class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
-        abstract = True
-
-    def clean(self):
-        super().clean()
-        self.email = self.__class__.objects.normalize_email(self.email)
-
-    def get_full_name(self):
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
-        full_name = '%s %s' % (self.first_name, self.last_name)
-        return full_name.strip()
-
-    def get_short_name(self):
-        """Return the short name for the user."""
-        return self.first_name
-
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        """Send an email to this user."""
-        send_mail(subject, message, from_email, [self.email], **kwargs)
-
-
-class User(AbstractUser):
-    """
-    Users within the Django authentication system are represented by this
-    model.
-
-    Username and password are required. Other fields are optional.
-    """
     picture = models.ImageField(blank=True, null=True)
     alt_email = models.EmailField(blank=True, null=True)
     street = models.CharField(blank=True, null=True, max_length=128)
@@ -127,13 +70,44 @@ class User(AbstractUser):
     vita = models.TextField(blank=True, null=True, max_length=1024)
     created_on = models.DateTimeField(auto_now_add=True, editable=False)
     updated_on = models.DateTimeField(auto_now=True, editable=False)
-    deleted = models.BooleanField(default=False)
+    is_active = models.BooleanField(
+        _('active'),
+        default=True,
+        help_text=_(
+            'Designates whether this user should be treated as active. '
+            'Unselect this instead of deleting accounts.'
+        ),
+    )
 
-    class Meta(AbstractUser.Meta):
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    class Meta:
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
         swappable = 'AUTH_USER_MODEL'
 
+    def clean(self):
+        super().clean()
+        self.email = self.__class__.objects.normalize_email(self.email)
+
+    def get_full_name(self):
+        return self.full_name
+
+    def get_short_name(self):
+        """Return screen name of the."""
+        if self.screen_name == self.unique_name:
+            return self.screen_name
+        return f"{self.screen_name}({self.unique_name})"
+
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """Send an email to this user."""
+        send_mail(subject, message, from_email, [self.email], **kwargs)
+
     def __str__(self):
-        return f"{self.email}"
+        return f"{self.email} ({self.unique_name})"
 
 
 class PlaceAccount(models.Model):

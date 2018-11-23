@@ -9,7 +9,7 @@ class ModelTest(BaseTest):
     def test_traveller_string(self):
         self.set_up_staff()
         traveller = User.objects.get(id=self.user.id)
-        self.assertEqual('a@b.com', str(traveller))
+        self.assertEqual('test@user.com (None)', str(traveller))
 
     def test_user_model(self):
         self.set_up_staff()
