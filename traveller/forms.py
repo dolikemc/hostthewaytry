@@ -6,7 +6,7 @@ from django.contrib.auth import (
 )
 from django.utils.translation import gettext_lazy as _
 
-from traveller.models import Traveller, User
+from traveller.models import User
 
 
 class UsernameField(forms.CharField):
@@ -17,13 +17,7 @@ class UsernameField(forms.CharField):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
-
-
-class TravellerForm(forms.ModelForm):
-    class Meta:
-        model = Traveller
-        fields = ['alt_email', 'street', 'country', 'zip', 'city', 'state',
+        fields = ['first_name', 'last_name', 'email', 'alt_email', 'street', 'country', 'zip', 'city', 'state',
                   'picture', 'vita']
 
 

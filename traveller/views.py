@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 
 from traveller.forms import UserForm, LoginForm, UserCreationForm
-from traveller.models import Traveller, PlaceAccount, User
+from traveller.models import PlaceAccount, User
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
@@ -19,13 +19,11 @@ logger: logging.Logger = logging.getLogger(__name__)
 @login_required
 def update_traveller(request: HttpRequest, place_id: int, user_id: int) -> HttpResponse:
     user: User = User.objects.get(id=user_id)
-    traveller: Traveller = Traveller.objects.filter(user_id__exact=user_id).first()
 
     if request.method == 'POST':
         logging.debug(request.POST)
         user_form = UserForm(request.POST, request.FILES, instance=user)
-        # traveller_form = TravellerForm(request.POST, request.FILES, instance=traveller)
-        if user_form.is_valid():  # and traveller_form.is_valid():
+        if user_form.is_valid():
             user_form.save(commit=True)
             # traveller_form.save(commit=True)
             if place_id > 0:
@@ -33,14 +31,10 @@ def update_traveller(request: HttpRequest, place_id: int, user_id: int) -> HttpR
             return redirect('admin:index')
     else:
         user_form = UserForm(instance=user)
-        # traveller_form = TravellerForm(instance=traveller)
 
     logger.warning(user_form.errors)
-    # logger.warning(traveller_form.errors)
     return render(request, 'traveller/create_place_admin.html',
-                  {'user_form': user_form,
-                   # 'traveller_form': traveller_form
-                   })
+                  {'user_form': user_form, })
 
 
 def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
@@ -52,9 +46,7 @@ def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
         if form.is_valid():
             user: User = form.save(commit=False)
             user.save()
-            travellers = Traveller.objects.filter(user=user)
-            for traveller in travellers:
-                PlaceAccount.objects.create(place_id=place_id, traveller_id=traveller.id)
+            PlaceAccount.objects.create(place_id=place_id, user_id=user.id)
             messages.success(request, 'Account created successfully')
             return redirect('places:create-user', place_id=place_id, user_id=user.id)
     else:
@@ -79,7 +71,6 @@ def register_worker(request: HttpRequest, ) -> HttpResponse:
 
 
 def login_user(request: HttpRequest, ) -> HttpResponse:
-    username = password = ''
     if request.POST:
         form = LoginForm(request.POST)
         username = request.POST['username']

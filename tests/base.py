@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group, Permission, AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 
-from traveller.models import User, Traveller
+from traveller.models import User
 
 
 class RoleMixin(object):
@@ -21,7 +21,6 @@ class RoleMixin(object):
 
     def set_up_traveller(self):
         self.user = User.objects.create_user(**self.credentials, is_staff=False, email='a@b.com')
-        Traveller.objects.create(user_id=self.user.id)
         # todo: permissions (post_comments, add_area_features)
         self.group = Group.objects.create(name='Traveller')
         self.user.groups.add(self.group)
@@ -29,7 +28,6 @@ class RoleMixin(object):
 
     def set_up_place_admin(self):
         self.user = User.objects.create_user(**self.credentials, is_staff=False, email='a@b.com')
-        Traveller.objects.create(user_id=self.user.id)
         self.group: Group = Group.objects.create(name='PlaceAdmin')
         for permission in Permission.objects.filter(codename__in=['change_place', 'add_user', 'change_user']):
             self.group.permissions.add(permission)
@@ -38,7 +36,6 @@ class RoleMixin(object):
 
     def set_up_worker(self):
         self.user = User.objects.create_user(**self.credentials, is_staff=False, email='a@b.com')
-        Traveller.objects.create(user_id=self.user.id)
         self.group: Group = Group.objects.create(name='Worker')
         # todo: permissions (post_comments, add_area_features)
         for permission in Permission.objects.filter(codename__in=['add_place', 'add_user', 'change_user']):
@@ -48,12 +45,10 @@ class RoleMixin(object):
 
     def set_up_staff(self):
         self.user = User.objects.create_user(**self.credentials, is_staff=True, email='a@b.com')
-        Traveller.objects.create(user_id=self.user.id)
         self.group = Group.objects.create(name='Staff')
         for permission in Permission.objects.filter(codename__in=['change_place', 'add_user', 'change_user']):
             self.group.permissions.add(permission)
         self.user.groups.add(self.group)
-
 
 
 class BaseTest(TestCase, RoleMixin):

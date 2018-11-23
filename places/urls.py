@@ -2,9 +2,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 
+from places import views
+from places.forms import DetailView, IndexView, EditRoom, EditPrice, DeletePrice, DeleteRoom, EditPlaceAddressView
 from traveller.views import update_traveller, register_user, register_worker
-from . import views
-from .forms import DetailView, IndexView, EditRoom, EditPrice, DeletePrice, DeleteRoom, EditPlaceAddressView
 
 app_name = 'places'
 urlpatterns = \

@@ -1,15 +1,15 @@
 from django.contrib.auth.models import AbstractBaseUser
 
 from tests.base import BaseTest
-from traveller.models import Traveller, User
+from traveller.models import User
 
 
 class ModelTest(BaseTest):
 
     def test_traveller_string(self):
         self.set_up_staff()
-        traveller = Traveller.objects.get(id=self.user.id)
-        self.assertEqual('a@b.com test_user', str(traveller))
+        traveller = User.objects.get(id=self.user.id)
+        self.assertEqual('a@b.com', str(traveller))
 
     def test_user_model(self):
         self.set_up_staff()

@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from places.models import Place, Room
 from tests.places_tests.base import PlacesTest
-from traveller.models import Traveller, PlaceAccount
+from traveller.models import User, PlaceAccount
 
 
 class NewPlaceTest(PlacesTest):
@@ -17,15 +17,15 @@ class NewPlaceTest(PlacesTest):
                                                           })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/places/1/')
-        traveller = Traveller.objects.get(id=self.user.id)
-        self.assertIsInstance(traveller, Traveller)
-        place_account: PlaceAccount = PlaceAccount.objects.filter(traveller_id=traveller.id).first()
+        traveller = User.objects.get(id=self.user.id)
+        self.assertIsInstance(traveller, User)
+        place_account: PlaceAccount = PlaceAccount.objects.filter(user_id=traveller.id).first()
         self.assertIsInstance(place_account, PlaceAccount)
         self.assertEqual(place_account.place_id, 1)
         place: Place = Place.objects.get(id=1)
         self.assertTrue(place.latitude, 0)
-        self.assertIsInstance(traveller, Traveller)
-        self.assertEqual('test_user', traveller.user.username)
+        self.assertIsInstance(traveller, User)
+        self.assertEqual('test_user', traveller.username)
 
     def test_create_std_place(self):
         self.set_up_worker()
@@ -46,6 +46,7 @@ class NewPlaceTest(PlacesTest):
         self.assertEqual(room.beds, 2)
         self.assertEqual(room.price_per_person, Decimal("12.60"))
 
+    # noinspection PyArgumentList
     def test_create_bigger_place(self):
         self.set_up_worker()
         self.assertTrue(self.client.login(**self.credentials))

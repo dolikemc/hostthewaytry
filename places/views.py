@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from places.forms import NewPlaceMinimal, AddRoomToPlace, AddPriceToPlace, EditPlaceView
 # my models
 from places.models import Place, Room
-from traveller.models import Traveller, PlaceAccount
+from traveller.models import PlaceAccount, User
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
@@ -28,8 +28,8 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 def create_new_place(request: HttpRequest) -> HttpResponse:
     """cover the create new place process."""
     if hasattr(request, 'user'):
-        traveller = Traveller.objects.filter(user_id__exact=request.user.id).first()
-        logger.debug(traveller)
+        user: User = request.user
+        logger.debug(request.user)
     else:
         return HttpResponseServerError()
     if request.method == 'POST':
@@ -40,7 +40,7 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
     if form.is_valid():
         place: Place = form.save(commit=False)
         place.save()
-        PlaceAccount.objects.create(place_id=place.id, traveller_id=traveller.id)
+        PlaceAccount.objects.create(place_id=place.id, user_id=user.id)
         # noinspection PyTypeChecker,PyCallByClass
         place.add_std_rooms_and_prices(std_price=Decimal(request.POST.get('std_price', '0.0')))
         return redirect('places:detail', pk=place.pk)
@@ -90,13 +90,14 @@ def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     logger.debug(request.POST)
     place: Place = Place.objects.get(id=pk)
     if hasattr(request, 'user'):
-        traveller = Traveller.objects.filter(user_id__exact=request.user.id).first()
+        user: User = request.user
+        logger.debug(user)
     else:
         return HttpResponseServerError()
-    place_account: PlaceAccount = PlaceAccount.objects.filter(traveller_id=traveller.id, place_id=place.id).first()
+    place_account: PlaceAccount = PlaceAccount.objects.filter(user_id=user.id, place_id=place.id).first()
     logger.debug(place_account)
-    logger.debug(f"He's a SuperUser: {traveller.user.is_superuser}")
-    if not traveller.user.is_superuser and place_account is None:
+    logger.debug(f"He's a SuperUser: {user.is_superuser}")
+    if not user.is_superuser and place_account is None:
         logger.warning('no permission to change place')
         return HttpResponseForbidden()
     place.room_set.all()

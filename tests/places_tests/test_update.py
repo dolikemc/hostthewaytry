@@ -2,7 +2,7 @@ from django.test.utils import skipIf
 
 from places.models import Place, Room, Price
 from tests.places_tests.base import PlacesPreparedTest
-from traveller.models import Traveller, PlaceAccount
+from traveller.models import User, PlaceAccount
 
 
 class UpdatePlaceTest(PlacesPreparedTest):
@@ -24,8 +24,7 @@ class UpdatePlaceTest(PlacesPreparedTest):
     def test_update_place(self):
         self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
-        traveller: Traveller = Traveller.objects.get(id=self.user.id)
-        PlaceAccount.objects.create(place_id=self.last_place_id, traveller_id=traveller.id)
+        PlaceAccount.objects.create(place_id=self.last_place_id, user_id=self.user.id)
         response = self.client.post(f'/places/update/place/{self.last_place_id}/', data=self.std_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f'/places/{self.last_place_id}/')
@@ -35,8 +34,6 @@ class UpdatePlaceTest(PlacesPreparedTest):
     def test_update_place_permission(self):
         self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
-        traveller: Traveller = Traveller.objects.get(id=self.user.id)
-        traveller.user.groups.add(self.group)
         response = self.client.post(f'/places/update/place/{self.last_place_id}/', data=self.std_data)
         self.assertEqual(response.status_code, 403)
 

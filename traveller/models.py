@@ -1,11 +1,8 @@
-from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UnicodeUsernameValidator, BaseUserManager
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -120,13 +117,6 @@ class User(AbstractUser):
 
     Username and password are required. Other fields are optional.
     """
-
-    class Meta(AbstractUser.Meta):
-        swappable = 'AUTH_USER_MODEL'
-
-
-class Traveller(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     picture = models.ImageField(blank=True, null=True)
     alt_email = models.EmailField(blank=True, null=True)
     street = models.CharField(blank=True, null=True, max_length=128)
@@ -139,27 +129,16 @@ class Traveller(models.Model):
     updated_on = models.DateTimeField(auto_now=True, editable=False)
     deleted = models.BooleanField(default=False)
 
+    class Meta(AbstractUser.Meta):
+        swappable = 'AUTH_USER_MODEL'
+
     def __str__(self):
-        return f"{self.user.email} {self.user.username}"
+        return f"{self.email}"
 
 
 class PlaceAccount(models.Model):
     place = models.ForeignKey(to=Place, null=True, blank=True, on_delete=models.DO_NOTHING)
-    traveller = models.ForeignKey(to=Traveller, null=True, blank=True, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(to=User, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
-        return f"{self.traveller.user.username} <-> {self.place.name}"
-
-
-"""
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Traveller.objects.create(user=instance)
-"""
-
-"""
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.traveller.save()
-"""
+        return f"{self.user.email} <-> {self.place.name}"

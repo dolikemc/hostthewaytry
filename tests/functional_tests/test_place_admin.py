@@ -19,7 +19,7 @@ class PlacerAdminTest(FunctionalTest):
 
     def test_can_change_place(self):
         self.set_up_place_admin()
-        PlaceAccount.objects.create(place_id=self.last_place_id, traveller_id=self.user.id)
+        PlaceAccount.objects.create(place_id=self.last_place_id, user_id=self.user.id)
         self.browser.get(self.live_server_url)
         self.do_logon()
         detail_button = self.wait_for_find_element_by_id('place-card-' + str(self.last_place_id))
