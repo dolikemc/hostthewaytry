@@ -1,11 +1,17 @@
+# import the logging library
+import logging
+
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin, UnicodeUsernameValidator, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin, BaseUserManager
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from places.models import Place
+
+# Get an instance of a logger
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class UserManager(BaseUserManager):
@@ -45,15 +51,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
     Email and password are required. Other fields are optional.
     """
-    username_validator = UnicodeUsernameValidator()
-
     email = models.EmailField(_('email address'), unique=True,
                               error_messages={
                                   'unique': _("This email already exists."),
                               },
                               )
     full_name = models.CharField(_('full name'), max_length=128, blank=True)
-    screen_name = models.CharField(_('screen name'), max_length=32, blank=True)
+    screen_name = models.CharField(_('screen name'), max_length=32, blank=True, db_index=True)
     unique_name = models.CharField(_('unique name'), max_length=64, unique=True, null=True)
     is_staff = models.BooleanField(
         _('staff status'),
@@ -106,13 +110,45 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def create_screen_names(self):
+        """Screen name could be set and will be displayed in any posts to avoid publishing the email address.
+        If screen name is not unique the unique name is added in brackets. See property display_name"""
+        if self.unique_name is not None:
+            return
+        if self.screen_name is None or self.screen_name == '':
+            return
+        other_screen_user_names = User.objects.filter(screen_name__exact=self.screen_name)
+        logger.debug(other_screen_user_names)
+        if other_screen_user_names is None or other_screen_user_names.count() == 0:
+            self.unique_name = self.screen_name
+            return
+        self.unique_name = ''.join([self.screen_name, str(self.id)])
+
+    @property
+    def display_name(self):
+        if self.unique_name is not None and self.unique_name != '':
+            if self.unique_name != self.screen_name:
+                return f"{self.screen_name} ({self.unique_name})"
+            return self.screen_name
+        return self.email
+
+    @property
+    def display_name_html(self):
+        if self.unique_name is not None and self.unique_name != '':
+            if self.unique_name != self.screen_name:
+                return f'<div class="screen-user-name-display">{self.screen_name}</div>' \
+                       f'<div class="unique-user-name-display">({self.unique_name})</div>'
+            return f'<div class="screen-user-name-display">{self.screen_name}<div>'
+        removed_at = self.email.replace('@', ' AT ')
+        return f'<div class="screen-user-name-display">{removed_at}<div>'
+
     def __str__(self):
-        return f"{self.email} ({self.unique_name})"
+        return self.display_name
 
 
 class PlaceAccount(models.Model):
     place = models.ForeignKey(to=Place, null=True, blank=True, on_delete=models.DO_NOTHING)
-    user = models.ForeignKey(to=User, null=True, blank=True, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(to=User, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user.email} <-> {self.place.name}"

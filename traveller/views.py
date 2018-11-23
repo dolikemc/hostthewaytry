@@ -18,14 +18,14 @@ logger: logging.Logger = logging.getLogger(__name__)
 # Create your views here.
 @login_required
 def update_traveller(request: HttpRequest, place_id: int, user_id: int) -> HttpResponse:
-    user: User = User.objects.get(id=user_id)
-
+    user = User.objects.get(id=user_id)
     if request.method == 'POST':
         logging.debug(request.POST)
         user_form = UserForm(request.POST, request.FILES, instance=user)
         if user_form.is_valid():
-            user_form.save(commit=True)
-            # traveller_form.save(commit=True)
+            user = user_form.save(commit=False)
+            user.create_screen_names()
+            user.save()
             if place_id > 0:
                 return redirect('places:detail', pk=place_id)
             return redirect('admin:index')
@@ -44,8 +44,7 @@ def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
         logging.debug(request.POST)
 
         if form.is_valid():
-            user: User = form.save(commit=False)
-            user.save()
+            user: User = form.save(commit=True)
             PlaceAccount.objects.create(place_id=place_id, user_id=user.id)
             messages.success(request, 'Account created successfully')
             return redirect('places:create-user', place_id=place_id, user_id=user.id)

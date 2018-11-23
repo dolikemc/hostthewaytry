@@ -175,6 +175,11 @@ LOGGING = {
                 'handlers': ['console'],
                 'level': 'DEBUG',
             },
+        'traveller':
+            {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+            },
     },
 }
 
