@@ -38,13 +38,14 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         submit_button.submit()
 
     def wait_for_find_element_by_id(self, tag_id: str):
+        return self.wait_for(lambda: self.browser.find_element_by_id(tag_id))
+
+    def wait_for(self, fn):
         start_time = time.time()
         while True:
             try:
-                button = self.browser.find_element_by_id(tag_id)
-                return button
+                return fn()
             except (AssertionError, WebDriverException) as e:
                 if time.time() - start_time > MAX_WAIT:
-                    print(self.browser.page_source)
                     raise e
                 time.sleep(0.5)
