@@ -1,3 +1,4 @@
+from django.test.utils import skipIf
 from selenium.common.exceptions import NoSuchElementException
 
 from tests.functional_tests.base import FunctionalTest
@@ -47,3 +48,129 @@ class PlacerAdminTest(FunctionalTest):
         submit.click()
         submit2 = self.wait_for_find_element_by_id('create-user-submit')
         self.assertIn('HOST THE WAY', self.browser.title)
+
+
+class TestWorkflow(FunctionalTest):
+    @skipIf(True, 'not yet implemented')
+    def test_login(self):
+        self.logon()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_start_site(self):
+        self.logon()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_place_admin_screen(self):
+        self.logon()
+        self.goto_admin_area()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_update_place(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_update_address(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_add_price(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_change_price(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_delete_price(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_add_room(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_change_room(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_delete_room(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_add_admin(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_change_admin(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_delete_admin(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_save_changes(self):
+        self.logon()
+        self.goto_admin_area()
+        self.open_detail()
+        self.preview_changes()
+        pass
+
+    def logon(self):
+        pass
+
+    def goto_admin_area(self):
+        pass
+
+    def open_detail(self):
+        pass
+
+    def preview_changes(self):
+        pass
