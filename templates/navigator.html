@@ -1,37 +1,37 @@
 {% load static %}
 <div class="w3-bar w3-medium">
     {% if user.is_authenticated and user.is_staff %}
-        <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-text-red" id="navigator-index">
+        <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-text-red" id="id_navigator_index">
             <div class="w3-padding-8"><i class="fa fa-cog"></i></div>
         </a>
         <a href="{% url 'places:register-worker' %}" class="w3-bar-item w3-button w3-text-blue"
-           id="navigator-register-worker">
+           id="id_navigator_register_worker">
             <div class="w3-padding-8"><i class="fa fa-address-book"></i></div>
         </a>
         <a href="/admin/places/place/?reviewed__exact=0" class="w3-bar-item w3-button w3-text-orange"
-           id="navigator-review-places">
+           id="id_navigator_review_places">
             <div class="w3-padding-8"><i class="fa fa-eye-slash"></i></div>
         </a>
     {% endif %}
     {% if user.is_authenticated %}
-        <a href="{% url 'place-logout' %}" class="w3-bar-item w3-button" id="navigator-logout">
+        <a href="{% url 'place-logout' %}" class="w3-bar-item w3-button" id="id_navigator_logout">
             <div class="w3-padding-8"><i class="fa fa-key w3-text-green"></i></div>
         </a>
     {% else %}
-        <a href="{% url 'place-login' %}" class="w3-bar-item w3-button" id="navigator-login">
+        <a href="{% url 'place-login' %}" class="w3-bar-item w3-button" id="id_navigator_login">
             <div class="w3-padding-8"><i class="fa fa-key w3-text-grey"></i></div>
         </a>
     {% endif %}
-    <a href="#" class="w3-bar-item w3-button" id="navigator-search">
+    <a href="#" class="w3-bar-item w3-button" id="id_navigator_search">
         <div class="w3-padding-8"><i class="fa fa-search w3-text-grey"></i></div>
     </a>
     {% if user.is_authenticated %}
     {% else %}
-        <a href="{% url 'places:intro' %}" class="w3-bar-item w3-button" id="navigator-intro">
+        <a href="{% url 'places:intro' %}" class="w3-bar-item w3-button" id="id_navigator_intro">
             <div class="w3-padding-8"><i class="fa fa-info"></i></div>
         </a>
     {% endif %}
-    <a href="{% url 'places:index' %}" class="w3-bar-item w3-button w3-right" id="navigator-places">
+    <a href="{% url 'places:index' %}" class="w3-bar-item w3-button w3-right" id="id_navigator_places">
         <div class="w3-padding-8"><i class="fa fa-home"></i></div>
     </a>
 </div>

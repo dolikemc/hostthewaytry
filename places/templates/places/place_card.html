@@ -1,10 +1,8 @@
 {% load static %}
 <a href="{% url 'places:detail' place.id %}">
     <div class="w3-col s6 m4 l3 w3-margin-bottom w3-leftbar w3-rightbar w3-border-black
-        {{ card_color|default:"w3-light-blue" }}"
-         style="min-height: 300px">
-        <!-- todo: all overview information in the card-->
-        <div id="place-card-{{ place.id }}">
+        {{ card_color|default:"w3-light-blue" }}" style="min-height: 300px">
+        <div id="id_place_card_{{ place.id }}">
             <br>
             <h8>{{ place.name }}</h8>
 

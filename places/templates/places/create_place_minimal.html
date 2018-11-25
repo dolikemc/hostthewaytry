@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="post" class="w3-container" enctype="multipart/form-data">
+    <form method="post" class="w3-container" enctype="multipart/form-data" id="id_create_place_minimal_form">
         {% csrf_token %}
         <div class="w3-bar">
             <button onclick="goBack()" class="w3-button w3-bar-item"><i class="fa fa-backward w3-large"></i>

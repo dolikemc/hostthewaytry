@@ -2,7 +2,7 @@
 {% block content %}
     {% load static %}
     {% load leaflet_tags %}
-    <div class="w3-panel w3-black w3-center w3-text-green">
+    <div class="w3-panel w3-black w3-center w3-text-green" id="id_wellcome_place_list">
         {% if user.is_authenticated %}
             <h8>
                 Hi {{ user }}, add another place if you want!
@@ -16,7 +16,7 @@
             </h8>
         {% endif %}
     </div>
-    <div class="w3-row w3-center">
+    <div class="w3-row w3-center" id="id_place_list">
         {% for place in places %}
             {% if forloop.counter == 1 %}
                 {% include 'places/place_card.html' with card_color="w3-light-blue" %}
@@ -33,6 +33,5 @@
                 {% include 'places/place_card.html' with card_color="w3-lime" %}
             {% endif %}
         {% endfor %}
-
     </div>
 {% endblock %}

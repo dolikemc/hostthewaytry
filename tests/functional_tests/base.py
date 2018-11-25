@@ -27,14 +27,14 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         self.browser.quit()
 
     def do_logon(self):
-        logon_button = self.browser.find_element_by_id('navigator-login')
+        logon_button = self.browser.find_element_by_id('id_navigator_login')
         logon_button.click()
         username = self.browser.find_element_by_id('id_email')
         password = self.browser.find_element_by_id('id_password')
 
         username.send_keys(self.credentials['email'])
         password.send_keys(self.credentials['password'])
-        submit_button = self.browser.find_element_by_id('login-form')
+        submit_button = self.browser.find_element_by_id('id_login_form')
         submit_button.submit()
 
     def wait_for_find_element_by_id(self, tag_id: str):

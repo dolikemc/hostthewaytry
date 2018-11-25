@@ -34,22 +34,22 @@
     {% endblock %}
 </head>
 <body>
-<div id="container" class="w3-container">
-    <div id="header">
+<div id="id_container" class="w3-container">
+    <div id="id_header">
         {% block bodytitle %}
             {{ title }}
         {% endblock %}
     </div>
-    <div id="nav-global">
+    <div id="id_nav_global">
         {% block nav-global %}
             {% include "navigator.html" %}
         {% endblock %}
     </div>
-    <div id="content">
+    <div id="id_content">
         {% block content %}
         {% endblock %}
     </div>
-    <div id="footer">
+    <div id="id_footer">
         {% block footer %}
             {% include "footer.html" %}
         {% endblock %}

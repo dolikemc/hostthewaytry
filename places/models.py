@@ -225,6 +225,10 @@ class Place(models.Model):
                                     valid_to__gte=date.today())
 
     @property
+    def email(self):
+        return self.placeaccount_set.filter(user__email__contains='@').order_by('-id').first()
+
+    @property
     def bathrooms(self) -> int:
         return self.room_set.filter(bathroom=True).count()
 
