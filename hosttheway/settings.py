@@ -49,8 +49,10 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.redirects',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'traveller.apps.TravellerConfig',
     'places.apps.PlacesConfig',
@@ -67,7 +69,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 ]
+
+SITE_ID = 1
 
 ROOT_URLCONF = 'hosttheway.urls'
 
@@ -151,12 +156,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "/")
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "places/static"), BASE_DIR, ]
 
 MEDIA_URL = '/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/places/img/')
@@ -186,5 +190,3 @@ LOGGING = {
             },
     },
 }
-
-# AUTH_USER_MODEL = 'participant.Participant' # new

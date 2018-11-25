@@ -1473,6 +1473,7 @@
     };
 
 
+
 // @factory L.latLng(latitude: Number, longitude: Number, altitude?: Number): LatLng
 // Creates an object representing a geographical point with the given latitude and longitude (and optionally altitude).
 

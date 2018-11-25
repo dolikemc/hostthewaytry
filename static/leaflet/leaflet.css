@@ -104,8 +104,10 @@
 }
 
 .leaflet-pane {
-    z-index: 400;
+    z-index: auto;
 }
+
+/* changed from 400 */
 
 .leaflet-tile-pane {
     z-index: 200;

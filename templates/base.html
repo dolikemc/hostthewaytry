@@ -5,7 +5,7 @@
 <head>
     <title>{% block title %}HOST THE WAY{% endblock title %}</title>
     {% block head_favicon %}
-        <link rel="icon" type="image/png" href="{% static 'places/favicon.ico' %}">
+        <link rel="icon" type="image/png" href="{% static 'favicon.ico' %}">
     {% endblock head_favicon %}
     {% block head_meta %}
         {% block head_meta_charset %}
@@ -14,7 +14,7 @@
     {% endblock head_meta %}
     {% block head_css %}
         {% block head_css_site %}
-            <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+            <link rel="stylesheet" type="text/css" href="{% static 'static/css/style.css' %}">
             <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
             <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
                   integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
@@ -60,7 +60,7 @@
 {% block footer_javascript %}
     {% block footer_javascript_site %}
         {% leaflet_js %}
-        <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+        <script type="text/javascript" src="{% static 'static/js/app.js' %}"></script>
     {% endblock footer_javascript_site %}
     {% block footer_javascript_section %}{% endblock footer_javascript_section %}
     {% block footer_javascript_page %}{% endblock footer_javascript_page %}
