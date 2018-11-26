@@ -160,10 +160,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "/")
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "places/static"), BASE_DIR, ]
-
+STATICFILES_DIRS = [BASE_DIR,
+                    os.path.join(BASE_DIR, "static"),
+                    os.path.join(BASE_DIR, "places/static/places")]
 MEDIA_URL = '/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/places/img/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'img')
 
 LOGGING = {
     'version': 1,
