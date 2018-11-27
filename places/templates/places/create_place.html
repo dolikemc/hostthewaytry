@@ -3,10 +3,12 @@
     <div class="w3-amber w3-container">
         <form method="post" enctype="multipart/form-data">
             <div class="w3-bar">
-                <button onclick="goBack()" class="w3-button w3-bar-item"><i class="fa fa-backward w3-large"></i>
+                <button onclick="goBack()" class="w3-button w3-bar-item" id="id_create_place_go_back"><i
+                        class="fa fa-backward w3-large"></i>
                 </button>
                 {% if user.is_authenticated %}
-                    <button type="submit" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i>
+                    <button type="submit" class="w3-button w3-bar-item" id="id_create_place_submit"><i
+                            class="fa fa-save w3-large"></i>
                     </button>
                 {% endif %}
             </div>
@@ -24,7 +26,7 @@
             <div class="w3-panel w3-center">
                 <h4>Prices</h4>
             </div>
-            <table class="w3-table w3-bordered">
+            <table class="w3-table w3-bordered" id="id_price_place_table">
                 <tr class="w3-amber">
                     <th>Category</th>
                     <th>Price</th>
@@ -37,9 +39,11 @@
                         <td>{{ price.get_category_display }}</td>
                         <td>{{ price.value }} {{ place.currency }}</td>
                         <td>{{ price.description }}</td>
-                        <td><a href="{% url 'places:update-price' pk=price.id %}" class="w3-button w3-bar-item"><i
+                        <td><a href="{% url 'places:update-price' pk=price.id %}" class="w3-button w3-bar-item"
+                               id="id_edit_place_price_{{ price.id }}"><i
                                 class="fa fa-save w3-large"></i></a></td>
-                        <td><a href="{% url 'places:delete-price' pk=price.id %}" class="w3-button w3-bar-item"><i
+                        <td><a href="{% url 'places:delete-price' pk=price.id %}" class="w3-button w3-bar-item"
+                               id="id_delete_place_price_{{ price.id }}"><i
                                 class="fa fa-times w3-text-red w3-large"></i></a></td>
                     </tr>
                 {% endfor %}
@@ -47,7 +51,7 @@
             <div class="w3-panel w3-center">
                 <h4>Room Info</h4>
             </div>
-            <table class="w3-table w3-bordered">
+            <table class="w3-table w3-bordered" id="id_room_place_table">
                 <tr class="w3-amber">
                     <th>Id</th>
                     <th>Number</th>
@@ -62,9 +66,11 @@
                         <td>{{ room.room_number }}</td>
                         <td>{{ room.price_per_person }} {{ place.currency }}</td>
                         <td>{{ room.beds }}</td>
-                        <td><a href="{% url 'places:update-room' pk=room.id %}" class="w3-button w3-bar-item"><i
+                        <td><a href="{% url 'places:update-room' pk=room.id %}" class="w3-button w3-bar-item"
+                               id="id_edit_place_room_{{ room.id }}"><i
                                 class="fa fa-save w3-large"></i></a></td>
-                        <td><a href="{% url 'places:delete-room' pk=room.id %}" class="w3-button w3-bar-item"><i
+                        <td><a href="{% url 'places:delete-room' pk=room.id %}" class="w3-button w3-bar-item"
+                               id="id_delete_place_room_{{ room.id }}"><i
                                 class="fa fa-times w3-text-red w3-large"></i></a></td>
                     </tr>
                 {% endfor %}

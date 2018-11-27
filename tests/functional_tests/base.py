@@ -1,13 +1,18 @@
+import logging
 import time
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, NoSuchElementException
+from selenium.webdriver.remote.webdriver import WebElement
 
-from places.models import Place
+from places.models import Place, Room, Price
 from tests.base import RoleMixin
 
 MAX_WAIT = 5
+
+# Get an instance of a logger
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
@@ -21,6 +26,10 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True)
         Place.objects.create(name='Test3', latitude=11, longitude=48, reviewed=True)
         place = Place.objects.create(name='Test4', latitude=11, longitude=48, reviewed=True)
+        room = Room.objects.create(room_number='01', place_id=place.id)
+        price = Price.objects.create(value=2.2, place_id=place.id)
+        self.last_price_id = price.id
+        self.last_room_id = room.id
         self.last_place_id = place.id
 
     def tearDown(self):
@@ -37,15 +46,43 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         submit_button = self.browser.find_element_by_id('id_login_form')
         submit_button.submit()
 
-    def wait_for_find_element_by_id(self, tag_id: str):
-        return self.wait_for(lambda: self.browser.find_element_by_id(tag_id))
+    def wait_for_find_element_by_id(self, tag_id: str, raise_exception: bool = True):
+        return self.wait_for(lambda: self.browser.find_element_by_id(tag_id), raise_exception)
 
-    def wait_for(self, fn):
+    @staticmethod
+    def wait_for(fn, raise_exception: bool = True):
         start_time = time.time()
         while True:
             try:
                 return fn()
             except (AssertionError, WebDriverException) as e:
                 if time.time() - start_time > MAX_WAIT:
-                    raise e
+                    if raise_exception:
+                        raise e
+                    else:
+                        return False
                 time.sleep(0.5)
+
+    def get_detail_block(self) -> WebElement:
+        self.wait_for_find_element_by_id('id_place_list')
+        return self.browser.find_element_by_id(f'id_place_card_{self.last_place_id}')
+
+    def is_detail_block(self) -> bool:
+        try:
+            self.wait_for_find_element_by_id(f"id_place_detail_name")
+            return True
+        except NoSuchElementException:
+            return False
+
+    def can_open_detail(self) -> bool:
+        button = self.get_detail_block()
+        button.click()
+        return self.is_detail_block()
+
+    def check_if_logged_in(self) -> bool:
+        try:
+            self.wait_for_find_element_by_id('id_navigator_logout')
+            self.assertIn('HOST THE WAY', self.browser.title)
+            return True
+        except NoSuchElementException:
+            return False

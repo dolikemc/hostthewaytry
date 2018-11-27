@@ -1,13 +1,25 @@
 from django.test.utils import skipIf
+from selenium.common.exceptions import NoSuchElementException
 
 from tests.functional_tests.base import FunctionalTest
 
 
 class TestWorkflow(FunctionalTest):
-    @skipIf(True, 'not yet implemented')
+
+    def setUp(self):
+        super().setUp()
+        self.set_up_traveller()
+        self.browser.get(self.live_server_url)
+        self.do_logon()
+
+    def test_cannot_change_place(self):
+        detail_button = self.get_detail_block()
+        detail_button.click()
+        with self.assertRaises(NoSuchElementException):
+            self.wait_for_find_element_by_id('id_detail_action_update_place')
+
     def test_login(self):
-        self.logon()
-        pass
+        self.assertTrue(self.check_if_logged_in())
 
     @skipIf(True, 'not yet implemented')
     def test_start_site(self):

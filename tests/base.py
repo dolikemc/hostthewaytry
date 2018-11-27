@@ -59,7 +59,7 @@ class BaseTest(TestCase, RoleMixin):
         self.last_place_id = 0
         self.image_with_exif = 'IMG_3745.JPG'
         self.image_without_exif = 'hosttheway.jpg'
-        self.image_path = 'places/static/places/img'
+        self.image_path = 'img'
 
     def get_file_pointer(self, with_exif: bool = True):
         if with_exif:
