@@ -20,10 +20,13 @@ from django.contrib.staticfiles import views
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+from places.forms import IndexPlaceAdminView, IndexWorkerView
 from traveller.views import login_user
 
 urlpatterns = [
                   path('', TemplateView.as_view(template_name='index.html')),
+                  path('worker', IndexWorkerView.as_view(), name='worker'),
+                  path('place_admin', IndexPlaceAdminView.as_view(), name='place_admin'),
                   path('legal.html', TemplateView.as_view(template_name='cookielaw/legal.html'), name='legal'),
                   path('admin/', admin.site.urls),
                   path('places/', include('places.urls')),

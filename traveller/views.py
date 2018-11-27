@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import *
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 
 from traveller.forms import UserForm, LoginForm, UserCreationForm
 from traveller.models import PlaceAccount, User
@@ -76,10 +77,21 @@ def login_user(request: HttpRequest, ) -> HttpResponse:
         password = request.POST['password']
 
         user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return HttpResponseRedirect('/places/')
+        if user is None:
+            form.add_error(error=_('User could not be authenticated'), field=form)
+            return render(request, 'traveller/login.html', {'form': form})
+        if not user.is_active:
+            form.add_error(error=_('User is not active anymore'), field=form)
+            return render(request, 'traveller/login.html', {'form': form})
+        login(request, user)
+        if user.is_staff:
+            return HttpResponseRedirect('/admin')
+        if user.is_worker and not user.is_place_admin:
+            return HttpResponseRedirect('/worker')
+        if user.is_place_admin:
+            return HttpResponseRedirect('/place_admin')
+
+        return HttpResponseRedirect('/places/')  # anonymous or logged in traveller
     else:
         form = LoginForm()
     return render(request, 'traveller/login.html', {'form': form})

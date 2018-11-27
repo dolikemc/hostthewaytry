@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load l10n i18n %}
+    {% include 'places/place_edit_bar_include.html' %}
+    {% include 'places/place_detail_include.html' %}
+{% endblock %}
+{% block footer_javascript_page %}
+    <script type="text/javascript">
+        {% localize off %}
+            var longitude = {{ place.longitude }};
+            var latitude = {{ place.latitude }};
+
+            function map_init_place(map, options) {
+                map.setView([latitude, longitude], 16);
+                L.marker([latitude, longitude]).addTo(map);
+            };
+        {% endlocalize %}
+    </script>
+{% endblock %}

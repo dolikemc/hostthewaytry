@@ -82,7 +82,10 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
     def check_if_logged_in(self) -> bool:
         try:
             self.wait_for_find_element_by_id('id_navigator_logout')
-            self.assertIn('HOST THE WAY', self.browser.title)
+            if self.user.is_staff or self.user.is_superuser:
+                self.assertIn('Host The Way', self.browser.title)
+            else:
+                self.assertIn('HOST THE WAY', self.browser.title)
             return True
         except NoSuchElementException:
             return False

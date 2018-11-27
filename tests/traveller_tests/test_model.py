@@ -56,3 +56,19 @@ class ModelTest(BaseTest):
         self.user.create_screen_names()
         self.assertIn('a', self.user.display_name_html)
         self.assertIn('(a2)', self.user.display_name_html)
+
+    def test_is_worker(self):
+        self.set_up_worker()
+        self.assertTrue(self.user.is_worker)
+
+    def test_is_traveller(self):
+        self.set_up_traveller()
+        self.assertTrue(self.user.is_traveller)
+
+    def test_is_place_admin(self):
+        self.set_up_place_admin()
+        self.assertTrue(self.user.is_place_admin)
+
+    def test_is_anonymous(self):
+        self.set_up_anonymous()
+        self.assertTrue(self.user.is_anonymous)

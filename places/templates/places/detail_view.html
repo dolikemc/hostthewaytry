@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load l10n i18n %}
+    <div class="w3-bar" id="id_place_detail_bar">
+        <a href="#" onclick="goBack()" class="w3-button w3-bar-item"><i
+                class="fa fa-backward w3-large"></i></a>
+    </div>
+    {% include 'places/place_detail_include.html' %}
+{% endblock %}
+{% block footer_javascript_page %}
+    <script type="text/javascript">
+        {% localize off %}
+            var longitude = {{ place.longitude }};
+            var latitude = {{ place.latitude }};
+
+            function map_init_place(map, options) {
+                map.setView([latitude, longitude], 16);
+                L.marker([latitude, longitude]).addTo(map);
+            };
+        {% endlocalize %}
+    </script>
+{% endblock %}

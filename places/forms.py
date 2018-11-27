@@ -15,6 +15,26 @@ from places.models import Place, Price, Room
 logger: logging.Logger = logging.getLogger(__name__)
 
 
+class IndexPlaceAdminView(generic.ListView):
+    model = Place
+    template_name = 'place_admin_index.html'
+    context_object_name = 'places'
+
+    def get_queryset(self):
+        # todo: measure of distance
+        return Place.objects.filter(deleted__exact=False, placeaccount__isnull=False).order_by('-created_on')
+
+
+class IndexWorkerView(generic.ListView):
+    model = Place
+    template_name = 'worker_index.html'
+    context_object_name = 'places'
+
+    def get_queryset(self):
+        # todo: measure of distance
+        return Place.objects.filter(deleted__exact=False, placeaccount__isnull=False).order_by('-created_on')
+
+
 class IndexView(generic.ListView):
     model = Place
     template_name = 'places/index.html'
@@ -96,7 +116,7 @@ class EditPlaceAddressView(LoginRequiredMixin, generic.UpdateView):
 
 
 class DetailView(generic.DetailView):
-    template_name = 'places/detail.html'
+    template_name = 'places/detail_edit.html'
     context_object_name = 'place'
     model = Place
 

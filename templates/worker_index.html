@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load static %}
+    {% load leaflet_tags %}
+    <div class="w3-panel w3-black w3-center w3-text-green" id="id_wellcome_worker">
+        {% if user.is_authenticated %}
+            <h8>
+                Hi {{ user.screen_name }}, ready to add another place?
+            </h8>
+            <a href="{% url 'places:create-place' %}" class="w3-button"><i
+                    class="fas fa-plus w3-large w3-text-green"></i>
+            </a>
+        {% endif %}
+    </div>
+    {% include 'places/place_list_include.html' %}
+{% endblock %}

@@ -2,7 +2,7 @@
 import logging
 
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin, BaseUserManager, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models
@@ -125,7 +125,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.unique_name = ''.join([self.screen_name, str(self.id)])
 
     @property
-    def display_name(self):
+    def display_name(self) -> str:
         if self.unique_name is not None and self.unique_name != '':
             if self.unique_name != self.screen_name:
                 return f"{self.screen_name} ({self.unique_name})"
@@ -133,14 +133,26 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     @property
-    def display_name_html(self):
+    def display_name_html(self) -> str:
         if self.unique_name is not None and self.unique_name != '':
             if self.unique_name != self.screen_name:
                 return f'<div class="screen-user-name-display">{self.screen_name}</div>' \
-                       f'<div class="unique-user-name-display">({self.unique_name})</div>'
+                    f'<div class="unique-user-name-display">({self.unique_name})</div>'
             return f'<div class="screen-user-name-display">{self.screen_name}<div>'
         removed_at = self.email.replace('@', ' AT ')
         return f'<div class="screen-user-name-display">{removed_at}<div>'
+
+    @property
+    def is_place_admin(self) -> bool:
+        return Group.objects.filter(name__iexact='PlaceAdmin', user=self).count() > 0
+
+    @property
+    def is_traveller(self) -> bool:
+        return Group.objects.filter(name__iexact='Traveller', user=self).count() > 0
+
+    @property
+    def is_worker(self) -> bool:
+        return Group.objects.filter(name__iexact='Worker', user=self).count() > 0
 
     def __str__(self):
         return self.display_name
