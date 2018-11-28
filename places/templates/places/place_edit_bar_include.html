@@ -3,7 +3,7 @@
     <a href="#" onclick="goBack()" class="w3-button w3-bar-item"><i
             class="fa fa-backward w3-large"></i></a>
     {% if user.is_authenticated %}
-        <a href="{% url 'places:register-user' place_id=place.id %}" id="id_detail_action_register"
+        <a href="{% url 'traveller:register-user' place_id=place.id %}" id="id_detail_action_register"
            class="w3-button w3-bar-item"><i class="fas fa-plus w3-large w3-text-green"></i> admin</a>
         <a href="{% url 'places:create-room' place=place.id %}" class="w3-button w3-bar-item"
            id="id_detail_action_create_room">

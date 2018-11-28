@@ -1,34 +1,27 @@
 {% extends "base.html" %}
+{% load static l10n i18n %}
 {% block content %}
-    <table class="w3-table-all w3-text-black" id="id_place_list_maintenance">
+    <table class="w3-table-all w3-text-black w3-amber" id="id_place_list_maintenance">
         <tr>
             <th>Id</th>
             <th>Name</th>
             <th>Country</th>
             <th>Description</th>
             <th>CreatedOn</th>
-            <th></th>
-            <th>Publish</th>
+            <th>Picture</th>
         </tr>
         {% for place in places %}
             <tr>
-                <td>{{ place.id }}</td>
-                <td>{{ place.name }}</td>
-                <td>{{ place.country }}</td>
-                <td>{{ place.generated_description }}</td>
-                <td>{{ place.created_on }}</td>
-                <td><a href="{% url 'places:update-place' place.id %}">Edit</a></td>
-                <td>
-                    <form method="post" action="{% url 'places:publish-place' place.id %}">
-                        {% csrf_token %}
-                        <label for="deleted-{{ place.id }}">Deleted?</label>
-                        <input type="checkbox" value="{{ place.deleted }}" id="deleted-{{ place.id }}">
-                        <button type="submit" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"></i>
-                        </button>
-                    </form>
-                </td>
+                <a href="{% url 'places:detail' pk=place.id %}" id="id_place_table_row_"{{ place.id }}>
+                    <td><{{ place.id }}</td>
+                    <td>{{ place.name }}</td>
+                    <td>{{ place.country }}</td>
+                    <td>{{ place.generated_description }}</td>
+                    <td>{{ place.created_on }}</td>
+                    <td><img src="{% static '/img/' %}{{ place.picture }}" alz="places picture" style="width: 50px;">
+                    </td>
+                </a>
             </tr>
         {% endfor %}
     </table>
-
 {% endblock %}

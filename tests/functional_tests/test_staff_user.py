@@ -1,3 +1,5 @@
+from time import sleep
+
 from tests.functional_tests.base import FunctionalTest
 from traveller.models import PlaceAccount
 
@@ -25,6 +27,7 @@ class TestWorkflow(FunctionalTest):
         password2.send_keys('DodoGaga')
         submit = self.wait_for_find_element_by_id('id_register_submit')
         submit.click()
+        # sleep(10)
         submit2 = self.wait_for_find_element_by_id('id_create_user_submit')
         self.assertIn('HOST THE WAY', self.browser.title)
 

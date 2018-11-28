@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import *
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
@@ -48,7 +48,7 @@ def register_user(request: HttpRequest, place_id: int) -> HttpResponse:
             user: User = form.save(commit=True)
             PlaceAccount.objects.create(place_id=place_id, user_id=user.id)
             messages.success(request, 'Account created successfully')
-            return redirect('places:create-user', place_id=place_id, user_id=user.id)
+            return redirect('traveller:create-user', place_id=place_id, user_id=user.id)
     else:
         form = UserCreationForm()
     return render(request, 'traveller/register.html', {'form': form})
@@ -63,7 +63,7 @@ def register_worker(request: HttpRequest, ) -> HttpResponse:
             user: User = form.save(commit=False)
             user.save()
             messages.success(request, 'Account created successfully')
-            return redirect('places:create-user', place_id=0, user_id=user.id)
+            return redirect('traveller:create-user', place_id=0, user_id=user.id)
     else:
         form = UserCreationForm()
 
@@ -78,20 +78,20 @@ def login_user(request: HttpRequest, ) -> HttpResponse:
 
         user = authenticate(username=username, password=password)
         if user is None:
-            form.add_error(error=_('User could not be authenticated'), field=form)
+            form.add_error(error=_('User could not be authenticated'), field='email')
             return render(request, 'traveller/login.html', {'form': form})
         if not user.is_active:
-            form.add_error(error=_('User is not active anymore'), field=form)
+            form.add_error(error=_('User is not active anymore'), field='email')
             return render(request, 'traveller/login.html', {'form': form})
         login(request, user)
         if user.is_staff:
-            return HttpResponseRedirect('/admin')
+            return redirect('admin:index')
         if user.is_worker and not user.is_place_admin:
-            return HttpResponseRedirect('/worker')
+            return redirect('places:worker')
         if user.is_place_admin:
-            return HttpResponseRedirect('/place_admin')
+            return redirect('places:place_admin')
 
-        return HttpResponseRedirect('/places/')  # anonymous or logged in traveller
+        return redirect('places:index')  # anonymous or logged in traveller
     else:
         form = LoginForm()
     return render(request, 'traveller/login.html', {'form': form})

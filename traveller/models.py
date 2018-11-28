@@ -74,14 +74,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     vita = models.TextField(blank=True, null=True, max_length=1024)
     created_on = models.DateTimeField(auto_now_add=True, editable=False)
     updated_on = models.DateTimeField(auto_now=True, editable=False)
-    is_active = models.BooleanField(
-        _('active'),
-        default=True,
-        help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
-    )
+    is_active = models.BooleanField(_('active'), default=True,
+                                    help_text=_(
+                                        'Designates whether this user should be treated as active. '
+                                        'Unselect this instead of deleting accounts.'
+                                    ),
+                                    )
 
     objects = UserManager()
 

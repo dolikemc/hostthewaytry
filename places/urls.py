@@ -3,18 +3,17 @@ from django.conf.urls.static import static
 from django.urls import path
 
 from places import views
-from places.forms import DetailView, IndexView, EditRoom, EditPrice, DeletePrice, DeleteRoom, EditPlaceAddressView
-from traveller.views import update_traveller, register_user, register_worker
+from places.forms import DetailView, IndexView, EditRoom, EditPrice, DeletePrice, DeleteRoom, EditPlaceAddressView, \
+    IndexPlaceAdminView, IndexWorkerView
 
 app_name = 'places'
 urlpatterns = \
     [
         path('', IndexView.as_view(), name='index'),
+        path('worker', IndexWorkerView.as_view(), name='worker'),
+        path('place_admin', IndexPlaceAdminView.as_view(), name='place_admin'),
         path('new/', views.create_new_place, name='create-place'),
         path('price/<int:place>/', views.create_new_price, name='create-price'),
-        path('register/<int:place_id>/', register_user, name='register-user'),
-        path('register/', register_worker, name='register-worker'),
-        path('user/<int:place_id>/<int:user_id>/', update_traveller, name='create-user'),
         path('room/<int:place>/', views.create_new_room, name='create-room'),
         path('<int:pk>/', DetailView.as_view(), name='detail'),
         path('update/place/<int:pk>/', views.update_place, name='update-place'),
