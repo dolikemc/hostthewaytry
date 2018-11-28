@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
     {% load l10n i18n %}
-    {% include 'places/place_edit_bar_include.html' %}
+    {% if user.is_place_admin or user.is_stuff or user.is_superuser %}
+        {% include 'places/place_edit_bar_include.html' %}
+    {% else %}
+        <div class="w3-bar" id="id_place_detail_bar">
+            <a href="#" onclick="goBack()" class="w3-button w3-bar-item"><i
+                    class="fa fa-backward w3-large"></i></a>
+        </div>
+    {% endif %}
     {% include 'places/place_detail_include.html' %}
 {% endblock %}
 {% block footer_javascript_page %}

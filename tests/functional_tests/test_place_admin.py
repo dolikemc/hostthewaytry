@@ -25,7 +25,7 @@ class TestWorkflow(FunctionalTest):
     def test_start_site(self):
         """ standard list view"""
         self.assertTrue(self.check_if_logged_in())
-        self.assertTrue(self.browser.find_element_by_id('id_place_list'))
+        self.assertTrue(self.browser.find_element_by_id('id_place_list_maintenance'))
         self.assertTrue(self.browser.find_element_by_id(f'id_place_card_{self.last_place_id}'))
 
     def test_place_admin_screen(self):
@@ -120,7 +120,7 @@ class TestWorkflow(FunctionalTest):
     def _prepare_edit(self, action: str, edit_field: str):
         self.assertTrue(self.check_if_logged_in())
         self.goto_admin_area()
-        self.assertTrue(self.can_open_detail())
+        self.assertTrue(self.can_open_detail('id_place_list_maintenance'))
         change_button = self.wait_for_find_element_by_id(action)
         change_button.click()
         # check just one item in the edit screen

@@ -13,7 +13,7 @@ class TestWorkflow(FunctionalTest):
         self.do_logon()
 
     def test_cannot_change_place(self):
-        detail_button = self.get_detail_block()
+        detail_button = self.get_detail_block('id_place_list')
         detail_button.click()
         with self.assertRaises(NoSuchElementException):
             self.wait_for_find_element_by_id('id_detail_action_update_place')

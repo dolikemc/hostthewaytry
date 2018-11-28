@@ -64,8 +64,8 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
                         return False
                 time.sleep(0.5)
 
-    def get_detail_block(self) -> WebElement:
-        self.wait_for_find_element_by_id('id_place_list')
+    def get_detail_block(self, list_id: str) -> WebElement:
+        self.wait_for_find_element_by_id(list_id)
         return self.browser.find_element_by_id(f'id_place_card_{self.last_place_id}')
 
     def is_detail_block(self) -> bool:
@@ -75,8 +75,8 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         except NoSuchElementException:
             return False
 
-    def can_open_detail(self) -> bool:
-        button = self.get_detail_block()
+    def can_open_detail(self, list_id: str) -> bool:
+        button = self.get_detail_block(list_id)
         button.click()
         return self.is_detail_block()
 

@@ -19,7 +19,7 @@ class TestWorkflow(FunctionalTest):
 
     def test_cannot_change_place(self):
         self.browser.get(self.live_server_url + '/places')
-        detail_button = self.get_detail_block()
+        detail_button = self.get_detail_block('id_place_list')
         detail_button.click()
         with self.assertRaises(NoSuchElementException):
             self.wait_for_find_element_by_id('id_detail_action_update_place')
@@ -39,7 +39,7 @@ class TestWorkflow(FunctionalTest):
 
     def test_show_detail(self):
         self.browser.get(self.live_server_url + '/places')
-        card = self.get_detail_block()
+        card = self.get_detail_block('id_place_list')
         card.click()
         self.wait_for_find_element_by_id('id_place_detail_bar')
         self.assertTrue(self.browser.find_element_by_id('id_place_detail_info'))
@@ -47,7 +47,7 @@ class TestWorkflow(FunctionalTest):
 
     def test_add_book_request(self):
         self.browser.get(self.live_server_url + '/places')
-        card = self.get_detail_block()
+        card = self.get_detail_block('id_place_list')
         card.click()
         self.wait_for_find_element_by_id('id_place_detail_bar')
         book = self.browser.find_element_by_id('id_book_place')

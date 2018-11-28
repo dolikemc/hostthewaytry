@@ -1,0 +1,23 @@
+{% load static l10n i18n %}
+
+<table class="w3-table-all w3-text-black w3-amber" id="id_place_list_maintenance">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Description</th>
+        <th>CreatedOn</th>
+        <th>Picture</th>
+    </tr>
+    {% for place in places %}
+        <tr>
+            <td><a href="{% url 'places:detail' pk=place.id %}"
+                   id="id_place_card_{{ place.id }}">{{ place.id }}</a></td>
+            <td>{{ place.name }}</td>
+            <td>{{ place.country }}</td>
+            <td>{{ place.generated_description }}</td>
+            <td>{{ place.created_on }}</td>
+            <td><img src="{% get_media_prefix %}{{ place.picture }}" alt="places picture" style="width: 50px;"</td>
+        </tr>
+    {% endfor %}
+</table>
