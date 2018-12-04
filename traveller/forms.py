@@ -5,14 +5,20 @@ from django.contrib.auth import (
 from django.forms import EmailField
 from django.utils.translation import gettext_lazy as _
 
-from traveller.models import User
+from traveller.models import User, Group
 
 
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['full_name', 'screen_name', 'alt_email', 'street', 'country', 'zip', 'city', 'state',
-                  'picture', 'vita']
+                  'picture', 'vita', 'groups']
+
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        self.fields['groups'].widget = forms.widgets.CheckboxSelectMultiple()
+        self.fields['groups'].help_text = ''
+        self.fields['groups'].queryset = Group.objects.all()
 
 
 class LoginForm(forms.ModelForm):

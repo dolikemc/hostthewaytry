@@ -15,21 +15,23 @@ from places.models import Place, Price, Room
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-class IndexPlaceAdminView(generic.ListView):
+class IndexPlaceAdminView(LoginRequiredMixin, generic.ListView):
     model = Place
     template_name = 'places/place_admin_index.html'
     context_object_name = 'places'
 
     def get_queryset(self):
+        # todo: restrict queryset to user id
         return Place.objects.filter(deleted__exact=False, placeaccount__isnull=False).order_by('-created_on')
 
 
-class IndexWorkerView(generic.ListView):
+class IndexWorkerView(LoginRequiredMixin, generic.ListView):
     model = Place
     template_name = 'places/worker_index.html'
     context_object_name = 'places'
 
     def get_queryset(self):
+        # todo: restrict queryset to user id
         return Place.objects.filter(deleted__exact=False, placeaccount__isnull=False).order_by('-created_on')
 
 

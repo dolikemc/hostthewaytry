@@ -66,7 +66,10 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
 
     def get_detail_block(self, list_id: str) -> WebElement:
         self.wait_for_find_element_by_id(list_id)
-        return self.browser.find_element_by_id(f'id_place_card_{self.last_place_id}')
+        try:
+            return self.browser.find_element_by_id(f'id_place_card_{self.last_place_id}')
+        except NoSuchElementException:
+            return WebElement()
 
     def is_detail_block(self) -> bool:
         try:

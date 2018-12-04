@@ -1,5 +1,6 @@
 from django.test.utils import skipIf
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.remote.webelement import WebElement
 
 from tests.functional_tests.base import FunctionalTest
 
@@ -21,14 +22,10 @@ class TestWorkflow(FunctionalTest):
     def test_login(self):
         self.assertTrue(self.check_if_logged_in())
 
-    @skipIf(True, 'not yet implemented')
     def test_start_site(self):
-        pass
-
-    @skipIf(True, 'not yet implemented')
-    def test_traveller_screen(self):
-        self.goto_traveller_area()
-        pass
+        self.assertTrue(self.check_if_logged_in())
+        self.assertTrue(self.browser.find_element_by_id('id_wellcome_place_list'))
+        self.assertTrue(self.browser.find_element_by_id('id_place_list'))
 
     @skipIf(True, 'not yet implemented')
     def test_add_comment(self):
@@ -55,16 +52,20 @@ class TestWorkflow(FunctionalTest):
         pass
 
     def test_add_book_request(self):
-        self.goto_traveller_area()
-        self.open_detail()
-        pass
+        detail_button = self.get_detail_block('id_place_list')
+        detail_button.click()
+        form = self.wait_for_find_element_by_id('id_book_email_form')
+        self.assertIsInstance(form, WebElement)
+        form.submit()
 
+    @skipIf(True, 'not yet implemented')
     def test_add_logged_book_request(self):
         self.goto_traveller_area()
         self.open_detail()
         self.logon()
         pass
 
+    @skipIf(True, 'not yet implemented')
     def test_delete_logged_book_request(self):
         self.goto_traveller_area()
         self.open_detail()

@@ -2,7 +2,7 @@
 import logging
 
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin, BaseUserManager, Group
+from django.contrib.auth.models import PermissionsMixin, BaseUserManager, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models
@@ -117,7 +117,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             return
         other_screen_user_names = User.objects.filter(screen_name__exact=self.screen_name)
         logger.debug(other_screen_user_names)
-        if other_screen_user_names is None or other_screen_user_names.count() == 0:
+        if other_screen_user_names is None or not other_screen_user_names.exists():
             self.unique_name = self.screen_name
             return
         self.unique_name = ''.join([self.screen_name, str(self.id)])
@@ -142,15 +142,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_place_admin(self) -> bool:
-        return Group.objects.filter(name__iexact='PlaceAdmin', user=self).count() > 0
+        return Group.objects.filter(name__iexact='PlaceAdmin', user=self).exists()
 
     @property
     def is_traveller(self) -> bool:
-        return Group.objects.filter(name__iexact='Traveller', user=self).count() > 0
+        return Group.objects.filter(name__iexact='Traveller', user=self).exists()
 
     @property
     def is_worker(self) -> bool:
-        return Group.objects.filter(name__iexact='Worker', user=self).count() > 0
+        return Group.objects.filter(name__iexact='Worker', user=self).exists()
 
     def __str__(self):
         return self.display_name

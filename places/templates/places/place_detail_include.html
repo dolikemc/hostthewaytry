@@ -4,7 +4,7 @@
 </div>
 <div class="w3-row-padding" id="id_place_detail_info">
     <div class="w3-container w3-third w3-center">
-        <img src="{% get_media_prefix %}{{ place.picture }}" alt="Picture"
+        <img src="{% static 'img/' %}{{ place.picture }}" alt="Picture"
              style="max-height: 300px; width: 100%">
     </div>
     <div class="w3-third w3-padding">
@@ -56,11 +56,16 @@
                         </tr>
                         <tr>
                             <td><label for="id_book_email_from">{% trans "Your Email:" %}</label></td>
-                            <td><input id="id_book_email_from" type="email" required></td>
+                            {% if user.is_authenticated %}
+                                <td><input id="id_book_email_from" type="email" readonly value="{{ user.email }}"></td>
+                            {% else %}
+                                <td><input id="id_book_email_from" type="email" required></td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td><label for="id_book_email_to">{% trans "To:" %}</label></td>
-                            <td><input id="id_book_email_to" type="email" value="{{ place.email }}" readonly></td>
+                            <td><input id="id_book_email_to" type="email" value="{{ place.email }}" readonly
+                                       style="width: 200px"></td>
                         </tr>
                         <tr>
                             <td><label for="id_book_email_message">Message:</label></td>

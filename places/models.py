@@ -5,7 +5,6 @@ from decimal import Decimal
 from io import BytesIO
 from math import sqrt, pow
 from os.path import isfile
-from typing import List
 
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -196,17 +195,17 @@ class Place(models.Model):
 
     @property
     def beds(self) -> int:
-        if self.room_set.all().count() == 0:
+        if not self.room_set.all().exists():
             return 0
         return self.room_set.aggregate(Sum('beds'))['beds__sum']
 
     @property
     def pets(self) -> bool:
-        return self.room_set.filter(pets=True).count() > 0
+        return self.room_set.filter(pets=True).exists()
 
     @property
     def smoking(self) -> bool:
-        return self.room_set.filter(smoking=True).count() > 0
+        return self.room_set.filter(smoking=True).exists()
 
     @property
     def private_bathroom(self) -> bool:
@@ -220,13 +219,16 @@ class Place(models.Model):
     def price_high(self) -> Decimal:
         return self.valid_rooms().aggregate(Max('price_per_person'))['price_per_person__max']
 
-    def valid_rooms(self) -> List:
+    def valid_rooms(self) -> models.QuerySet:
         return self.room_set.filter(valid_from__lte=date.today() + timedelta(days=7), price_per_person__gt=0.0,
                                     valid_to__gte=date.today())
 
     @property
     def email(self):
-        return self.placeaccount_set.filter(user__email__contains='@').order_by('-id').first()
+        if not self.placeaccount_set.filter(user__email__contains='@').exists():
+            return 'setup_error@hosttheway.com'
+            # raise AttributeError("Place object without creation user")
+        return self.placeaccount_set.filter(user__email__contains='@').order_by('id').first().user.email
 
     @property
     def bathrooms(self) -> int:
