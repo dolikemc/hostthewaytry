@@ -38,7 +38,7 @@ class TestWorkflow(FunctionalTest):
             self.edit_action('id_detail_action_update_place', 'id_who_lives_here', 'id_create_place_submit'))
 
     def test_update_address(self):
-        self.assertTrue(self.edit_action('id_detail_action_update_place_address', 'id_name'))
+        self.assertTrue(self.edit_action('id_detail_action_update_place_address', 'id_street'))
 
     def test_add_price(self):
         self.assertTrue(self.edit_action('id_detail_action_create_price', 'id_description'))
@@ -122,6 +122,7 @@ class TestWorkflow(FunctionalTest):
         self.goto_admin_area()
         self.assertTrue(self.can_open_detail('id_place_list_maintenance'))
         change_button = self.wait_for_find_element_by_id(action)
+        self.assertIsInstance(change_button, WebElement)
         change_button.click()
         # check just one item in the edit screen
         element = self.wait_for_find_element_by_id(edit_field)

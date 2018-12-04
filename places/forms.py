@@ -3,99 +3,115 @@ import logging
 
 # django modules
 from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.forms import ModelForm
-from django.shortcuts import reverse
+from django.shortcuts import reverse, redirect
 from django.views import generic
 
 # my models
 from places.models import Place, Price, Room
+from traveller.models import PlaceAccount
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-class IndexPlaceAdminView(LoginRequiredMixin, generic.ListView):
+class BaseIndexView(generic.ListView):
+    """ Base class for index view on model place """
     model = Place
+    context_object_name = 'places'
+
+    def get_queryset(self):
+        if not hasattr(self.request, 'user'):
+            return Place.objects.filter(deleted__exact=False, reviewed__exact=True)
+        return Place.objects.filter(deleted__exact=False, placeaccount__user__exact=self.request.user).order_by(
+            '-created_on')
+
+
+class IndexPlaceAdminView(LoginRequiredMixin, BaseIndexView):
     template_name = 'places/place_admin_index.html'
-    context_object_name = 'places'
-
-    def get_queryset(self):
-        # todo: restrict queryset to user id
-        return Place.objects.filter(deleted__exact=False, placeaccount__isnull=False).order_by('-created_on')
 
 
-class IndexWorkerView(LoginRequiredMixin, generic.ListView):
-    model = Place
+class IndexWorkerView(LoginRequiredMixin, BaseIndexView):
     template_name = 'places/worker_index.html'
-    context_object_name = 'places'
-
-    def get_queryset(self):
-        # todo: restrict queryset to user id
-        return Place.objects.filter(deleted__exact=False, placeaccount__isnull=False).order_by('-created_on')
 
 
-class IndexView(generic.ListView):
-    model = Place
+class IndexView(BaseIndexView):
     template_name = 'places/index.html'
-    context_object_name = 'places'
 
     def get_queryset(self):
         # todo: measure of distance
-        return Place.objects.filter(deleted__exact=False,
-                                    reviewed__exact=True
-                                    ).order_by('-latitude')
+        return Place.objects.filter(deleted__exact=False, reviewed__exact=True).order_by('-latitude')
 
 
-class DeletePrice(LoginRequiredMixin, generic.DeleteView):
-    model = Price
+class BaseDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    """ Base delete form, implements a common test function, the success url and skip confirmation"""
+    login_url = '/traveller/login/'
+
+    def test_func(self):
+        return PlaceAccount.edit_place_permission(self.request.user, self.get_object().place.id)
 
     def get_success_url(self):
         return reverse('places:update-place', kwargs={'pk': self.object.place.id})
 
-    def get(self, *args, **kwargs):
+    def get(self, *args, **kwargs):  # skips confirmation
         return self.post(*args, **kwargs)
 
 
-class EditPrice(LoginRequiredMixin, generic.UpdateView):
+class DeletePrice(BaseDeleteView):
+    model = Price
+
+
+class DeleteRoom(BaseDeleteView):
+    model = Room
+
+
+class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+    """Base change form, implements a common test function and the success url. If model is not a detail of
+    the place model, but place itself, we can take the id direct from the self.get_object() return value
+    and redirect after success to the detail page"""
     template_name = 'places/create_detail.html'
     context_object_name = 'form'
+    login_url = '/traveller/login/'
+
+    def test_func(self):
+        if self.model == Place:
+            return PlaceAccount.edit_place_permission(self.request.user, self.get_object().id)
+        return PlaceAccount.edit_place_permission(self.request.user, self.get_object().place.id)
+
+    def get_success_url(self):
+        if self.model == Place:
+            return reverse('places:detail', kwargs={'pk': self.object.id})
+        return reverse('places:update-place', kwargs={'pk': self.object.place.id})
+
+
+class ChangePrice(BaseChangeView):
     model = Price
     fields = ['category', 'value', 'description', ]
 
-    # pk_url_kwarg = 'place_id', , 'reviewed', 'deleted'
 
-    def get_success_url(self):
-        return reverse('places:update-place', kwargs={'pk': self.object.place.id})
-
-
-class DeleteRoom(LoginRequiredMixin, generic.DeleteView):
-    model = Room
-
-    def get_success_url(self):
-        return reverse('places:update-place', kwargs={'pk': self.object.place.id})
-
-    def get(self, *args, **kwargs):
-        return self.post(*args, **kwargs)
-
-
-class EditRoom(LoginRequiredMixin, generic.UpdateView):
-    template_name = 'places/create_detail.html'
-    context_object_name = 'form'
+class ChangeRoom(BaseChangeView):
     model = Room
     fields = ['room_number', 'beds', 'bathroom', 'kitchen', 'outdoor_place', 'room_add', 'smoking', 'pets', 'family',
               'handicapped_enabled', 'price_per_person', 'price_per_room', ]
     localized_fields = ['valid_from', 'valid_to']
 
-    def get_success_url(self):
-        return reverse('places:update-place', kwargs={'pk': self.object.place.id})
+
+class ChangePlaceAddress(BaseChangeView):
+    model = Place
+    fields = ['name', 'street', 'country', 'city', 'address_add', 'mobile', 'phone']
 
 
-class EditPlaceView(LoginRequiredMixin, ModelForm):
+class EditPlaceView(LoginRequiredMixin, UserPassesTestMixin, ModelForm):
+    login_url = '/traveller/login/'
+
     def clean(self):
         cleaned_data = super().clean()
         # todo: to clean
         return cleaned_data
+
+    def test_func(self):
+        return PlaceAccount.edit_place_permission(self.request.user, self.get_object().id)
 
     class Meta:
         model = Place
@@ -105,24 +121,54 @@ class EditPlaceView(LoginRequiredMixin, ModelForm):
                   'vegan', 'vegetarian', 'check_in_time', 'check_out_time']
 
 
-class EditPlaceAddressView(LoginRequiredMixin, generic.UpdateView):
-    template_name = 'places/create_detail.html'
-    context_object_name = 'form'
-    model = Place
-    fields = ['name', 'street', 'country', 'city', 'address_add', 'mobile', 'phone']
-
-    def get_success_url(self):
-        return reverse('places:detail', kwargs={'pk': self.object.id})
-
-
 class DetailView(generic.DetailView):
     template_name = 'places/detail_edit.html'
     context_object_name = 'place'
     model = Place
 
 
+class BaseCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
+    login_url = '/traveller/login/'
+
+    def get_place_id(self):
+        for key in ('pk', 'place', 'place_id', 'id'):
+            if key in self.kwargs:
+                logger.debug(f'Place id from {key} parameter is {self.kwargs[key]}')
+                return self.kwargs[key]
+        return 0
+
+    def get_success_url(self):
+        return redirect('places:detail', pk=self.get_place_id())
+
+    def form_valid(self, form):
+        new_model = form.save(commit=False)
+        new_model.place = Place.objects.get(id=self.get_place_id())
+        new_model.save()
+        return self.get_success_url()
+
+    def test_func(self):
+        if self.model == Place:
+            return PlaceAccount.edit_place_permission(self.request.user, self.get_place_id())
+        return PlaceAccount.edit_place_permission(self.request.user, self.get_place_id())
+
+
+class CreatePrice(BaseCreateView):
+    model = Price
+    fields = ['description', 'category', 'value']
+    template_name = 'places/create_detail.html'
+
+
+class CreateRoom(BaseCreateView):
+    model = Room
+    localized_fields = ['valid_from', 'valid_to']
+    fields = ['room_number', 'beds', 'bathroom', 'kitchen', 'outdoor_place', 'room_add', 'smoking', 'pets', 'family',
+              'handicapped_enabled', 'price_per_person', 'price_per_room']
+    template_name = 'places/create_detail.html'
+
+
 class NewPlaceMinimal(LoginRequiredMixin, ModelForm):
     """form for the minimum of information creating a new place"""
+    login_url = '/traveller/login/'
     breakfast_included = forms.BooleanField(initial=True)
     std_price = forms.DecimalField(decimal_places=2, label="Standard price for one night and one person")
 
@@ -136,19 +182,3 @@ class NewPlaceMinimal(LoginRequiredMixin, ModelForm):
         model = Place
         fields = ['name', 'picture', 'description', 'laundry', 'parking',
                   'wifi', 'own_key', 'separate_entrance', 'category', 'country']
-
-
-class AddPriceToPlace(LoginRequiredMixin, ModelForm):
-    """add a price entry to the given place, therefore the place refernce is excluded"""
-    required_css_class = 'w3-amber w3-input'
-
-    class Meta:
-        model = Price
-        exclude = ['place']
-
-
-class AddRoomToPlace(LoginRequiredMixin, ModelForm):
-    class Meta:
-        model = Room
-        exclude = ['place']
-        localized_fields = ['valid_from', 'valid_to']

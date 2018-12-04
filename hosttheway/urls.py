@@ -16,15 +16,16 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.staticfiles import views
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+from traveller.views import login_user
 
 urlpatterns = [
                   path('', TemplateView.as_view(template_name='index.html')),
                   path('legal.html', TemplateView.as_view(template_name='cookielaw/legal.html'), name='legal'),
                   path('admin/', admin.site.urls),
+                  path('accounts/login/', login_user, name='accounts-login'),
                   path('places/', include('places.urls')),
                   path('article/', include('article.urls')),
                   path('traveller/', include('traveller.urls')),

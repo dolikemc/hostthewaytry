@@ -5,12 +5,12 @@ from decimal import Decimal
 # django modules
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.transaction import atomic
-from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseServerError
+from django.http import HttpRequest, HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
 
-from places.forms import NewPlaceMinimal, AddRoomToPlace, AddPriceToPlace, EditPlaceView
+from places.forms import NewPlaceMinimal, EditPlaceView
 # my models
-from places.models import Place, Room
+from places.models import Place
 from traveller.models import PlaceAccount, User
 
 # Get an instance of a logger
@@ -24,7 +24,8 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 
 
 @atomic
-@login_required
+@permission_required('places.add_place')
+@login_required(login_url='/traveller/login/')
 def create_new_place(request: HttpRequest) -> HttpResponse:
     """cover the create new place process."""
     if hasattr(request, 'user'):
@@ -48,58 +49,12 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
     return render(request, 'places/create_place_minimal.html', {'form': form})
 
 
-@login_required
-def create_new_price(request: HttpRequest, place: int) -> HttpResponse:
-    """ new price added to a by id given place"""
-    if request.method == 'POST':
-        form = AddPriceToPlace(request.POST, request.FILES)
-    else:
-        form = AddPriceToPlace()
-    logger.debug(request.POST)
-    if form.is_valid():
-        logger.debug(form.data)
-        price = form.save(commit=False)
-        price.place_id = place
-        price.save()
-        return redirect('places:detail', pk=price.place_id)
-    logger.warning(form.errors)
-    return render(request, 'places/create_detail.html', {'form': form})
-
-
-@login_required
-def create_new_room(request: HttpRequest, place: int) -> HttpResponse:
-    if request.method == 'POST':
-        form = AddRoomToPlace(request.POST, request.FILES)
-    else:
-        form = AddRoomToPlace()
-        form.place_id = place
-    logger.debug(request.POST)
-    if form.is_valid():
-        room: Room = form.save(commit=False)
-        room.place_id = place
-        room.save()
-
-        return redirect('places:detail', pk=room.place_id)
-    logger.warning(form.errors)
-    return render(request, 'places/create_detail.html', {'form': form})
-
-
 @permission_required('places.change_place')
-@login_required
+@login_required(login_url='/traveller/login/')
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     logger.debug(request.POST)
     place: Place = Place.objects.get(id=pk)
-    if hasattr(request, 'user'):
-        user: User = request.user
-        logger.debug(user)
-    else:
-        return HttpResponseServerError()
-    place_account: PlaceAccount = PlaceAccount.objects.filter(user_id=user.id, place_id=place.id).first()
-    logger.debug(place_account)
-    logger.debug(f"He's a SuperUser: {user.is_superuser}")
-    if not user.is_superuser and place_account is None:
-        logger.warning('no permission to change place')
-        return HttpResponseForbidden()
+
     place.room_set.all()
     place.price_set.all()
     if request.method == 'POST':

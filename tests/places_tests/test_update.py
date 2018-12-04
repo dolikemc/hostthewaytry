@@ -2,7 +2,7 @@ from django.test.utils import skipIf
 
 from places.models import Place, Room, Price
 from tests.places_tests.base import PlacesPreparedTest
-from traveller.models import User, PlaceAccount
+from traveller.models import PlaceAccount
 
 
 class UpdatePlaceTest(PlacesPreparedTest):
@@ -31,11 +31,12 @@ class UpdatePlaceTest(PlacesPreparedTest):
         place = Place.objects.get(pk=1)
         self.assertEqual(place.name, self.std_data['name'][0])
 
-    def test_update_place_permission(self):
+    @skipIf('True', 'not yet implemented')
+    def test_update_not_allowed(self):
         self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
-        response = self.client.post(f'/places/update/place/{self.last_place_id}/', data=self.std_data)
-        self.assertEqual(response.status_code, 403)
+        response = self.client.post(f'/places/update/place/{self.last_place_id + 1}/', data=self.std_data)
+        self.assertRedirects(response, '/traveller/login/')
 
 
 @skipIf('True', 'not yet implemented')
