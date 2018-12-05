@@ -46,7 +46,6 @@ ALLOWED_HOSTS = ['hostthewaytry.pythonanywhere.com', '127.0.0.1', 'localhost']
 # Application definition
 
 INSTALLED_APPS = [
-    'behave_django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
