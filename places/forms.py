@@ -142,7 +142,7 @@ class BaseCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView
 
     def form_valid(self, form):
         new_model = form.save(commit=False)
-        new_model.place = Place.objects.get(id=self.get_place_id())
+        new_model.place_id = self.get_place_id()
         new_model.save()
         return self.get_success_url()
 
