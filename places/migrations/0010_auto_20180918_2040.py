@@ -113,7 +113,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='places',
             name='pets',
-            field=models.BooleanField(default=True, help_text='Are peds wellcome?'),
+            field=models.BooleanField(default=True, help_text='Are peds welcome?'),
         ),
         migrations.AddField(
             model_name='places',

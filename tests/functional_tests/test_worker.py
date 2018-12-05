@@ -1,103 +1,81 @@
 from django.test.utils import skipIf
+from selenium.webdriver.remote.webelement import WebElement
 
 from tests.functional_tests.base import FunctionalTest
 
 
 class TestWorkflow(FunctionalTest):
-    @skipIf(True, 'not yet implemented')
+    def setUp(self):
+        super().setUp()
+        self.set_up_worker()
+        self.browser.get(self.live_server_url)
+        self.do_logon()
+
     def test_login(self):
-        self.logon()
-        pass
+        self.assertTrue(self.check_if_logged_in())
 
-    @skipIf(True, 'not yet implemented')
     def test_start_site(self):
-        self.logon()
-        pass
+        self.assertTrue(self.wait_for_find_element_by_id('id_welcome_worker'))
 
-    @skipIf(True, 'not yet implemented')
     def test_worker_screen(self):
-        self.logon()
         self.goto_worker_area()
-        pass
+        self.assertTrue(self.wait_for_find_element_by_id('id_welcome_worker'))
+        self.assertTrue(self.wait_for_find_element_by_id('id_create_place'))
 
-    @skipIf(True, 'not yet implemented')
     def test_create_place(self):
-        self.logon()
         self.goto_worker_area()
-        self.preview_changes()
-        pass
+        button = self.wait_for_find_element_by_id('id_create_place')
+        self.assertIsInstance(button, WebElement)
+        button.click()
+        self.assertTrue(self.wait_for_find_element_by_id('id_create_place_minimal_form'))
+        for item in ['id_name', 'id_std_price']:
+            self.assertTrue(self.wait_for_find_element_by_id(item))
+            field: WebElement = self.browser.find_element_by_id(item)
+            field.send_keys('1234')
+        button = self.browser.find_element_by_id('id_submit_create_place')
+        self.assertIsInstance(button, WebElement)
+        button.click()
+        self.assertTrue(self.wait_for_find_element_by_id('id_place_detail_name'))
 
     @skipIf(True, 'not yet implemented')
     def test_create_admin(self):
-        self.logon()
         self.goto_worker_area()
-        self.preview_changes()
         pass
 
     @skipIf(True, 'not yet implemented')
     def test_update_admin(self):
-        self.logon()
         self.goto_worker_area()
-        self.open_detail()
-        self.preview_changes()
         pass
 
     @skipIf(True, 'not yet implemented')
     def test_add_comment(self):
-        self.logon()
         self.goto_worker_area()
-        self.open_detail()
-        self.preview_changes()
         pass
 
     @skipIf(True, 'not yet implemented')
     def test_update_comment(self):
-        self.logon()
         self.goto_worker_area()
-        self.open_detail()
-        self.preview_changes()
         pass
 
     @skipIf(True, 'not yet implemented')
     def test_delete_comment(self):
-        self.logon()
         self.goto_worker_area()
-        self.open_detail()
-        self.preview_changes()
         pass
 
     @skipIf(True, 'not yet implemented')
     def test_add_area_highlite(self):
-        self.logon()
         self.goto_worker_area()
-        self.open_detail()
-        self.preview_changes()
         pass
 
     @skipIf(True, 'not yet implemented')
     def test_update_area_highlite(self):
-        self.logon()
         self.goto_worker_area()
-        self.open_detail()
-        self.preview_changes()
         pass
 
     @skipIf(True, 'not yet implemented')
     def test_delete_area_highlite(self):
-        self.logon()
         self.goto_worker_area()
-        self.open_detail()
-        self.preview_changes()
-        pass
-
-    def logon(self):
         pass
 
     def goto_worker_area(self):
-        pass
-
-    def open_detail(self):
-        pass
-
-    def preview_changes(self):
         pass

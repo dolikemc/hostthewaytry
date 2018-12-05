@@ -373,7 +373,7 @@ class Room(models.Model):
     outdoor_place = models.BooleanField(help_text='Do this room have a garden, a terrace or a balcony?', default=False)
     room_add = models.CharField(max_length=200, help_text='Additional information about this room', blank=True)
     smoking = models.BooleanField(help_text='Smoking allowed in the room?', default=False)
-    pets = models.BooleanField(help_text='Are peds wellcome?', default=True)
+    pets = models.BooleanField(help_text='Are peds welcome?', default=True)
     family = models.BooleanField(help_text='Is this room suitable families/kids?', default=True)
     handicapped_enabled = models.BooleanField(help_text='Is this room suitable for handicapped guests?', default=False)
 

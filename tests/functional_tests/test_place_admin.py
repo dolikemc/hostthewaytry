@@ -31,7 +31,7 @@ class TestWorkflow(FunctionalTest):
     def test_place_admin_screen(self):
         self.assertTrue(self.check_if_logged_in())
         self.goto_admin_area()
-        self.assertTrue(self.wait_for_find_element_by_id('id_wellcome_place_admin', raise_exception=False))
+        self.assertTrue(self.wait_for_find_element_by_id('id_welcome_place_admin', raise_exception=False))
 
     def test_update_place(self):
         self.assertTrue(

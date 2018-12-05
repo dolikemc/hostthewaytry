@@ -24,7 +24,7 @@ class TestWorkflow(FunctionalTest):
 
     def test_start_site(self):
         self.assertTrue(self.check_if_logged_in())
-        self.assertTrue(self.browser.find_element_by_id('id_wellcome_place_list'))
+        self.assertTrue(self.browser.find_element_by_id('id_welcome_place_list'))
         self.assertTrue(self.browser.find_element_by_id('id_place_list'))
 
     @skipIf(True, 'not yet implemented')

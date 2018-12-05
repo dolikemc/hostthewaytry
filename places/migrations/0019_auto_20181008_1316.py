@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('room_add',
                  models.CharField(blank=True, help_text='What other rooms can your guests use?', max_length=200)),
                 ('smoking', models.BooleanField(default=False, help_text='Is smoking allowed in the house?')),
-                ('pets', models.BooleanField(default=True, help_text='Are peds wellcome?')),
+                ('pets', models.BooleanField(default=True, help_text='Are peds welcome?')),
                 ('family', models.BooleanField(default=True, help_text='Is your house suitable families/kids?')),
                 ('meals', models.CharField(
                     choices=[('NO', 'no meal at all'), ('BR', 'only breakfast'), ('BL', 'breakfast and lunch'),
