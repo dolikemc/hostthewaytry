@@ -1,9 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="w3-panel w3-black w3-center w3-text-green" id="id_welcome_place_list">
-        <h8>
-            Places in your neighbourhood:
-        </h8>
+        {% if user.is_authenticated %}
+            <h6>
+                Hi {{ user.screen_name }}!
+                {% if user.is_place_admin %}
+                    Ready to add another place?</h6>
+                    <a href="{% url 'places:create-place' %}" class="w3-button" id="id_create_place"><i
+                            class="fas fa-plus w3-large w3-text-green"></i>
+                    </a>
+                {% else %}
+                    </h6>
+                {% endif %}
+        {% else %}
+            <h6>
+                Places in your neighbourhood:
+            </h6>
+        {% endif %}
+
+
     </div>
     {% include 'places/place_list_include.html' %}
 {% endblock %}
