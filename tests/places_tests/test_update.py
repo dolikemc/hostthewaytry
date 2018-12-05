@@ -35,7 +35,8 @@ class UpdatePlaceTest(PlacesPreparedTest):
         self.set_up_place_admin()
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.post(f'/places/update/place/{self.last_place_id}/', data=self.std_data)
-        self.assertRedirects(response, f'/traveller/login/?next=/places/update/place/{self.last_place_id}/')
+        self.assertEqual(response.status_code, 403)
+        # self.assertRedirects(response, f'/traveller/login/?next=/places/update/place/{self.last_place_id}/')
 
     def test_update_address_clean(self):
         self.set_up_place_admin()

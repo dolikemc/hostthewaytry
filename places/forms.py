@@ -16,6 +16,12 @@ from traveller.models import PlaceAccount
 logger: logging.Logger = logging.getLogger(__name__)
 
 
+class DetailView(generic.DetailView):
+    template_name = 'places/detail_edit.html'
+    context_object_name = 'place'
+    model = Place
+
+
 class BaseIndexView(generic.ListView):
     """ Base class for index view on model place """
     model = Place
@@ -47,6 +53,7 @@ class IndexView(BaseIndexView):
 class BaseDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
     """ Base delete form, implements a common test function, the success url and skip confirmation"""
     login_url = '/traveller/login/'
+    raise_exception = False
 
     def test_func(self):
         # the use of get_object() is necessary, because self.object not set yet
@@ -74,6 +81,7 @@ class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
     template_name = 'places/create_detail.html'
     context_object_name = 'form'
     login_url = '/traveller/login/'
+    raise_exception = False
 
     def test_func(self):
         # the use of get_object() is necessary, because self.object not set yet
@@ -115,33 +123,23 @@ class ChangePlaceAddress(BaseChangeView):
         return obj
 
 
-class EditPlaceView(LoginRequiredMixin, UserPassesTestMixin, ModelForm):
-    login_url = '/traveller/login/'
-
-    def clean(self):
-        cleaned_data = super().clean()
-        # todo: to clean
-        return cleaned_data
-
-    def test_func(self):
-        return PlaceAccount.edit_place_permission(self.request.user, self.get_object().id)
-
-    class Meta:
-        model = Place
-        fields = ['name', 'contact_type', 'website', 'languages', 'who_lives_here', 'currency',
-                  'picture', 'description', 'outdoor_place', 'wifi', 'separate_entrance', 'common_kitchen',
-                  'pick_up_service', 'parking', 'own_key', 'laundry', 'meals', 'meal_example',
-                  'vegan', 'vegetarian', 'check_in_time', 'check_out_time']
-
-
-class DetailView(generic.DetailView):
-    template_name = 'places/detail_edit.html'
-    context_object_name = 'place'
+class ChangePlace(BaseChangeView):
     model = Place
+    fields = ['name', 'contact_type', 'website', 'languages', 'who_lives_here', 'currency',
+              'picture', 'description', 'outdoor_place', 'wifi', 'separate_entrance', 'common_kitchen',
+              'pick_up_service', 'parking', 'own_key', 'laundry', 'meals', 'meal_example',
+              'vegan', 'vegetarian', 'check_in_time', 'check_out_time']
+    template_name = 'places/create_place.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['rooms'] = self.object.room_set.all()
+        kwargs['prices'] = self.object.price_set.all()
+        return super().get_context_data(**kwargs)
 
 
 class BaseCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
     login_url = '/traveller/login/'
+    raise_exception = False
 
     def get_place_id(self):
         for key in ('pk', 'place', 'place_id', 'id'):

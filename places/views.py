@@ -3,12 +3,12 @@ import logging
 from decimal import Decimal
 
 # django modules
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.transaction import atomic
 from django.http import HttpRequest, HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
 
-from places.forms import NewPlaceMinimal, EditPlaceView
+from places.forms import NewPlaceMinimal
 # my models
 from places.models import Place
 from traveller.models import PlaceAccount, User
@@ -47,36 +47,6 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
         return redirect('places:detail', pk=place.pk)
     logger.warning(form.errors)
     return render(request, 'places/create_place_minimal.html', {'form': form})
-
-
-def user_has_permission(user: User):
-    # todo: missing place id check
-    return PlaceAccount.objects.filter(user_id=user.id).exists()
-
-
-@permission_required('places.change_place')
-@login_required(login_url='/traveller/login/')
-@user_passes_test(test_func=user_has_permission, login_url='/traveller/login/')
-def update_place(request: HttpRequest, pk: int) -> HttpResponse:
-    logger.debug(request.POST)
-    place: Place = Place.objects.get(id=pk)
-
-    place.room_set.all()
-    place.price_set.all()
-    if request.method == 'POST':
-        form = EditPlaceView(request.POST, request.FILES, instance=place)
-        if form.is_valid():
-            form.save()
-            return redirect('places:detail', pk=pk)
-        logger.warning(form.errors)
-    else:
-        form = EditPlaceView(instance=place)
-        logger.debug(place)
-        logger.debug(place.room_set.all())
-
-    return render(request, 'places/create_place.html', {'form': form,
-                                                        'rooms': place.room_set.all(),
-                                                        'prices': place.price_set.all()})
 
 
 def show_intro(request: HttpRequest) -> HttpResponse:

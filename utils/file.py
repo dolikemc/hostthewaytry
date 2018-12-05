@@ -31,6 +31,9 @@ class ImageX:
         except FileNotFoundError as exc:
             logger.warning(exc)
             return False
+        except OSError as exc:
+            logger.warning(exc)
+            return False
         logger.debug(f'{self.name} is open')
         self.is_open = True
 
@@ -85,11 +88,16 @@ class ImageX:
         try:
             self.image.save(fp, format='JPEG', quality=100, exif=exif_bytes, **kwargs)
             return True
+        except AttributeError as exc:
+            logger.warning(exc)
+            return False
         except FileNotFoundError as exc:
             logger.warning(exc)
             return False
 
     def correct_orientation(self) -> Image:
+        if self.image is None:
+            return self.image
         if self.orientation <= 1:
             return self.image
         if self.orientation == 2:
@@ -110,7 +118,8 @@ class ImageX:
         return self.image
 
     def resize(self, width: int = 200, length: int = 200) -> Image:
-        self.image = self.image.resize((width, length))
+        if self.image is not None:
+            self.image = self.image.resize((width, length))
         return self.image
 
     def close(self):
