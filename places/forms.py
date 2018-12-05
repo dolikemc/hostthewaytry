@@ -49,6 +49,7 @@ class BaseDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView
     login_url = '/traveller/login/'
 
     def test_func(self):
+        # the use of get_object() is necessary, because self.object not set yet
         return PlaceAccount.edit_place_permission(self.request.user, self.get_object().place.id)
 
     def get_success_url(self):
@@ -75,6 +76,7 @@ class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
     login_url = '/traveller/login/'
 
     def test_func(self):
+        # the use of get_object() is necessary, because self.object not set yet
         if self.model == Place:
             return PlaceAccount.edit_place_permission(self.request.user, self.get_object().id)
         return PlaceAccount.edit_place_permission(self.request.user, self.get_object().place.id)
@@ -83,6 +85,10 @@ class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
         if self.model == Place:
             return reverse('places:detail', kwargs={'pk': self.object.id})
         return reverse('places:update-place', kwargs={'pk': self.object.place.id})
+
+    def form_invalid(self, form):
+        logger.warning(f'form is invalid: {form.errors}')
+        return super().form_invalid(form)
 
 
 class ChangePrice(BaseChangeView):
@@ -100,6 +106,13 @@ class ChangeRoom(BaseChangeView):
 class ChangePlaceAddress(BaseChangeView):
     model = Place
     fields = ['name', 'street', 'country', 'city', 'address_add', 'mobile', 'phone']
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        logger.warning(obj)
+        if hasattr(obj, 'country'):
+            obj.country = str.upper(obj.country[:2])
+        return obj
 
 
 class EditPlaceView(LoginRequiredMixin, UserPassesTestMixin, ModelForm):

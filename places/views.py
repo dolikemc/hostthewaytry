@@ -3,7 +3,7 @@ import logging
 from decimal import Decimal
 
 # django modules
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.db.transaction import atomic
 from django.http import HttpRequest, HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
@@ -49,8 +49,14 @@ def create_new_place(request: HttpRequest) -> HttpResponse:
     return render(request, 'places/create_place_minimal.html', {'form': form})
 
 
+def user_has_permission(user: User):
+    # todo: missing place id check
+    return PlaceAccount.objects.filter(user_id=user.id).exists()
+
+
 @permission_required('places.change_place')
 @login_required(login_url='/traveller/login/')
+@user_passes_test(test_func=user_has_permission, login_url='/traveller/login/')
 def update_place(request: HttpRequest, pk: int) -> HttpResponse:
     logger.debug(request.POST)
     place: Place = Place.objects.get(id=pk)
