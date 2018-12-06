@@ -3,13 +3,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from traveller.views import register_user, register_worker, update_traveller, login_user
+from traveller.forms import ChangeUser
+from traveller.views import register_user, login_user
 
 app_name = 'traveller'
 urlpatterns = [
                   path('register/<int:place_id>/', register_user, name='register-user'),
-                  path('register/', register_worker, name='register-worker'),
-                  path('user/<int:place_id>/<int:user_id>/', update_traveller, name='create-user'),
+                  path('register/', register_user, name='register-worker'),
+                  path('user/<int:pk>/<int:place_id>/', ChangeUser.as_view(), name='create-user'),
+                  # path('update/user/<int:pk>/', ChangeUser.as_view(), name='change-user'),
                   path('login/', login_user, name='traveller-login'),
                   path('logout/', admin.site.logout, name='traveller-logout'),
 

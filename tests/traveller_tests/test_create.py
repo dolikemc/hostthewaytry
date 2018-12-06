@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import make_password
 
 from tests.places_tests.base import PlacesPreparedTest
+from traveller.models import PlaceAccount
 
 
 class CreateTest(PlacesPreparedTest):
@@ -10,17 +11,15 @@ class CreateTest(PlacesPreparedTest):
         self.assertTrue(self.client.login(**self.credentials))
         pwd = make_password('zegwugr643267')
         response = self.client.post('/traveller/register/', {'password1': pwd, 'password2': pwd, 'email': 'fl@c.com'})
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/traveller/user/0/2/')
+        self.assertRedirects(response, '/traveller/user/2/0/')
 
     def test_add_admin_to_place(self):
         self.set_up_place_admin()
+        PlaceAccount.objects.create(place_id=self.last_place_id, user_id=self.user.id)
         self.assertTrue(self.client.login(**self.credentials))
         pwd = make_password('zegwugr643267')
         response = self.client.post(f'/traveller/register/{self.last_place_id}/', {'password1': pwd, 'password2': pwd,
                                                                                    'email': 'fl@c.com'})
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f'/traveller/user/{self.last_place_id}/2/')
-        response = self.client.post(response.url, {'screen_name': 'a'})
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f'/places/{self.last_place_id}/')
+        self.assertRedirects(response, f'/traveller/user/2/{self.last_place_id}/')
+        response = self.client.post(response.url, {'unique_name': 'a', 'email': 'fl@c.com'})
+        self.assertRedirects(response, f'/places/{self.last_place_id}/')

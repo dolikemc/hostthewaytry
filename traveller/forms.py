@@ -1,24 +1,45 @@
+import logging
+
 from django import forms
-from django.contrib.auth import (
-    password_validation,
-)
+from django.contrib.auth import password_validation
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.forms import EmailField
+from django.forms.models import modelform_factory
+from django.shortcuts import reverse
 from django.utils.translation import gettext_lazy as _
+from django.views import generic
 
-from traveller.models import User, Group
+from traveller.models import User, PlaceAccount
+
+# Get an instance of a logger
+logger: logging.Logger = logging.getLogger(__name__)
 
 
-class UserForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['full_name', 'screen_name', 'alt_email', 'street', 'country', 'zip', 'city', 'state',
-                  'picture', 'vita', 'groups']
+class ChangeUser(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+    model = User
+    template_name = 'traveller/create_place_admin.html'
+    form_class = modelform_factory(User, widgets={'groups': forms.widgets.CheckboxSelectMultiple()},
+                                   exclude=['password', 'user_permissions', 'last_login'])
+    login_url = '/traveller/login/'
 
-    def __init__(self, *args, **kwargs):
-        super(UserForm, self).__init__(*args, **kwargs)
-        self.fields['groups'].widget = forms.widgets.CheckboxSelectMultiple()
-        self.fields['groups'].help_text = ''
-        self.fields['groups'].queryset = Group.objects.all()
+    def test_func(self):
+        place_id = self.get_place_id()
+        if place_id == 0:
+            return self.request.user.is_staff
+        return PlaceAccount.edit_place_permission(self.request.user, place_id)
+
+    def get_place_id(self):
+        for key in ('place', 'place_id'):
+            if key in self.kwargs:
+                logger.debug(f'Place id from {key} parameter is {self.kwargs[key]}')
+                return self.kwargs[key]
+        return 0
+
+    def get_success_url(self):
+        place_id = self.get_place_id()
+        if place_id > 0:
+            return reverse('places:detail', kwargs={'pk': place_id})
+        return reverse('admin:index')
 
 
 class LoginForm(forms.ModelForm):

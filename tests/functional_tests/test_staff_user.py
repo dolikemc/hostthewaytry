@@ -1,7 +1,4 @@
-from time import sleep
-
 from tests.functional_tests.base import FunctionalTest
-from traveller.models import PlaceAccount
 
 
 class TestWorkflow(FunctionalTest):
@@ -15,10 +12,10 @@ class TestWorkflow(FunctionalTest):
         self.assertTrue(self.check_if_logged_in())
 
     def test_can_register_traveller(self):
-        PlaceAccount.objects.create(place_id=self.last_place_id, user_id=self.user.id)
+        # PlaceAccount.objects.create(place_id=self.last_place_id, user_id=self.user.id)
         register_button = self.wait_for_find_element_by_id('id_navigator_register_worker')
         register_button.click()
-        self.assertIn('Create User', self.browser.title)
+        self.assertIn('Create User - HOST THE WAY', self.browser.title)
         username = self.browser.find_element_by_id('id_email')
         password1 = self.browser.find_element_by_id('id_password1')
         password2 = self.browser.find_element_by_id('id_password2')
