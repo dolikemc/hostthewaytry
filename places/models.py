@@ -298,6 +298,9 @@ class Place(models.Model):
 
     def work_on_image(self):
         logger.debug('work on image')
+
+        output = BytesIO()
+
         # Opening the uploaded image
         try:
 
@@ -317,20 +320,19 @@ class Place(models.Model):
             im.correct_orientation()
 
             # after modifications, save it to the output
-            output = BytesIO()
             im.save(output)
-            im.close()
-            output.seek(0)
-
-            # change the image field value to be the newly modifed image value
-            self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
-                                                'image/jpeg', sys.getsizeof(output), None)
         except FileNotFoundError  as exc:
             logger.warning(f'{exc}: file not found')
             pass
         except ValueError as exc:
             logger.warning(f'{exc}: value error')
             pass
+
+        output.seek(0)
+        # change the image field value to be the newly modifed image value
+        self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
+                                            'image/jpeg', sys.getsizeof(output), None)
+
 
     def get_absolute_url(self) -> str:
         return reverse('places:detail', kwargs={'pk': self.pk})
