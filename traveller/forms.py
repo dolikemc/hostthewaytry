@@ -19,7 +19,8 @@ class ChangeUser(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = User
     template_name = 'traveller/create_place_admin.html'
     form_class = modelform_factory(User, widgets={'groups': forms.widgets.CheckboxSelectMultiple()},
-                                   exclude=['password', 'user_permissions', 'last_login'])
+                                   exclude=['password', 'user_permissions', 'last_login'],
+                                   help_texts={'groups': ""})
     login_url = '/traveller/login/'
 
     def test_func(self):

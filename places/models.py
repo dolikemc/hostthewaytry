@@ -282,27 +282,35 @@ class Place(models.Model):
     def __str__(self) -> str:
         return f"{self.name} ({self.country})"
 
-    def save(self, **kwargs):
-
+    def clean(self):
+        logger.debug('clean')
         self.country = str.upper(self.country)
         self.currency = str.upper(self.currency)
         self.currencies = str.upper(self.currencies)
+        self.work_on_image()
+        return super().clean()
 
+    def fill_geo_data(self, im: ImageX):
+        # set geo position from exif data
+        if self.longitude is None or self.longitude == 0 or self.latitude is None or self.latitude == 0:
+            self.latitude = im.latitude
+            self.longitude = im.longitude
+
+    def work_on_image(self):
+        logger.debug('work on image')
         # Opening the uploaded image
         try:
-
-            if isfile('places/static/img/' + self.picture.name):
-                logger.debug(f"File {self.picture.name} already exits")
-                # return super(Place, self).save(**kwargs)
 
             # copied from https://djangosnippets.org/snippets/10597/
             im: ImageX = ImageX(self.picture.name)
             im.open(self.picture)
 
-            if self.longitude is None or self.longitude == 0 or \
-                    self.latitude is None or self.latitude == 0:
-                self.latitude = im.latitude
-                self.longitude = im.longitude
+            # fill geo data from open ImageX
+            self.fill_geo_data(im=im)
+
+            if isfile('img/' + self.picture.name):
+                logger.debug(f"File {self.picture.name} already exits")
+                return
 
             # makes a proper image for the portal
             im.resize()
@@ -312,19 +320,17 @@ class Place(models.Model):
             output = BytesIO()
             im.save(output)
             im.close()
-
             output.seek(0)
 
             # change the image field value to be the newly modifed image value
-            self.picture = InMemoryUploadedFile(output, 'ImageField',
-                                                "%s.jpg" % self.picture.name.split('.')[0],
-                                                'image/jpeg',
-                                                sys.getsizeof(output), None)
-        except FileNotFoundError:
+            self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
+                                                'image/jpeg', sys.getsizeof(output), None)
+        except FileNotFoundError  as exc:
+            logger.warning(f'{exc}: file not found')
             pass
-        except ValueError:
+        except ValueError as exc:
+            logger.warning(f'{exc}: value error')
             pass
-        return super(Place, self).save(**kwargs)
 
     def get_absolute_url(self) -> str:
         return reverse('places:detail', kwargs={'pk': self.pk})

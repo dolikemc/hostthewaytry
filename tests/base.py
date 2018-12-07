@@ -29,7 +29,8 @@ class RoleMixin(object):
     def set_up_place_admin(self):
         self.user = User.objects.create_user(**self.credentials, is_staff=False)
         self.group: Group = Group.objects.create(name='PlaceAdmin')
-        for permission in Permission.objects.filter(codename__in=['change_place', 'add_user', 'change_user']):
+        for permission in Permission.objects.filter(codename__in=['delete_place', 'change_place', 'add_user',
+                                                                  'change_user', 'view_place']):
             self.group.permissions.add(permission)
         self.user.groups.add(self.group)
         return self.user
@@ -38,7 +39,8 @@ class RoleMixin(object):
         self.user = User.objects.create_user(**self.credentials, is_staff=False)
         self.group: Group = Group.objects.create(name='Worker')
         # todo: permissions (post_comments, add_area_features)
-        for permission in Permission.objects.filter(codename__in=['add_place', 'add_user', 'change_user']):
+        for permission in Permission.objects.filter(codename__in=['add_place', 'add_user', 'change_user',
+                                                                  'delete_user', 'view_place']):
             self.group.permissions.add(permission)
         self.user.groups.add(self.group)
         return self.user
@@ -46,7 +48,8 @@ class RoleMixin(object):
     def set_up_staff(self):
         self.user = User.objects.create_user(**self.credentials, is_staff=True)
         self.group = Group.objects.create(name='Staff')
-        for permission in Permission.objects.filter(codename__in=['change_place', 'add_user', 'change_user']):
+        for permission in Permission.objects.filter(codename__in=['change_place', 'add_user', 'change_user',
+                                                                  'add_place', 'delete_place']):
             self.group.permissions.add(permission)
         self.user.groups.add(self.group)
 

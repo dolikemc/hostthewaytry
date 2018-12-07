@@ -3,7 +3,7 @@ import logging
 
 # django modules
 from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.forms import ModelForm
 from django.shortcuts import reverse, redirect
 from django.views import generic
@@ -50,10 +50,10 @@ class IndexView(BaseIndexView):
         return Place.objects.filter(deleted__exact=False, reviewed__exact=True).order_by('-latitude')
 
 
-class BaseDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+class BaseDeleteView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin, generic.DeleteView):
     """ Base delete form, implements a common test function, the success url and skip confirmation"""
     login_url = '/traveller/login/'
-    raise_exception = False
+    permission_required = 'places.delete_place'
 
     def test_func(self):
         # the use of get_object() is necessary, because self.object not set yet
@@ -74,14 +74,14 @@ class DeleteRoom(BaseDeleteView):
     model = Room
 
 
-class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin, generic.UpdateView):
     """Base change form, implements a common test function and the success url. If model is not a detail of
     the place model, but place itself, we can take the id direct from the self.get_object() return value
     and redirect after success to the detail page"""
     template_name = 'places/create_detail.html'
     context_object_name = 'form'
     login_url = '/traveller/login/'
-    raise_exception = False
+    permission_required = 'places.change_place'
 
     def test_func(self):
         # the use of get_object() is necessary, because self.object not set yet
@@ -132,14 +132,15 @@ class ChangePlace(BaseChangeView):
     template_name = 'places/create_place.html'
 
     def get_context_data(self, **kwargs):
+        """add the detail lists"""
         kwargs['rooms'] = self.object.room_set.all()
         kwargs['prices'] = self.object.price_set.all()
         return super().get_context_data(**kwargs)
 
 
-class BaseCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
+class BaseCreateView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin, generic.CreateView):
     login_url = '/traveller/login/'
-    raise_exception = False
+    permission_required = 'places.change_place'
 
     def get_place_id(self):
         for key in ('pk', 'place', 'place_id', 'id'):

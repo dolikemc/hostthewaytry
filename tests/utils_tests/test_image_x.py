@@ -34,6 +34,7 @@ class ExifData(BaseTest):
         place = Place.objects.get(id=1)
         place.picture = self.get_file_pointer()
         place.picture.name = 'IMG_3745_X.JPG'
+        place.clean()
         place.save()
         place = Place.objects.get(id=1)
         self.assertIsInstance(place, Place)

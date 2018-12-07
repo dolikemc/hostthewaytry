@@ -39,14 +39,18 @@
             {% endif %}
         </div>
 
-        <button onclick="document.getElementById('id_book_email_modal').style.display='block'"
+        <button onclick="
+            document.getElementById('id_book_email_modal').style.display='block';
+            document.getElementById('id_leaflet_map').style.display='none';"
                 class="w3-button w3-amber" id="id_book_place">Book Place
         </button>
     </div>
     <div id="id_book_email_modal" class="w3-modal">
         <div class="w3-modal-content" style="display: block">
             <header class="w3-container w3-black">
-                    <span onclick="document.getElementById('id_book_email_modal').style.display='none'"
+                    <span onclick="
+                    document.getElementById('id_book_email_modal').style.display='none';
+                    document.getElementById('id_leaflet_map').style.display='block';"
                           class="w3-button w3-display-topright">&times;</span>
                 <form id="id_book_email_form">
                     <table class="w3-table-all w3-amber">
@@ -74,10 +78,10 @@
                         </tr>
                     </table>
                 </form>
-
+            </header>
         </div>
     </div>
-    <div class="w3-container w3-third">
+    <div class="w3-container w3-third" id="id_leaflet_map">
         {% leaflet_map "detail_map" callback="window.map_init_place" settings_overrides='' %}
     </div>
     <div class="w3-panel w3-center">
