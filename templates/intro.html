@@ -1,7 +1,7 @@
 {% load static %}
 <div class="w3-modal-content">
     <div class="w3-amber  w3-padding">
-        <h2>Dear host,</h2>
+        <h2>Dear host, <a href="{% url 'places:index' %}">... let's start!</a></h2>
     </div>
     <div class="w3-light-blue  w3-padding">
         <p>We welcome you to <a href="http://www.hosttheway.com">www.hosttheway.com</a>! we are a non-profit
@@ -61,6 +61,9 @@
             </li>
             <li style="font-size: 1em">
                 We take no liability for the travellers or the hosts
+            </li>
+            <li style="font-size: 1em">
+                <a href="{% url 'places:index' %}">... let's start!</a>
             </li>
         </ul>
     </div>

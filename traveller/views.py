@@ -32,7 +32,7 @@ def register_user(request: HttpRequest, place_id: int = 0) -> HttpResponse:
     return render(request, 'traveller/register.html', {'form': form})
 
 
-def login_user(request: HttpRequest, ) -> HttpResponse:
+def login_user(request: HttpRequest) -> HttpResponse:
     if request.POST:
         form = LoginForm(request.POST)
         username = request.POST['email']
@@ -47,7 +47,7 @@ def login_user(request: HttpRequest, ) -> HttpResponse:
             return render(request, 'traveller/login.html', {'form': form})
         login(request, user)
         if user.is_staff:
-            return redirect('admin:index')
+            return redirect('/admin/places/place/?deleted__exact=0&reviewed__exact=0')
         if user.is_worker and not user.is_place_admin:
             return redirect('places:worker')
         if user.is_place_admin:

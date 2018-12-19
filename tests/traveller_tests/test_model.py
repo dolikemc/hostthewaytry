@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser
+from django.test.utils import skipIf
 
 from tests.base import BaseTest
 from traveller.models import User
@@ -72,3 +73,35 @@ class ModelTest(BaseTest):
     def test_is_anonymous(self):
         self.set_up_anonymous()
         self.assertTrue(self.user.is_anonymous)
+
+    @skipIf(True, 'not yet implemented')
+    def test_full_name(self):
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_short_name(self):
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_create_superuser(self):
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_create_user(self):
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_email_user(self):
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_create_screen_names(self):
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_display_name_html(self):
+        pass
+
+    @skipIf(True, 'not yet implemented')
+    def test_edit_place_permission(self):
+        pass

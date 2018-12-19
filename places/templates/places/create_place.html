@@ -13,6 +13,33 @@
                 {% endif %}
             </div>
             {% csrf_token %}
+            <div class="w3-panel w3-center">
+                <h4>Admins</h4>
+            </div>
+            <table class="w3-table w3-bordered" id="id_room_place_table">
+                <tr class="w3-amber">
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                {% for admin in admins %}
+                    <tr>
+                        <td>{{ admin.id }}</td>
+                        <td>{{ admin.screen_name }}</td>
+                        <td>{{ admin.email }}</td>
+                        <td><a href="{% url 'traveller:create-user' pk=admin.id place_id=place_id %}"
+                               class="w3-button w3-bar-item"
+                               id="id_edit_place_admin_{{ admin.id }}"><i
+                                class="fa fa-save w3-large"></i></a></td>
+                        <td><a href="{% url 'traveller:create-user' pk=admin.id place_id=place_id %}"
+                               class="w3-button w3-bar-item"
+                               id="id_delete_place_admin_{{ admin.id }}"><i
+                                class="fa fa-times w3-text-red w3-large"></i></a></td>
+                    </tr>
+                {% endfor %}
+            </table>
             {% for field in form %}
                 {% cycle '<div class="w3-row-padding">' '' %}
 

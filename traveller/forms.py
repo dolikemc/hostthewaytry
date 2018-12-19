@@ -39,7 +39,7 @@ class ChangeUser(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     def get_success_url(self):
         place_id = self.get_place_id()
         if place_id > 0:
-            return reverse('places:detail', kwargs={'pk': place_id})
+            return reverse('places:update-place', kwargs={'pk': place_id})
         return reverse('admin:index')
 
 

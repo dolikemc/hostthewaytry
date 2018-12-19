@@ -22,4 +22,4 @@ class CreateTest(PlacesPreparedTest):
                                                                                    'email': 'fl@c.com'})
         self.assertRedirects(response, f'/traveller/user/2/{self.last_place_id}/')
         response = self.client.post(response.url, {'unique_name': 'a', 'email': 'fl@c.com'})
-        self.assertRedirects(response, f'/places/{self.last_place_id}/')
+        self.assertRedirects(response, f'/places/update/place/{self.last_place_id}/')

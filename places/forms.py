@@ -10,7 +10,7 @@ from django.views import generic
 
 # my models
 from places.models import Place, Price, Room
-from traveller.models import PlaceAccount
+from traveller.models import PlaceAccount, User
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
@@ -128,13 +128,15 @@ class ChangePlace(BaseChangeView):
     fields = ['name', 'contact_type', 'website', 'languages', 'who_lives_here', 'currency',
               'picture', 'description', 'outdoor_place', 'wifi', 'separate_entrance', 'common_kitchen',
               'pick_up_service', 'parking', 'own_key', 'laundry', 'meals', 'meal_example',
-              'vegan', 'vegetarian', 'check_in_time', 'check_out_time']
+              'vegan', 'vegetarian', 'check_in_time', 'check_out_time', 'id']
     template_name = 'places/create_place.html'
 
     def get_context_data(self, **kwargs):
         """add the detail lists"""
         kwargs['rooms'] = self.object.room_set.all()
         kwargs['prices'] = self.object.price_set.all()
+        kwargs['admins'] = User.objects.filter(placeaccount__place=self.object)
+        kwargs['place_id'] = self.object.id
         return super().get_context_data(**kwargs)
 
 

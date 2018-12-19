@@ -1,14 +1,9 @@
-import logging
-
 from django.test.utils import skipIf
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
 from tests.functional_tests.base import FunctionalTest
-from traveller.models import PlaceAccount
-
-# Get an instance of a logger
-logger: logging.Logger = logging.getLogger(__name__)
+from traveller.models import PlaceAccount, User
 
 
 class TestWorkflow(FunctionalTest):
@@ -60,25 +55,30 @@ class TestWorkflow(FunctionalTest):
     def test_delete_room(self):
         self.assertTrue(self.edit_change_action(edit_field=f'id_delete_place_room_{self.last_room_id}'))
 
-    @skipIf(True, 'not yet implemented')
     def test_add_admin(self):
-        self.goto_admin_area()
-        pass
+        email_element = self._prepare_edit(action='id_detail_action_register', edit_field='id_email')
+        email_element.send_keys('n@v.com')
+        pwd_element = self.browser.find_element_by_id('id_password1')
+        pwd_element.send_keys('88ww55cc99oo')
+        pwd_element = self.browser.find_element_by_id('id_password2')
+        pwd_element.send_keys('88ww55cc99oo')
+        submit_button = self.browser.find_element_by_id('id_register_submit')
+        submit_button.click()
+        # update user screen
+        self.assertTrue(self.wait_for_find_element_by_id('id_create_user_submit', raise_exception=False))
 
-    @skipIf(True, 'not yet implemented')
     def test_change_admin(self):
-        self.goto_admin_area()
-        pass
+        user = User.objects.create(email='b@d.com', unique_name='BB', screen_name='BB')
+        PlaceAccount.objects.create(user_id=user.id, place_id=self.last_place_id)
+        self.assertTrue(self.edit_change_action(edit_field=f'id_edit_place_admin_{user.id}',
+                                                change_field='id_unique_name', submit_button='id_create_user_submit'))
 
-    @skipIf(True, 'not yet implemented')
+    @skipIf(True, 'implement set user inactive function')
     def test_delete_admin(self):
-        self.goto_admin_area()
-        pass
-
-    @skipIf(True, 'not yet implemented')
-    def test_save_changes(self):
-        self.goto_admin_area()
-        pass
+        user = User.objects.create(email='b@d.com', unique_name='BB', screen_name='BB')
+        PlaceAccount.objects.create(user_id=user.id, place_id=self.last_place_id)
+        self.assertTrue(self.edit_change_action(edit_field=f'id_delete_place_admin_{user.id}',
+                                                submit_button='id_create_user_submit'))
 
     def goto_admin_area(self):
         pass
@@ -93,43 +93,47 @@ class TestWorkflow(FunctionalTest):
         submit_button.click()
         return self.is_detail_block()
 
-    def edit_change_action(self, edit_field: str, change_field: str = None) -> bool:
+    def edit_change_action(self, edit_field: str, change_field: str = None,
+                           submit_button: str = 'id_create_detail_submit') -> bool:
         try:
             element = self._prepare_edit(action='id_detail_action_update_place', edit_field=edit_field)
             element.click()
         except ValueError:
+            print(f'value error during find {edit_field}')
             return False
         if change_field is None:  # means delete
             try:
                 self.browser.find_element_by_id(edit_field)
+                print('edit field should not be found')
                 return False
             except NoSuchElementException:
+                print(f'edit field {edit_field} not found')
                 return self.wait_for_find_element_by_id('id_create_place_submit', raise_exception=False)
         element2: WebElement = self.wait_for_find_element_by_id(change_field)
         if not isinstance(element2, WebElement):
-            logger.warning(f'fetched by {change_field} element is not a web element')
+            print(f'fetched by {change_field} element is not a web element')
             return False
         element2.send_keys('nobody')
-        change_button = self.browser.find_element_by_id('id_create_detail_submit')
+        change_button = self.browser.find_element_by_id(submit_button)
         if not isinstance(change_button, WebElement):
-            logger.warning('fetched by id_create_detail_submit element is not a web element')
+            print('fetched by id_create_detail_submit element is not a web element')
             return False
         change_button.click()
         return self.wait_for_find_element_by_id('id_create_place_submit', raise_exception=False)
 
     def _prepare_edit(self, action: str, edit_field: str):
-        self.assertTrue(self.check_if_logged_in())
+        self.assertTrue(self.check_if_logged_in(), 'check if you logged in')
         self.goto_admin_area()
-        self.assertTrue(self.can_open_detail('id_place_list_maintenance'))
+        self.assertTrue(self.can_open_detail('id_place_list_maintenance'), 'can open detail')
         change_button = self.wait_for_find_element_by_id(action)
         self.assertIsInstance(change_button, WebElement)
         change_button.click()
         # check just one item in the edit screen
         element = self.wait_for_find_element_by_id(edit_field)
         if not isinstance(element, WebElement):
-            logger.warning(f'fetched by {edit_field} element is not a web element')
+            print(f'fetched by {edit_field} element is not a web element')
             raise ValueError
         if 'HOST THE WAY' not in self.browser.title:
-            logger.warning('title of page is not HOST THE WAY')
+            print('title of page is not HOST THE WAY')
             raise ValueError
         return element
