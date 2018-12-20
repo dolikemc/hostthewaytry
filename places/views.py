@@ -45,7 +45,7 @@ def create_place(request: HttpRequest) -> HttpResponse:
 
 
 @atomic
-@permission_required('places.change_place')
+@permission_required('places.delete_place')
 @login_required(login_url='/traveller/login/')
 def delete_place(request: HttpRequest, pk: int) -> HttpResponse:
     """set a place to deleted = true (soft delete)"""
