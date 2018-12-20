@@ -30,7 +30,7 @@ class RoleMixin(object):
         self.user = User.objects.create_user(**self.credentials, is_staff=False)
         self.group: Group = Group.objects.create(name='PlaceAdmin')
         for permission in Permission.objects.filter(codename__in=['delete_place', 'change_place', 'add_user',
-                                                                  'change_user', 'view_place']):
+                                                                  'change_user', 'view_place', 'add_place']):
             self.group.permissions.add(permission)
         self.user.groups.add(self.group)
         return self.user

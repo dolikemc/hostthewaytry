@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.test.utils import skipIf
 
 from tests.base import BaseTest
-from traveller.models import User
+from traveller.models import User, PlaceAccount
 
 
 class ModelTest(BaseTest):
@@ -74,34 +74,68 @@ class ModelTest(BaseTest):
         self.set_up_anonymous()
         self.assertTrue(self.user.is_anonymous)
 
-    @skipIf(True, 'not yet implemented')
     def test_full_name(self):
-        pass
+        self.set_up_staff()
+        traveller = User.objects.get(id=self.user.id)
+        self.assertEqual('', traveller.get_full_name())
 
-    @skipIf(True, 'not yet implemented')
     def test_short_name(self):
-        pass
+        self.set_up_staff()
+        traveller = User.objects.get(id=self.user.id)
+        self.assertEqual('test@user.com(None)', traveller.get_short_name())
 
-    @skipIf(True, 'not yet implemented')
+    def test_screen_name(self):
+        user = User.objects.create(email='next@a.com', screen_name='a', unique_name='a')
+        self.assertEqual('a', user.get_short_name())
+
     def test_create_superuser(self):
-        pass
+        su = User.objects.create_superuser(email='a@b.com', password='aaaa')
+        self.assertTrue(su.is_staff)
+        self.assertTrue(su.is_superuser)
 
-    @skipIf(True, 'not yet implemented')
     def test_create_user(self):
-        pass
+        su = User.objects.create_user(email='a@b.com', password='aaaa')
+        self.assertFalse(su.is_staff)
+        self.assertFalse(su.is_superuser)
+
+    def test_create_no_user_wo_password(self):
+        with self.assertRaises(ValueError):
+            User.objects.create_user(email='', password='aaaa')
 
     @skipIf(True, 'not yet implemented')
     def test_email_user(self):
         pass
 
-    @skipIf(True, 'not yet implemented')
-    def test_create_screen_names(self):
-        pass
+    def test_create_screen_names_unique_name_exists(self):
+        user = User.objects.create(email='next@a.com', screen_name='a', unique_name='a')
+        user.create_screen_names()
+        self.assertEqual('a', user.get_short_name())
 
-    @skipIf(True, 'not yet implemented')
     def test_display_name_html(self):
-        pass
+        user = User.objects.create(email='next@a.com', screen_name='a', unique_name='a')
+        self.assertEqual('<div class="screen-user-name-display">a<div>', user.display_name_html)
 
-    @skipIf(True, 'not yet implemented')
-    def test_edit_place_permission(self):
-        pass
+    def test_edit_place_permission_for_superuser(self):
+        self.set_up_staff()
+        self.assertTrue(PlaceAccount.edit_place_permission(self.user, self.last_place_id))
+
+    def test_edit_place_permission_for_staff(self):
+        user = User.objects.create(email='next@a.com', is_staff=True, is_superuser=False)
+        self.assertTrue(PlaceAccount.edit_place_permission(user, self.last_place_id))
+
+    def test_edit_place_permission_for_anonymous(self):
+        self.set_up_anonymous()
+        self.assertFalse(PlaceAccount.edit_place_permission(self.user, self.last_place_id))
+
+    def test_edit_place_permission_for_traveller(self):
+        self.set_up_traveller()
+        self.assertFalse(PlaceAccount.edit_place_permission(self.user, self.last_place_id))
+
+    def test_edit_place_permission_for_place_admin(self):
+        self.set_up_place_admin()
+        PlaceAccount.objects.create(user_id=self.user.id, place_id=self.last_place_id)
+        self.assertTrue(PlaceAccount.edit_place_permission(self.user, self.last_place_id))
+
+    def test_edit_place_permission_for_other_place_admin(self):
+        self.set_up_place_admin()
+        self.assertFalse(PlaceAccount.edit_place_permission(self.user, self.last_place_id))

@@ -94,10 +94,6 @@ class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequired
             return reverse('places:detail', kwargs={'pk': self.object.id})
         return reverse('places:update-place', kwargs={'pk': self.object.place.id})
 
-    def form_invalid(self, form):
-        logger.warning(f'form is invalid: {form.errors}')
-        return super().form_invalid(form)
-
 
 class ChangePrice(BaseChangeView):
     model = Price

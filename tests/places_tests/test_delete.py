@@ -1,5 +1,3 @@
-from django.test.utils import skipIf
-
 from places.models import Room, Place, Price
 from tests.places_tests.base import PlacesPreparedTest
 from traveller.models import PlaceAccount
@@ -22,13 +20,12 @@ class NewPlaceTest(PlacesPreparedTest):
         self.assertRedirects(response, f'/places/update/place/{self.last_place_id}/')
         self.assertFalse(Price.objects.filter(id=self.last_price_id).exists())
 
-    @skipIf(True, 'Not yet implemented')
     def test_soft_delete(self):
         response = self.client.post(f'/places/delete/place/{self.last_place_id}/')
-        self.assertRedirects(response, f'/places/')
-        self.assertEqual(Place.objects.filter(id=self.last_place_id, deleted=False), None)
+        self.assertRedirects(response, f'/places/{self.last_place_id}/')
+        self.assertTrue(Place.objects.filter(id=self.last_place_id, deleted=True).exists())
 
     def test_undelete(self):
         response = self.client.post(f'/places/undelete/place/{self.last_place_id}/')
-        self.assertRedirects(response, f'/places/update/place/{self.last_place_id}/')
-        self.assertEqual(Place.objects.filter(id=self.last_place_id, deleted=False).count(), 1)
+        self.assertRedirects(response, f'/places/{self.last_place_id}/')
+        self.assertTrue(Place.objects.filter(id=self.last_place_id, deleted=False).exists())

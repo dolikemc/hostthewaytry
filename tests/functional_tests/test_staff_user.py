@@ -15,6 +15,7 @@ class TestWorkflow(FunctionalTest):
         # PlaceAccount.objects.create(place_id=self.last_place_id, user_id=self.user.id)
         register_button = self.wait_for_find_element_by_id('id_navigator_register_worker')
         register_button.click()
+        self.wait_for_find_element_by_id('id_email')
         self.assertIn('Create User - HOST THE WAY', self.browser.title)
         username = self.browser.find_element_by_id('id_email')
         password1 = self.browser.find_element_by_id('id_password1')
