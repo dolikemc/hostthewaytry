@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext as _
 
 from places.models import Place, Price, GeoName, Room
 
@@ -16,22 +17,23 @@ class PlaceAdmin(admin.ModelAdmin):
     def publish(modeladmin, request, queryset):
         queryset.update(reviewed=True)
 
-    publish.short_description = "Set the reviewed flag to true so it is published and visible in the www"
+    # publish.allowed_permissions = ('change',)
+    publish.short_description = _("publish selected places")
 
     def unpublish(modeladmin, request, queryset):
         queryset.update(reviewed=False)
 
-    unpublish.short_description = "Set the reviewed flag to false not visible in the www"
+    unpublish.short_description = _("un-publish selected places")
 
     def mark_deleted(modeladmin, request, queryset):
         queryset.update(deleted=True)
 
-    mark_deleted.short_description = "Soft delete means is marked as deleted but can still be reused"
+    mark_deleted.short_description = _("soft delete of selected places")
 
     def unmark_deleted(modeladmin, request, queryset):
         queryset.update(deleted=False)
 
-    unmark_deleted.short_description = "Soft delete means undone"
+    unmark_deleted.short_description = _("undo soft delete of selected places")
 
 
 admin.site.register(Place, PlaceAdmin)

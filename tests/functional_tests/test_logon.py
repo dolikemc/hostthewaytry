@@ -19,6 +19,7 @@ class LogonTest(FunctionalTest):
         self.do_logon()
         logout_button = self.wait_for_find_element_by_id('id_navigator_logout')
         logout_button.click()
+        self.wait_for_find_element_by_id('id_navigator_login', raise_exception=False)
         self.assertFalse(self.check_if_logged_in())
 
     def test_can_logon_wo_stuff(self):
