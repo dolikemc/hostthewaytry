@@ -1,5 +1,5 @@
 {% load l10n static leaflet_tags i18n %}
-<div class="w3-panel w3-center w3-amber" id="id_place_detail_name">
+<div class="w3-panel w3-center w3-khaki" id="id_place_detail_name">
     <h3>{{ place.name }}</h3>
 </div>
 <div class="w3-row-padding" id="id_place_detail_info">
@@ -42,43 +42,45 @@
         <button onclick="
             document.getElementById('id_book_email_modal').style.display='block';
             document.getElementById('id_leaflet_map').style.display='none';"
-                class="w3-button w3-amber" id="id_book_place">Book Place
+                class="w3-button w3-khaki" id="id_book_place">Book Place
         </button>
     </div>
+
     <div id="id_book_email_modal" class="w3-modal">
-        <div class="w3-modal-content" style="display: block">
-            <header class="w3-container w3-black">
-                    <span onclick="
-                    document.getElementById('id_book_email_modal').style.display='none';
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-black w3-border" style="max-width:600px">
+            <div class="w3-center"><br>
+                <span onclick="document.getElementById('id_book_email_modal').style.display='none';
                     document.getElementById('id_leaflet_map').style.display='block';"
-                          class="w3-button w3-display-topright">&times;</span>
-                <form id="id_book_email_form">
-                    <table class="w3-table-all w3-amber">
-                        <tr>
-                            <th style="max-width: 120px; width: 40px"></th>
-                            <th style="max-width: 400px; width: 120px"></th>
-                        </tr>
-                        <tr>
-                            <td><label for="id_book_email_from">{% trans "Your Email:" %}</label></td>
-                            {% if user.is_authenticated %}
-                                <td><input id="id_book_email_from" type="email" readonly value="{{ user.email }}"></td>
-                            {% else %}
-                                <td><input id="id_book_email_from" type="email" required></td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <td><label for="id_book_email_to">{% trans "To:" %}</label></td>
-                            <td><input id="id_book_email_to" type="email" value="{{ place.email }}" readonly
-                                       style="width: 200px"></td>
-                        </tr>
-                        <tr>
-                            <td><label for="id_book_email_message">Message:</label></td>
-                            <td><input id="id_book_email_message" value="{% trans 'Do you have vaccancies' %}"
-                                       type="text" style="height: 180px;"></td>
-                        </tr>
-                    </table>
-                </form>
-            </header>
+                      class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+
+            </div>
+            <form id="id_book_email_form" class="w3-container">
+                <div class="w3-section">
+                    <label for="id_book_email_to">{% trans "To:" %}</label>
+                    <input id="id_book_email_to" type="email" value="{{ place.email }}" readonly
+                           class="w3-input w3-border">
+                    <label for="id_book_email_from">{% trans "Your Email:" %}</label>
+                    {% if user.is_authenticated %}
+                        <input id="id_book_email_from" type="email" class="w3-input w3-border w3-margin-bottom"
+                               readonly value="{{ user.email }}">
+                    {% else %}
+                        <input id="id_book_email_from" type="email" class="w3-input w3-border w3-margin-bottom"
+                               required>
+                    {% endif %}
+                    <label for="id_book_email_message">Message:</label>
+                    <input class="w3-input w3-border" type="text" id="id_book_email_message"
+                           placeholder="{% trans 'Do you have vacancies' %}">
+                    <button class="w3-button w3-block w3-pale-green w3-section w3-padding" type="submit">Send</button>
+
+                </div>
+            </form>
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <button onclick="document.getElementById('id_book_email_modal').style.display='none';
+                document.getElementById('id_leaflet_map').style.display='block';" type="button"
+                        class="w3-button w3-khaki">Cancel
+                </button>
+                <span class="w3-right w3-padding w3-hide-small">Forgot <a href="#">password?</a></span>
+            </div>
         </div>
     </div>
     <div class="w3-container w3-third" id="id_leaflet_map">
@@ -88,7 +90,7 @@
         <h4>Prices</h4>
     </div>
     <table class="w3-table w3-bordered">
-        <tr class="w3-amber">
+        <tr class="w3-khaki">
             <th>Category</th>
             <th>Price</th>
             <th>Description</th>
