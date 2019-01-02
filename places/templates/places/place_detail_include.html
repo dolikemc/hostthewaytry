@@ -1,5 +1,5 @@
 {% load l10n static leaflet_tags i18n %}
-<div class="w3-panel w3-center w3-khaki" id="id_place_detail_name">
+<div class="w3-panel w3-center hosttheway-color-two" id="id_place_detail_name">
     <h3>{{ place.name }}</h3>
 </div>
 <div class="w3-row-padding" id="id_place_detail_info">
@@ -7,47 +7,48 @@
         <img src="{% static 'img/' %}{{ place.picture }}" alt="Picture"
              style="max-height: 300px; width: 100%">
     </div>
-    <div class="w3-third w3-padding">
-        <div class="w3-bar">
-            {{ place.generated_description }}
-        </div>
-        <div class="w3-bar">
+    <div class="w3-third w3-padding w3-container">
+        <div class="w3-section">
+            <div class="w3-block w3-sectionr">
+                {{ place.generated_description }}
+            </div>
+            <div class="w3-block w3-section">
+                <i class="fa fa-bed w3-large w3-bar-item">  {{ place.beds }}</i>
+                {% if place.private_bathroom %}
+                    <i class="fas fa-bath w3-large w3-bar-item"></i>
+                {% endif %}
 
-            <i class="fa fa-bed w3-large w3-bar-item">  {{ place.beds }}</i>
-            {% if place.private_bathroom %}
-                <i class="fas fa-bath w3-large w3-bar-item"></i>
-            {% endif %}
+                {% if place.smoking %}
+                    <i class="fas fa-smoking w3-large w3-bar-item w3-text-green"></i>
+                {% else %}
+                    <i class="fas fa-smoking-ban w3-large w3-bar-item w3-text-red"></i>
+                {% endif %}
+                <i class="fas fa-coffee w3-large w3-bar-item w3-text-brown">{{ place.meals }}</i>
+                {% if place.wifi %}
+                    <i class="fas fa-wifi w3-latge w3-bar-item w3-text-blue"></i>
+                {% else %}
+                    <div class="w3-bar-item>">No WiFi</div>
+                {% endif %}
+            </div>
+            <div class="w3-block w3-section">
+                Price per person:
+                {% if place.price_low == place.price_high %}
+                    {{ place.price_low.normalize }} {{ place.currency }}
+                {% else %}
+                    {{ place.price_low.normalize }} - {{ place.price_high.normalize }} {{ place.currency }}
+                {% endif %}
+            </div>
 
-            {% if place.smoking %}
-                <i class="fas fa-smoking w3-large w3-bar-item w3-text-green"></i>
-            {% else %}
-                <i class="fas fa-smoking-ban w3-large w3-bar-item w3-text-red"></i>
-            {% endif %}
-            <i class="fas fa-coffee w3-large w3-bar-item w3-text-brown">{{ place.meals }}</i>
-            {% if place.wifi %}
-                <i class="fas fa-wifi w3-latge w3-bar-item w3-text-blue"></i>
-            {% else %}
-                <div class="w3-bar-item>">No WiFi</div>
-            {% endif %}
-        </div>
-        <div class="w3-container">
-            Price per person:
-            {% if place.price_low == place.price_high %}
-                {{ place.price_low.normalize }} {{ place.currency }}
-            {% else %}
-                {{ place.price_low.normalize }} - {{ place.price_high.normalize }} {{ place.currency }}
-            {% endif %}
-        </div>
-
-        <button onclick="
+            <button onclick="
             document.getElementById('id_book_email_modal').style.display='block';
             document.getElementById('id_leaflet_map').style.display='none';"
-                class="w3-button w3-khaki" id="id_book_place">Book Place
-        </button>
+                    class="w3-button w3-block w3-section w3-padding hosttheway-color-two" id="id_book_place">Book Place
+            </button>
+        </div>
     </div>
 
     <div id="id_book_email_modal" class="w3-modal">
-        <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-black w3-border" style="max-width:600px">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom hosttheway-color-one w3-border" style="max-width:600px">
             <div class="w3-center"><br>
                 <span onclick="document.getElementById('id_book_email_modal').style.display='none';
                     document.getElementById('id_leaflet_map').style.display='block';"
@@ -77,7 +78,7 @@
             <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
                 <button onclick="document.getElementById('id_book_email_modal').style.display='none';
                 document.getElementById('id_leaflet_map').style.display='block';" type="button"
-                        class="w3-button w3-khaki">Cancel
+                        class="w3-button hosttheway-color-two">Cancel
                 </button>
                 <span class="w3-right w3-padding w3-hide-small">Forgot <a href="#">password?</a></span>
             </div>
@@ -90,7 +91,7 @@
         <h4>Prices</h4>
     </div>
     <table class="w3-table w3-bordered">
-        <tr class="w3-khaki">
+        <tr class="hosttheway-color-two">
             <th>Category</th>
             <th>Price</th>
             <th>Description</th>

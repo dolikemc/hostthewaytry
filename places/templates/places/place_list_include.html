@@ -9,9 +9,9 @@
                 {% leaflet_map "yourmap" callback="window.map_init_basic" %}
             </div>
         {% elif forloop.counter == 3 or forloop.counter == 6 %}
-            {% include 'places/place_card_include.html' with card_color="w3-khaki" %}
+            {% include 'places/place_card_include.html' with card_color="hosttheway-color-two" %}
         {% elif forloop.counter == 5 or forloop.counter == 8 %}
-            {% include 'places/place_card_include.html' with card_color="w3-khaki" %}
+            {% include 'places/place_card_include.html' with card_color="hosttheway-color-two" %}
         {% else %}
             {% include 'places/place_card_include.html' with card_color="w3-lime" %}
         {% endif %}

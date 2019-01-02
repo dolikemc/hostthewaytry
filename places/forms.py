@@ -97,14 +97,13 @@ class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequired
 
 class ChangePrice(BaseChangeView):
     model = Price
-    fields = ['category', 'value', 'description', ]
+    fields = ['category', 'value', 'description']
 
 
 class ChangeRoom(BaseChangeView):
     model = Room
     fields = ['room_number', 'beds', 'bathroom', 'kitchen', 'outdoor_place', 'room_add', 'smoking', 'pets', 'family',
-              'handicapped_enabled', 'price_per_person', 'price_per_room', ]
-    localized_fields = ['valid_from', 'valid_to']
+              'handicapped_enabled', 'price_per_person', 'price_per_room', 'valid_from', 'valid_to']
 
 
 class ChangePlaceAddress(BaseChangeView):
@@ -170,9 +169,8 @@ class CreatePrice(BaseCreateView):
 
 class CreateRoom(BaseCreateView):
     model = Room
-    localized_fields = ['valid_from', 'valid_to']
     fields = ['room_number', 'beds', 'bathroom', 'kitchen', 'outdoor_place', 'room_add', 'smoking', 'pets', 'family',
-              'handicapped_enabled', 'price_per_person', 'price_per_room']
+              'handicapped_enabled', 'price_per_person', 'price_per_room', 'valid_from', 'valid_to']
     template_name = 'places/create_detail.html'
 
 
