@@ -88,11 +88,22 @@ body, h1, h2, h3, h4, h5, h6, h7, h8 {
     background-color: #1e9bf0 !important;
 }
 
-osttheway-color-three, .hosttheway-hover-color-three:hover {
+.hosttheway-color-three, .hosttheway-hover-color-three:hover {
     color: #fff !important;
     background-color: #A0A098 !important;
 }
 
+.hosttheway-text-color-one {
+    color: #43a92f !important;
+}
+
+.hosttheway-text-color-two {
+    color: #ff543c !important;
+}
+
+.hosttheway-text-color-off {
+    color: darkgrey !important;
+}
 
 /*
 [1]: All items a forced onto a single line, causing the overflow when necessary.

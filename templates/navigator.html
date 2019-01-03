@@ -1,29 +1,30 @@
 {% load static %}
 <div class="w3-bar w3-medium">
     {% if user.is_authenticated and user.is_staff %}
-        <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-text-red" id="id_navigator_index">
+        <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button hosttheway-text-color-two"
+           id="id_navigator_index">
             <div class="w3-padding-8"><i class="fa fa-cog"></i></div>
         </a>
-        <a href="{% url 'traveller:register-worker' %}" class="w3-bar-item w3-button w3-text-blue"
+        <a href="{% url 'traveller:register-worker' %}" class="w3-bar-item w3-button hosttheway-text-color-two"
            id="id_navigator_register_worker">
             <div class="w3-padding-8"><i class="fa fa-address-book"></i></div>
         </a>
-        <a href="/admin/places/place/?reviewed__exact=0" class="w3-bar-item w3-button w3-text-orange"
+        <a href="/admin/places/place/?reviewed__exact=0" class="w3-bar-item w3-button hosttheway-text-color-one"
            id="id_navigator_review_places">
             <div class="w3-padding-8"><i class="fa fa-eye-slash"></i></div>
         </a>
     {% endif %}
     {% if user.is_authenticated %}
         <a href="{% url 'traveller:traveller-logout' %}" class="w3-bar-item w3-button" id="id_navigator_logout">
-            <div class="w3-padding-8"><i class="fa fa-key w3-text-green"></i></div>
+            <div class="w3-padding-8"><i class="fa fa-key hosttheway-text-color-one"></i></div>
         </a>
     {% else %}
         <a href="{% url 'traveller:traveller-login' %}" class="w3-bar-item w3-button" id="id_navigator_login">
-            <div class="w3-padding-8"><i class="fa fa-key w3-text-grey"></i></div>
+            <div class="w3-padding-8"><i class="fa fa-key hosttheway-text-color-offy"></i></div>
         </a>
     {% endif %}
     <a href="#" class="w3-bar-item w3-button" id="id_navigator_search">
-        <div class="w3-padding-8"><i class="fa fa-search w3-text-grey"></i></div>
+        <div class="w3-padding-8"><i class="fa fa-search hosttheway-text-color-off"></i></div>
     </a>
     {% if user.is_authenticated %}
     {% else %}
