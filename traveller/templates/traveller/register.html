@@ -13,7 +13,13 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        <h1>Register a place admin</h1>
+        <h1>Register a
+            {% if user.is_staff %}
+                working traveller
+            {% else %}
+                place admin
+            {% endif %}
+        </h1>
         <form method="post" id="id_register_form">
             {% csrf_token %}
             <table>

@@ -9,7 +9,7 @@ from selenium.webdriver.remote.webdriver import WebElement
 from places.models import Place, Room, Price
 from tests.base import RoleMixin
 
-MAX_WAIT = 5
+MAX_WAIT = 6
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
