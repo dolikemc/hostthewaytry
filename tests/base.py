@@ -47,7 +47,7 @@ class RoleMixin(object):
 
     def set_up_staff(self):
         self.user = User.objects.create_user(**self.credentials, is_staff=True)
-        self.group = Group.objects.create(name='Staff')
+        self.group = Group.objects.create(name='Admin')
         for permission in Permission.objects.filter(codename__in=['change_place', 'add_user', 'change_user',
                                                                   'add_place', 'delete_place']):
             self.group.permissions.add(permission)

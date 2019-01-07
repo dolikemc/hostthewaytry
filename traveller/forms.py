@@ -3,8 +3,10 @@ import logging
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import Group
 from django.forms import EmailField
 from django.forms.models import modelform_factory
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
@@ -15,16 +17,15 @@ from traveller.models import User, PlaceAccount
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-class ChangeUser(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+class ChangeUserBase(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = User
     template_name = 'traveller/create_place_admin.html'
-    form_class = modelform_factory(User, widgets={'groups': forms.widgets.CheckboxSelectMultiple()},
-                                   exclude=['password', 'user_permissions', 'last_login'],
-                                   help_texts={'groups': ""})
     login_url = '/traveller/login/'
 
     def test_func(self):
         place_id = self.get_place_id()
+        if self.request.user.id == self.get_object().id:
+            return True
         if place_id == 0:
             return self.request.user.is_staff
         return PlaceAccount.edit_place_permission(self.request.user, place_id)
@@ -40,7 +41,43 @@ class ChangeUser(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
         place_id = self.get_place_id()
         if place_id > 0:
             return reverse('places:update-place', kwargs={'pk': place_id})
-        return reverse('admin:index')
+        if self.request.user.is_staff:
+            return reverse('admin:index')
+        return reverse('places:index')
+
+    def form_valid(self, form):
+        traveller: User = form.save(commit=False)
+        traveller.is_superuser = False
+        traveller.is_active = True
+        if self.request.user.is_staff and not traveller.groups.filter(name='Worker').exists():
+            logger.debug(f'add group worker to user {self.request.user}')
+            traveller.groups.add(Group.objects.filter(name='Worker').first())
+        if (self.request.user.is_worker or self.request.user.is_place_admin) and not traveller.groups.filter(
+                name__iexact='PlaceAdmin').exists():
+            logger.debug(f'add group place admin to user {self.request.user}')
+            traveller.groups.add(Group.objects.filter(name__iexact='PlaceAdmin').first())
+        elif not self.request.user.is_staff and not traveller.groups.filter(name__iexact='Traveller').exists():
+            logger.debug(f'add group traveller to user {self.request.user}')
+            traveller.groups.add(Group.objects.filter(name__iexact='Traveller').first())
+        traveller.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class ChangeUser(ChangeUserBase):
+    form_class = modelform_factory(User,
+                                   exclude=['password', 'user_permissions', 'last_login', 'groups', 'is_staff',
+                                            'is_superuser', 'is_active'])
+
+
+class ChangeUserAll(ChangeUserBase):
+    form_class = modelform_factory(User, widgets={'groups': forms.widgets.CheckboxSelectMultiple()},
+                                   exclude=['password', 'user_permissions', 'last_login', ],
+                                   help_texts={'groups': ""})
+
+    def test_func(self):
+        if self.request.user.id == self.get_object().id:
+            return True
+        return self.request.user.is_superuser
 
 
 class LoginForm(forms.ModelForm):

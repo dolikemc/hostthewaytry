@@ -74,3 +74,6 @@ class UpdatePlaceTest(PlacesPreparedTest):
         self.assertEqual(response.url, f'/places/update/place/{self.last_place_id}/')
         price = Price.objects.get(pk=self.last_price_id)
         self.assertAlmostEqual(Decimal(99.7), price.value, 2)
+
+    def test_create_place(self):
+        pass

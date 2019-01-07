@@ -5,7 +5,8 @@ import logging
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.forms import ModelForm
-from django.shortcuts import reverse, redirect
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import reverse
 from django.views import generic
 
 # my models
@@ -147,13 +148,13 @@ class BaseCreateView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequired
         return 0
 
     def get_success_url(self):
-        return redirect('places:detail', pk=self.get_place_id())
+        return reverse('places:detail', kwargs={'pk': self.get_place_id()})
 
     def form_valid(self, form):
         new_model = form.save(commit=False)
         new_model.place_id = self.get_place_id()
         new_model.save()
-        return self.get_success_url()
+        return HttpResponseRedirect(self.get_success_url())
 
     def test_func(self):
         if self.model == Place:
