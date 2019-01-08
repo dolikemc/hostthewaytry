@@ -1,0 +1,16 @@
+<i class="fa fa-bed w3-large w3-bar-item">  {{ place.beds }}  </i>
+{% if place.smoking %}
+    <i class="fas fa-smoking w3-large w3-bar-item hosttheway-text-color-one"></i>
+{% else %}
+    <i class="fas fa-smoking-ban w3-large w3-bar-item hosttheway-text-color-two"></i>
+{% endif %}
+{% if place.pets %}
+    <i class="fas fa-dog w3-large w3-bar-item hosttheway-text-color-one"></i>
+{% endif %}
+{% if place.wifi %}
+    <i class="fas fa-wifi w3-large w3-bar-item w3-text-blue"></i>
+{% endif %}
+{% if place.private_bathroom %}
+    <i class="fas fa-bath w3-large w3-bar-item"></i>
+{% endif %}
+<i class="fas fa-coffee w3-large w3-bar-item hosttheway-text-color-two">{{ place.meals }}</i>

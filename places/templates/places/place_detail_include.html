@@ -12,23 +12,13 @@
             <div class="w3-block w3-sectionr">
                 {{ place.generated_description }}
             </div>
+            {% if place.pick_up_service %}
+                <div class="w3-block w3-sectionr">
+                    <p>{% trans 'Pickup service' %}</p>
+                </div>
+            {% endif %}
             <div class="w3-block w3-section">
-                <i class="fa fa-bed w3-large w3-bar-item">  {{ place.beds }}</i>
-                {% if place.private_bathroom %}
-                    <i class="fas fa-bath w3-large w3-bar-item"></i>
-                {% endif %}
-
-                {% if place.smoking %}
-                    <i class="fas fa-smoking w3-large w3-bar-item hosttheway-text-color-one"></i>
-                {% else %}
-                    <i class="fas fa-smoking-ban w3-large w3-bar-item hosttheway-text-color-two"></i>
-                {% endif %}
-                <i class="fas fa-coffee w3-large w3-bar-item hosttheway-text-color-two">{{ place.meals }}</i>
-                {% if place.wifi %}
-                    <i class="fas fa-wifi w3-latge w3-bar-item w3-text-blue"></i>
-                {% else %}
-                    <div class="w3-bar-item>">No WiFi</div>
-                {% endif %}
+                {% include 'places/place_symbol_section_include.html' %}
             </div>
             <div class="w3-block w3-section">
                 Price per person:
@@ -38,7 +28,6 @@
                     {{ place.price_low.normalize }} - {{ place.price_high.normalize }} {{ place.currency }}
                 {% endif %}
             </div>
-
             <button onclick="
             document.getElementById('id_book_email_modal').style.display='block';
             document.getElementById('id_leaflet_map').style.display='none';"

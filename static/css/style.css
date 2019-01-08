@@ -90,7 +90,43 @@ body, h1, h2, h3, h4, h5, h6, h7, h8 {
 
 .hosttheway-color-three, .hosttheway-hover-color-three:hover {
     color: #fff !important;
-    background-color: #A0A098 !important;
+    background-color: #bfbfbf !important;
+}
+
+.hosttheway-color-four, .hosttheway-hover-color-four:hover {
+    color: #fff !important;
+    background-color: #f57b45 !important;
+}
+
+.hosttheway-color-five, .hosttheway-hover-color-five:hover {
+    color: #bfbfbf !important;
+    background-color: #92f5d1 !important;
+}
+
+
+.hosttheway-color-l-one, .hosttheway-hover-color-l-one:hover {
+    color: #000 !important;
+    background-color: #bfbfbf !important;
+}
+
+.hosttheway-color-l-two, .hosttheway-hover-color-l-two:hover {
+    color: #bfbfbf !important;
+    background-color: #aac4f0 !important;
+}
+
+.hosttheway-color-l-three, .hosttheway-hover-color-l-three:hover {
+    color: #bfbfbf !important;
+    background-color: #41413a !important;
+}
+
+.hosttheway-color-l-four, .hosttheway-hover-color-l-four:hover {
+    color: #000 !important;
+    background-color: rgba(245, 123, 69, 0.4) !important;
+}
+
+.hosttheway-color-l-five, .hosttheway-hover-color-l-five:hover {
+    color: #fff !important;
+    background-color: #497d6a !important;
 }
 
 .hosttheway-text-color-one {

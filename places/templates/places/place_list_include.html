@@ -2,18 +2,18 @@
 <div class="w3-row w3-center" id="id_place_list">
     {% for place in places %}
         {% if forloop.counter == 1 %}
-            {% include 'places/place_card_include.html' with card_color="w3-light-blue" %}
+            {% include 'places/place_card_include.html' with card_color="hosttheway-color-four" %}
         {% elif forloop.counter == 2 %}
-            {% include 'places/place_card_include.html' with card_color="w3-grey" %}
-            <div class="w3-col s12 m4 w3-light-blue w3-margin-bottom w3-hide-large">
+            {% include 'places/place_card_include.html' with card_color="hosttheway-color-three" %}
+            <div class="w3-col s12 m4 w3-margin-bottom w3-hide-large">
                 {% leaflet_map "yourmap" callback="window.map_init_basic" %}
             </div>
         {% elif forloop.counter == 3 or forloop.counter == 6 %}
             {% include 'places/place_card_include.html' with card_color="hosttheway-color-two" %}
         {% elif forloop.counter == 5 or forloop.counter == 8 %}
-            {% include 'places/place_card_include.html' with card_color="hosttheway-color-two" %}
+            {% include 'places/place_card_include.html' with card_color="hosttheway-color-four" %}
         {% else %}
-            {% include 'places/place_card_include.html' with card_color="w3-lime" %}
+            {% include 'places/place_card_include.html' with card_color="hosttheway-color-five" %}
         {% endif %}
     {% endfor %}
 </div>
