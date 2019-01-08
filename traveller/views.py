@@ -20,7 +20,6 @@ def register_user(request: HttpRequest, place_id: int = 0) -> HttpResponse:
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         logging.debug(request.POST)
-
         if form.is_valid():
             user: User = form.save(commit=True)
             if place_id > 0:
@@ -34,16 +33,16 @@ def register_user(request: HttpRequest, place_id: int = 0) -> HttpResponse:
 
 def login_user(request: HttpRequest) -> HttpResponse:
     if request.POST:
+        logger.debug(request.POST)
         form = LoginForm(request.POST)
         username = request.POST['email']
         password = request.POST['password']
-
+        # authenticate also failed if user is inactiv
         user = authenticate(username=username, password=password)
+        logger.info(form.errors)
         if user is None:
-            form.add_error(error=_('User could not be authenticated'), field='email')
-            return render(request, 'traveller/login.html', {'form': form})
-        if not user.is_active:
-            form.add_error(error=_('User is not active anymore'), field='email')
+            form.add_error(error=_('User could not be authenticated'), field=None)
+            logger.info(form.errors)
             return render(request, 'traveller/login.html', {'form': form})
         login(request, user)
         if user.is_staff:

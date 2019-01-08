@@ -11,22 +11,22 @@
 {% block content_title %}{% endblock %}
 {% block breadcrumbs %}{% endblock %}
 {% block content %}
-    <div class="w3-center w3-text-green">
+    <div class="w3-center hosttheway-text-color-one hosttheway-color-one">
         {% if form.errors and not form.non_field_errors %}
-            <p class="errornote w3-text-red">
+            <p class="errornote hosttheway-text-color-two">
                 {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}
                     {% trans "Please correct the errors below." %}{% endif %}
             </p>
         {% endif %}
         {% if form.non_field_errors %}
             {% for error in form.non_field_errors %}
-                <p class="errornote w3-text-red">
+                <p class="errornote hosttheway-text-color-two">
                     {{ error }}
                 </p>
             {% endfor %}
         {% endif %}
         {% if user.is_authenticated %}
-            <p class="errornote w3-text-red">
+            <p class="errornote hosttheway-text-color-two">
                 {% blocktrans trimmed %}
                     You are authenticated as {{ username }}, but are not authorized to
                     access this page. Would you like to login to a different account?
@@ -39,14 +39,14 @@
                 <input type="hidden" name="next" value="{{ next }}"/>
             {% endif %}
             <div class="control-group">
-                {{ form.email.errors }}
+                <p class="errornote hosttheway-text-color-two">{{ form.email.errors }}</p>
                 <label class="control-label" for="id_email">Email</label>
                 <div class="controls">
                     <input type="email" id="id_email" name="email" placeholder="Email">
                 </div>
             </div>
             <div class="control-group">
-                {{ form.password.errors }}
+                <p class="errornote hosttheway-text-color-two">{{ form.password.errors }}</p>
                 <label class="control-label" for="id_password">Password</label>
                 <div class="controls">
                     <input type="password" name="password" id="id_password" placeholder="Password">

@@ -80,10 +80,9 @@ class ChangeUserAll(ChangeUserBase):
         return self.request.user.is_superuser
 
 
-class LoginForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['email', 'password']
+class LoginForm(forms.Form):
+    email = forms.EmailField(help_text=_('your email for logon'))
+    password = forms.PasswordInput()
 
 
 class UserCreationForm(forms.ModelForm):
@@ -116,6 +115,9 @@ class UserCreationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self._meta.model.USERNAME_FIELD in self.fields:
             self.fields[self._meta.model.USERNAME_FIELD].widget.attrs.update({'autofocus': True})
+
+    def clean(self):
+        self.error_class().clear()
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")

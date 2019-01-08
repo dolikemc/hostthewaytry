@@ -17,7 +17,6 @@ class SimpleViewPlaceTest(PlacesPreparedTest):
         # Issue a GET request.
         response: HttpResponse = self.client.get('/places/')
         self.assertContains(response, 'places', status_code=200)
-        print(str(response.content))
         self.assertInHTML('<title>HOST THE WAY</title>', response.content.decode())
 
     def test_index_template(self):

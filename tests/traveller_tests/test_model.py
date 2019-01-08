@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.test.utils import skipIf
 
 from tests.base import BaseTest
-from traveller.models import User, PlaceAccount
+from traveller.models import User, PlaceAccount, Place
 
 
 class ModelTest(BaseTest):
@@ -11,6 +11,12 @@ class ModelTest(BaseTest):
         self.set_up_staff()
         traveller = User.objects.get(id=self.user.id)
         self.assertEqual('test@user.com', str(traveller))
+
+    def test_place_account_string(self):
+        self.set_up_place_admin()
+        place = Place.objects.create(name='Test')
+        place_account = PlaceAccount.objects.create(user=self.user, place=place)
+        self.assertEqual('test@user.com <-> Test', str(place_account))
 
     def test_user_model(self):
         self.set_up_staff()

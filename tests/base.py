@@ -53,6 +53,9 @@ class RoleMixin(object):
             self.group.permissions.add(permission)
         self.user.groups.add(self.group)
 
+    def set_up_superuser(self):
+        self.user = User.objects.create_user(**self.credentials, is_staff=True, is_superuser=True)
+
 
 class BaseTest(TestCase, RoleMixin):
 
