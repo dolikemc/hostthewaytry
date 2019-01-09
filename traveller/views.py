@@ -3,6 +3,7 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import Group
 from django.http import *
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -16,15 +17,20 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 
 def register_user(request: HttpRequest, place_id: int = 0) -> HttpResponse:
-    """create a new user and add him to the admin group of the place"""
+    """create a new user and add him to the admin group of the place if place id is given"""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         logging.debug(request.POST)
         if form.is_valid():
             user: User = form.save(commit=True)
             if place_id > 0:
+                logger.debug(f'create place account for user {user} and place id {place_id}')
                 PlaceAccount.objects.create(place_id=place_id, user_id=user.id)
                 messages.success(request, 'Account created successfully')
+                if request.user.is_worker:
+                    logger.debug(f'add group place admin to user {user}')
+                    user.groups.add(Group.objects.filter(name__iexact='PlaceAdmin').first())
+                    return redirect('places:worker')
             return redirect('traveller:create-user', pk=user.id, place_id=place_id, )
     else:
         form = UserCreationForm()

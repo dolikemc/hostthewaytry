@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     {% load l10n i18n %}
-    {% if user.is_place_admin or user.is_stuff or user.is_superuser %}
+    {% if user.is_authenticated and not user.is_traveller %}
         {% include 'places/place_edit_bar_include.html' %}
     {% else %}
         <div class="w3-bar" id="id_place_detail_bar">

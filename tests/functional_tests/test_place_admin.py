@@ -71,7 +71,7 @@ class TestWorkflow(FunctionalTest):
         user = User.objects.create(email='b@d.com', unique_name='BB', screen_name='BB')
         PlaceAccount.objects.create(user_id=user.id, place_id=self.last_place_id)
         self.assertTrue(self.edit_change_action(edit_field=f'id_edit_place_admin_{user.id}',
-                                                change_field='id_unique_name', submit_button='id_create_user_submit'))
+                                                change_field='id_screen_name', submit_button='id_create_user_submit'))
 
     @skipIf(True, 'implement set user inactive function')
     def test_delete_admin(self):

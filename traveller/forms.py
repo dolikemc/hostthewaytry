@@ -47,6 +47,7 @@ class ChangeUserBase(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
 
     def form_valid(self, form):
         traveller: User = form.save(commit=False)
+        traveller.create_screen_names()
         traveller.is_superuser = False
         traveller.is_active = True
         if self.request.user.is_staff and not traveller.groups.filter(name='Worker').exists():
@@ -66,7 +67,7 @@ class ChangeUserBase(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
 class ChangeUser(ChangeUserBase):
     form_class = modelform_factory(User,
                                    exclude=['password', 'user_permissions', 'last_login', 'groups', 'is_staff',
-                                            'is_superuser', 'is_active'])
+                                            'is_superuser', 'is_active', 'unique_name'])
 
 
 class ChangeUserAll(ChangeUserBase):

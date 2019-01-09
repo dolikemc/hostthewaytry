@@ -53,3 +53,20 @@ class CreateTest(PlacesPreparedTest):
         self.assertFalse(user.is_staff)
         self.assertEqual('a', user.display_name)
         self.assertTrue(user.groups.filter(name__iexact='Traveller').exists())
+
+    def test_add_place_admin(self):
+        self.set_up_worker()
+        Group.objects.create(name='PlaceAdmin')
+        self.assertTrue(self.client.login(**self.credentials))
+        self.assertTrue(self.user.is_worker)
+        pwd = make_password('zegwugr643267')
+        response = self.client.post(f'/traveller/register/{self.last_place_id}/',
+                                    {'password1': pwd, 'password2': pwd, 'email': 'fl@c.com'})
+        self.assertRedirects(response, '/places/worker')
+        user = User.objects.get(id=2)
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_superuser)
+        self.assertFalse(user.is_staff)
+        self.assertEqual('fl@c.com', user.display_name)
+        self.assertTrue(user.groups.filter(name__iexact='PlaceAdmin').exists())
+        self.assertTrue(PlaceAccount.objects.filter(user_id=2, place_id=self.last_place_id).exists())

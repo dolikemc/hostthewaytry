@@ -5,17 +5,19 @@
     {% if user.is_authenticated %}
         <a href="{% url 'traveller:register-user' place_id=place.id %}" id="id_detail_action_register"
            class="w3-button w3-bar-item"><i class="fas fa-plus w3-large hosttheway-text-color-one"></i> admin</a>
-        <a href="{% url 'places:create-room' pk=place.id %}" class="w3-button w3-bar-item"
-           id="id_detail_action_create_room">
-            <i class="fas fa-plus w3-large hosttheway-text-color-one"></i> room</a>
-        <a href="{% url 'places:create-price' pk=place.id %}" class="w3-button w3-bar-item"
-           id="id_detail_action_create_price">
-            <i class="fas fa-plus w3-large hosttheway-text-color-one"></i> price</a>
-        <a href="{% url 'places:update-place' pk=place.id %}" class="w3-button w3-bar-item"
-           id="id_detail_action_update_place">
-            <i class="fas fa-edit w3-large hosttheway-text-color-one"></i> place</a>
-        <a href="{% url 'places:update-place-address' pk=place.id %}" class="w3-button w3-bar-item"
-           id="id_detail_action_update_place_address">
-            <i class="fas fa-edit w3-large hosttheway-text-color-one"></i> address</a>
+        {% if not user.is_worker %}
+            <a href="{% url 'places:create-room' pk=place.id %}" class="w3-button w3-bar-item"
+               id="id_detail_action_create_room">
+                <i class="fas fa-plus w3-large hosttheway-text-color-one"></i> room</a>
+            <a href="{% url 'places:create-price' pk=place.id %}" class="w3-button w3-bar-item"
+               id="id_detail_action_create_price">
+                <i class="fas fa-plus w3-large hosttheway-text-color-one"></i> price</a>
+            <a href="{% url 'places:update-place' pk=place.id %}" class="w3-button w3-bar-item"
+               id="id_detail_action_update_place">
+                <i class="fas fa-edit w3-large hosttheway-text-color-one"></i> place</a>
+            <a href="{% url 'places:update-place-address' pk=place.id %}" class="w3-button w3-bar-item"
+               id="id_detail_action_update_place_address">
+                <i class="fas fa-edit w3-large hosttheway-text-color-one"></i> address</a>
+        {% endif %}
     {% endif %}
 </div>
