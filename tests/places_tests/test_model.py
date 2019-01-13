@@ -19,6 +19,16 @@ class PlaceModel(TestCase):
         self.assertFalse(place.smoking)
         self.assertEqual(place.beds, 5)
 
+    def test_place_admin_list(self):
+        user = User.objects.create(email='a@b.com')
+        place = Place.objects.create(name='test')
+        PlaceAccount.objects.create(place_id=place.id, user_id=user.id)
+        self.assertListEqual([1], place.admin_id_list)
+        user = User.objects.create(email='b@b.com')
+        self.assertListEqual([1], place.admin_id_list)
+        PlaceAccount.objects.create(place_id=place.id, user_id=user.id)
+        self.assertListEqual([1, 2], place.admin_id_list)
+
     def test_distance(self):
         place: Place = Place.objects.create(name='Lang', latitude=12, longitude=48.5)
         self.assertAlmostEqual(place.distance(latitude=11, longitude=48), 1.118, places=2)

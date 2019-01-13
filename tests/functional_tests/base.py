@@ -24,8 +24,7 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         self.profile = webdriver.FirefoxProfile()
         self.profile.set_preference("geo.prompt.testing", True)
         self.profile.set_preference("geo.prompt.testing.allow", True)
-        self.browser = webdriver.Firefox(firefox_profile=self.profile,
-                                         options=self.options)
+        self.browser = webdriver.Firefox(firefox_profile=self.profile, options=self.options)
         Place.objects.create(name='Test1', reviewed=True)
         Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True)
         Place.objects.create(name='Test3', latitude=11, longitude=48, reviewed=True)
@@ -40,12 +39,10 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         self.browser.quit()
 
     def do_logon(self):
-
-        logon_button = self.browser.find_element_by_id('id_navigator_login')
+        logon_button = self.wait_for_find_element_by_id('id_navigator_login')
         logon_button.click()
         username = self.browser.find_element_by_id('id_email')
         password = self.browser.find_element_by_id('id_password')
-
         username.send_keys(self.credentials['email'])
         password.send_keys(self.credentials['password'])
         submit_button = self.browser.find_element_by_id('id_login_form')

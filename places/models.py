@@ -5,6 +5,7 @@ from decimal import Decimal
 from io import BytesIO
 from math import sqrt, pow
 from os.path import isfile
+from typing import List
 
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -190,6 +191,10 @@ class Place(models.Model):
                     pow(self.longitude - longitude, 2))
 
     @property
+    def admin_id_list(self) -> List[int]:
+        return [x.id for x in self.placeaccount_set.filter(place_id=self.id)]
+
+    @property
     def average_price(self) -> Decimal:
         return self.room_set.aggregate(Avg('price_per_person'))['price_per_person__avg']
 
@@ -321,7 +326,7 @@ class Place(models.Model):
 
             # after modifications, save it to the output
             im.save(output)
-        except FileNotFoundError  as exc:
+        except FileNotFoundError as exc:
             logger.warning(f'{exc}: file not found')
             pass
         except ValueError as exc:

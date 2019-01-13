@@ -17,6 +17,13 @@ class TestWorkflow(FunctionalTest):
     def test_login(self):
         self.assertTrue(self.check_if_logged_in())
 
+    def test_not_owned_place(self):
+        PlaceAccount.objects.filter(place_id=self.last_place_id, user_id=self.user.id).delete()
+        self.browser.get(self.live_server_url + '/places/')
+        button = self.wait_for_find_element_by_id(f'id_place_card_{self.last_place_id}')
+        button.click()
+        self.assertFalse(self.wait_for_find_element_by_id('id_detail_action_create_room', raise_exception=False))
+
     def test_start_site(self):
         """ standard list view"""
         self.assertTrue(self.check_if_logged_in())
