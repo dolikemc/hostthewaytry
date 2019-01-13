@@ -4,6 +4,7 @@ import time
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException, NoSuchElementException
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.remote.webdriver import WebElement
 
 from places.models import Place, Room, Price
@@ -18,10 +19,13 @@ logger: logging.Logger = logging.getLogger(__name__)
 class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
 
     def setUp(self):
+        self.options = Options()
+        self.options.headless = True
         self.profile = webdriver.FirefoxProfile()
         self.profile.set_preference("geo.prompt.testing", True)
         self.profile.set_preference("geo.prompt.testing.allow", True)
-        self.browser = webdriver.Firefox(firefox_profile=self.profile)
+        self.browser = webdriver.Firefox(firefox_profile=self.profile,
+                                         options=self.options)
         Place.objects.create(name='Test1', reviewed=True)
         Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True)
         Place.objects.create(name='Test3', latitude=11, longitude=48, reviewed=True)
@@ -69,7 +73,7 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         try:
             return self.browser.find_element_by_id(f'id_place_card_{self.last_place_id}')
         except NoSuchElementException:
-            return WebElement()
+            return WebElement(id_=None, parent=None)
 
     def is_detail_block(self) -> bool:
         try:
