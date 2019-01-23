@@ -192,7 +192,7 @@ class Place(models.Model):
 
     @property
     def admin_id_list(self) -> List[int]:
-        return [x.id for x in self.placeaccount_set.filter(place_id=self.id)]
+        return [x.user_id for x in self.placeaccount_set.filter(place_id=self.id)]
 
     @property
     def average_price(self) -> Decimal:
