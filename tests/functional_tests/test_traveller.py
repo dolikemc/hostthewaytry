@@ -38,9 +38,9 @@ class TestWorkflow(FunctionalTest):
         self.assertTrue(self.check_if_logged_in())
         config_menue : WebElement =self.browser.find_element_by_id('id_navigator_config')
         config_menue.click()
-        self.assertTrue(self.wait_for_find_element_id('id_navigator_profile')
-        self.assertTrue(self.wait_for_find_element_id('id_navigator_history')
-        self.assertTrue(self.wait_for_find_element_id('id_navigator_filter')
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_profile'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_history'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_filter'))
 
 
     @skipIf(True, 'not yet implemented')
