@@ -26,22 +26,21 @@ class TestWorkflow(FunctionalTest):
         self.assertTrue(self.check_if_logged_in())
         self.assertTrue(self.browser.find_element_by_id('id_welcome_place_list'))
         self.assertTrue(self.browser.find_element_by_id('id_place_list'))
-    
+
     def test_icon_bar(self):
         self.assertTrue(self.check_if_logged_in())
-        self.assertTrue(self.browser.find_element_by_id('id_navigator_logoff'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_logout'))
         self.assertTrue(self.browser.find_element_by_id('id_navigator_search'))
-        self.assertTrue(self.browser.find_element_by_id('id_navigator_home'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_places'))
         self.assertTrue(self.browser.find_element_by_id('id_navigator_config'))
 
     def test_config_menue(self):
         self.assertTrue(self.check_if_logged_in())
-        config_menue : WebElement =self.browser.find_element_by_id('id_navigator_config')
+        config_menue: WebElement = self.browser.find_element_by_id('id_navigator_config')
         config_menue.click()
         self.assertTrue(self.browser.find_element_by_id('id_navigator_profile'))
         self.assertTrue(self.browser.find_element_by_id('id_navigator_history'))
         self.assertTrue(self.browser.find_element_by_id('id_navigator_filter'))
-
 
     @skipIf(True, 'not yet implemented')
     def test_add_comment(self):
