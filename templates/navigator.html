@@ -24,17 +24,17 @@
     </a>
     {% if user.is_authenticated %}
         <div class="w3-dropdown-click">
-            <button onclick="showMenue()" class="w3-button w3-black" id="id_navigator_config_dropdown">
+            <button onclick="showmenu()" class="w3-button w3-black" id="id_navigator_config_dropdown">
                 <div class="w3-padding-8"><i class="fa fa-cog"></i></div>
             </button>
             <div id="id_navigator_config" class="w3-dropdown-content w3-bar-block w3-border">
-                <a href="#"
+                <a href="{% url 'places:history' %}"
                    class="w3-bar-item w3-button"
                    id="id_navigator_history">
                     <div class="w3-padding-8 hosttheway-text-color-three">
                         <i class="fa fa-archive"> Archive</i></div>
                 </a>
-                <a href="#"
+                <a href="{% url 'places:filter' %}"
                    class="w3-bar-item w3-button"
                    id="id_navigator_filter">
                     <div class="w3-padding-8 hosttheway-text-color-three">

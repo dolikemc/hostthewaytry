@@ -43,6 +43,18 @@ class IndexWorkerView(LoginRequiredMixin, BaseIndexView):
     template_name = 'places/worker_index.html'
 
 
+class IndexHistoryView(LoginRequiredMixin, BaseIndexView):
+    template_name = 'places/histories_index.html'
+
+
+class IndexFilterView(LoginRequiredMixin, BaseIndexView):
+    template_name = 'places/filter_index.html'
+
+    def get_queryset(self):
+        # todo: measure of distance
+        return Place.objects.filter(deleted__exact=False, reviewed__exact=True).order_by('-latitude')
+
+
 class IndexView(BaseIndexView):
     template_name = 'places/index.html'
 

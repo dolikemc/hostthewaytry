@@ -87,6 +87,44 @@ class TestWorkflow(FunctionalTest):
         self.assertTrue(self.edit_change_action(edit_field=f'id_delete_place_admin_{user.id}',
                                                 submit_button='id_create_user_submit'))
 
+    def test_icon_bar(self):
+        self.assertTrue(self.check_if_logged_in())
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_logout'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_search'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_places'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_config'))
+
+    def test_config_menu(self):
+        self.assertTrue(self.check_if_logged_in())
+        config_menu: WebElement = self.browser.find_element_by_id('id_navigator_config_dropdown')
+        self.assertIsInstance(config_menu, WebElement)
+        config_menu.click()
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_profile'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_history'))
+        self.assertTrue(self.browser.find_element_by_id('id_navigator_filter'))
+
+    def test_see_history(self):
+        self.assertTrue(self.check_if_logged_in())
+        config_menu: WebElement = self.browser.find_element_by_id('id_navigator_config_dropdown')
+        self.assertIsInstance(config_menu, WebElement)
+        config_menu.click()
+        history: WebElement = self.browser.find_element_by_id('id_navigator_history')
+        self.assertIsInstance(history, WebElement)
+        history.click()
+        self.assertTrue(self.wait_for_find_element_by_id('id_place_list_maintenance', raise_exception=False))
+        # todo: other histories, articles and bookings
+
+    def test_filter(self):
+        self.assertTrue(self.check_if_logged_in())
+        config_menu: WebElement = self.browser.find_element_by_id('id_navigator_config_dropdown')
+        self.assertIsInstance(config_menu, WebElement)
+        config_menu.click()
+        history: WebElement = self.browser.find_element_by_id('id_navigator_filter')
+        self.assertIsInstance(history, WebElement)
+        history.click()
+        self.assertTrue(self.wait_for_find_element_by_id('id_place_list', raise_exception=False))
+        # todo: other filters necessary for place admin
+
     def goto_admin_area(self):
         pass
 

@@ -21,7 +21,7 @@ function goBack() {
     window.history.back();
 }
 
-function showMenue() {
+function showmenu() {
     var x = document.getElementById("id_navigator_config");
     if (x.className.indexOf("w3-show") == -1) {
         x.className += " w3-show";
