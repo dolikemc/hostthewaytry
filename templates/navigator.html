@@ -28,25 +28,29 @@
                 <div class="w3-padding-8"><i class="fa fa-cog"></i></div>
             </button>
             <div id="id_navigator_config" class="w3-dropdown-content w3-bar-block w3-border">
-                <a href="{% url 'traveller:create-user' user.id 0 %}"
+                <a href="#"
                    class="w3-bar-item w3-button"
                    id="id_navigator_history">
-                    <div class="w3-padding-8"><i class="fa fa-archive"></i></div>
+                    <div class="w3-padding-8 hosttheway-text-color-three">
+                        <i class="fa fa-archive"> Archive</i></div>
                 </a>
-                <a href="{% url 'traveller:create-user' user.id 0 %}"
+                <a href="#"
                    class="w3-bar-item w3-button"
                    id="id_navigator_filter">
-                    <div class="w3-padding-8"><i class="fa fa-filter"></i></div>
+                    <div class="w3-padding-8 hosttheway-text-color-three">
+                        <i class="fa fa-filter"> Filter</i></div>
                 </a>
                 <a href="{% url 'traveller:create-user' user.id 0 %}"
                    class="w3-bar-item w3-button"
                    id="id_navigator_profile">
-                    <div class="w3-padding-8"><i class="fa fa-user"></i></div>
+                    <div class="w3-padding-8 hosttheway-text-color-three">
+                        <i class="fa fa-user"> Profile</i></div>
                 </a>
                 {% if user.is_authenticated and user.is_staff %}
-                    <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button hosttheway-text-color-two"
+                    <a href="{% url 'admin:index' %}"
+                       class="w3-bar-item w3-button hosttheway-text-color-two"
                        id="id_navigator_index">
-                        <div class="w3-padding-8"><i class="fa fa-cog"></i></div>
+                        <div class="w3-padding-8"><i class="fa fa-cog"> Admin</i></div>
                     </a>
                 {% endif %}
             </div>

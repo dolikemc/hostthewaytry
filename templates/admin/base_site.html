@@ -1,11 +1,15 @@
 {% extends "admin/base.html" %}
 
+{% load i18n static leaflet_tags cookielaw_tags %}
 {% block extrastyle %}
     {% include 'extrastyle_include.html' %}
     <style>
         #header {
             height: auto;
             background: #000000;
+        }
+
+        #header a:link, #header a:visited {
         }
 
         .submit-row p.deletelink-box {
@@ -29,4 +33,5 @@
 
 {% block footer %}
     {% include "footer.html" %}
+    <script type="text/javascript" src="{% static 'static/js/app.js' %}"></script>
 {% endblock %}

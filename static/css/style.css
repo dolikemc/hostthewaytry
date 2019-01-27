@@ -141,6 +141,10 @@ body, h1, h2, h3, h4, h5, h6, h7, h8 {
     color: darkgrey !important;
 }
 
+.hosttheway-text-color-three {
+    color: #000 !important;
+}
+
 /*
 [1]: All items a forced onto a single line, causing the overflow when necessary.
 [2]: Automatic overflow means a scroll bar won’t be present if it isn’t needed
