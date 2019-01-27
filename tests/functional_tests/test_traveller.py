@@ -36,7 +36,7 @@ class TestWorkflow(FunctionalTest):
 
     def test_config_menue(self):
         self.assertTrue(self.check_if_logged_in())
-        config_menue: WebElement = self.browser.find_element_by_id('id_navigator_config')
+        config_menue: WebElement = self.browser.find_element_by_id('id_navigator_config_dropdown')
         config_menue.click()
         self.assertTrue(self.browser.find_element_by_id('id_navigator_profile'))
         self.assertTrue(self.browser.find_element_by_id('id_navigator_history'))
