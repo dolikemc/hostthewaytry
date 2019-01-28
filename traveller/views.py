@@ -39,7 +39,6 @@ def register_user(request: HttpRequest, place_id: int = 0) -> HttpResponse:
 
 def login_user(request: HttpRequest) -> HttpResponse:
     if request.POST:
-        logger.debug(request.POST)
         form = LoginForm(request.POST)
         username = request.POST['email']
         password = request.POST['password']
