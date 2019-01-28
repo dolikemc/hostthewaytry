@@ -3,8 +3,8 @@
     <div class="hosttheway-color-two w3-container">
         <form method="post">
             <div class="w3-bar">
-                <button onclick="goBack()" class="w3-button w3-bar-item" id="id_create_detail_go_back"><i
-                        class="fa fa-backward w3-large"></i>
+                <button onclick="goBack()" class="w3-button w3-bar-item" id="id_create_detail_go_back" type="reset">
+                    <i class="fa fa-backward w3-large"></i>
                 </button>
                 {% if user.is_authenticated %}
                     <button type="submit" class="w3-button w3-bar-item" id="id_create_detail_submit">
