@@ -5,8 +5,9 @@
         {% include 'places/place_edit_bar_include.html' %}
     {% else %}
         <div class="w3-bar" id="id_place_detail_bar">
-            <a href="#" onclick="goBack()" class="w3-button w3-bar-item"><i
-                    class="fa fa-backward w3-large"></i></a>
+            <a href="#" onclick="goBack()" class="w3-button w3-bar-item" type="reset">
+                <i class="fa fa-backward w3-large"></i>
+            </a>
         </div>
     {% endif %}
     {% include 'places/place_detail_include.html' %}
