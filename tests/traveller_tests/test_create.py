@@ -62,7 +62,7 @@ class CreateTest(PlacesPreparedTest):
         pwd = make_password('zegwugr643267')
         response = self.client.post(f'/traveller/register/{self.last_place_id}/',
                                     {'password1': pwd, 'password2': pwd, 'email': 'fl@c.com'})
-        self.assertRedirects(response, '/places/worker')
+        self.assertRedirects(response, '/places/worker/')
         user = User.objects.get(id=2)
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_superuser)
