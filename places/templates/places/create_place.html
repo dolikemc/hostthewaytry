@@ -7,16 +7,6 @@
             </button>
         </div>
         <form method="post" enctype="multipart/form-data">
-            <div class="w3-bar">
-                <button onclick="goBack()" class="w3-button w3-bar-item" id="id_create_place_go_back" type="reset">
-                    <i class="fa fa-backward w3-large"></i>
-                </button>
-                {% if user.is_authenticated %}
-                    <button type="submit" class="w3-button w3-bar-item" id="id_create_place_submit"><i
-                            class="fa fa-save w3-large"></i>
-                    </button>
-                {% endif %}
-            </div>
             {% csrf_token %}
             <div class="w3-panel w3-center">
                 <h4>Admins</h4>
@@ -45,6 +35,13 @@
                     </tr>
                 {% endfor %}
             </table>
+            {% if user.is_authenticated %}
+                <div class="w3-bar">
+                    <button type="submit" class="w3-button w3-bar-item" id="id_create_place_submit"><i
+                            class="fa fa-save w3-large"></i>
+                    </button>
+                </div>
+            {% endif %}
             {% for field in form %}
                 {% cycle '<div class="w3-row-padding">' '' %}
 
