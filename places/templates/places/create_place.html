@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="hosttheway-color-two w3-container">
+        <div class="w3-bar">
+            <button onclick="goBack()" class="w3-button w3-bar-item" id="id_create_place_go_back" type="reset">
+                    <i class="fa fa-backward w3-large"></i>
+            </button>
+        </div>
         <form method="post" enctype="multipart/form-data">
             <div class="w3-bar">
                 <button onclick="goBack()" class="w3-button w3-bar-item" id="id_create_place_go_back" type="reset">
