@@ -79,6 +79,9 @@ class TestWorkflow(FunctionalTest):
     def test_add_book_request(self):
         detail_button = self.get_detail_block('id_place_list')
         detail_button.click()
+        book_button = self.wait_for_find_element_by_id('id_book_place')
+        self.assertIsInstance(book_button, WebElement)
+        book_button.click()
         form = self.wait_for_find_element_by_id('id_book_email_form')
         self.assertIsInstance(form, WebElement)
         form.submit()
