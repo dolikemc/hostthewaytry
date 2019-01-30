@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load l10n i18n %}
+    <div id="id_book_email_modal" class="w3-container">
+        <div class="w3-card-4 hosttheway-color-one w3-border">
+            <form id="id_book_email_form" class="w3-container">
+                <div class="w3-section">
+                    <label for="id_book_email_to">{% trans "To:" %}</label>
+                    <input id="id_book_email_to" type="email" value="{{ place.email }}" readonly
+                           class="w3-input w3-border">
+                    <label for="id_book_email_from">{% trans "Your Email:" %}</label>
+                    {% if user.is_authenticated %}
+                        <input id="id_book_email_from" type="email" class="w3-input w3-border w3-margin-bottom"
+                               readonly value="{{ user.email }}">
+                    {% else %}
+                        <input id="id_book_email_from" type="email" class="w3-input w3-border w3-margin-bottom"
+                               required>
+                    {% endif %}
+                    <label for="id_book_email_message">Message:</label>
+                    <input class="w3-input w3-border" type="text" id="id_book_email_message"
+                           placeholder="{% trans 'Do you have vacancies' %}">
+                    <button class="w3-button w3-block w3-pale-green w3-section w3-padding"
+                            type="submit">Send
+                    </button>
+                </div>
+            </form>
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <a href="#" onclick="goBack()" class="w3-button w3-bar-item" type="reset">
+                    Cancel
+                </a>
+                <span class="w3-right w3-padding w3-hide-small">Forgot <a href="#">password?</a></span>
+            </div>
+        </div>
+    </div>
+{% endblock %}

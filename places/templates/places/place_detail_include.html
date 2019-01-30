@@ -28,49 +28,11 @@
                     {{ place.price_low.normalize }} - {{ place.price_high.normalize }} {{ place.currency }}
                 {% endif %}
             </div>
-            <button onclick="
-            document.getElementById('id_book_email_modal').style.display='block';
-            document.getElementById('id_leaflet_map').style.display='none';"
-                    class="w3-button w3-block w3-section w3-padding hosttheway-color-two" id="id_book_place">Book Place
-            </button>
-        </div>
-    </div>
-
-    <div id="id_book_email_modal" class="w3-modal">
-        <div class="w3-modal-content w3-card-4 w3-animate-zoom hosttheway-color-one w3-border" style="max-width:600px">
-            <div class="w3-center"><br>
-                <span onclick="document.getElementById('id_book_email_modal').style.display='none';
-                    document.getElementById('id_leaflet_map').style.display='block';"
-                      class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
-
-            </div>
-            <form id="id_book_email_form" class="w3-container">
-                <div class="w3-section">
-                    <label for="id_book_email_to">{% trans "To:" %}</label>
-                    <input id="id_book_email_to" type="email" value="{{ place.email }}" readonly
-                           class="w3-input w3-border">
-                    <label for="id_book_email_from">{% trans "Your Email:" %}</label>
-                    {% if user.is_authenticated %}
-                        <input id="id_book_email_from" type="email" class="w3-input w3-border w3-margin-bottom"
-                               readonly value="{{ user.email }}">
-                    {% else %}
-                        <input id="id_book_email_from" type="email" class="w3-input w3-border w3-margin-bottom"
-                               required>
-                    {% endif %}
-                    <label for="id_book_email_message">Message:</label>
-                    <input class="w3-input w3-border" type="text" id="id_book_email_message"
-                           placeholder="{% trans 'Do you have vacancies' %}">
-                    <button class="w3-button w3-block w3-pale-green w3-section w3-padding" type="submit">Send</button>
-
-                </div>
-            </form>
-            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
-                <button onclick="document.getElementById('id_book_email_modal').style.display='none';
-                document.getElementById('id_leaflet_map').style.display='block';" type="button"
-                        class="w3-button hosttheway-color-two">Cancel
+            <a href="{% url 'booking:create-booking' place.id %}">
+                <button class="w3-button w3-block w3-section w3-padding hosttheway-color-two"
+                        id="id_book_place">Book Place
                 </button>
-                <span class="w3-right w3-padding w3-hide-small">Forgot <a href="#">password?</a></span>
-            </div>
+            </a>
         </div>
     </div>
     <div class="w3-container w3-third" id="id_leaflet_map">

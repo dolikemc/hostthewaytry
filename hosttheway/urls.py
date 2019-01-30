@@ -29,6 +29,6 @@ urlpatterns = [
                   path('places/', include('places.urls')),
                   path('article/', include('article.urls')),
                   path('traveller/', include('traveller.urls')),
-                  #                  path('places/places/static/img/', views.serve),
+                  path('booking', include('booking.urls')),
 
               ] + static(settings.STATIC_URL, document_root=settings.BASE_DIR)

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'traveller.apps.TravellerConfig',
     'places.apps.PlacesConfig',
     'article.apps.ArticleConfig',
+    'booking.apps.BookingConfig',
     'leaflet',
     'cookielaw',
 ]
