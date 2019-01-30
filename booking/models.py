@@ -6,8 +6,8 @@ from traveller.models import User
 
 # Create your models here.
 class Booking(models.Model):
-    place = models.OneToOneField(to=Place, on_delete=models.CASCADE)
-    traveller = models.OneToOneField(to=User, on_delete=models.CASCADE)
+    place = models.ForeignKey(to=Place, on_delete=models.CASCADE)
+    traveller = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE)
     date_from = models.DateField()
     date_to = models.DateField()
     adults = models.PositiveIntegerField(default=1)
