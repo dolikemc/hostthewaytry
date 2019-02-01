@@ -17,6 +17,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 class BookingCreate(generic.CreateView):
     # login_url = '/traveller/login/'
     model = Booking
+    context_object_name = 'form'
     fields = '__all__'
     template_name = 'booking/create.html'
 
