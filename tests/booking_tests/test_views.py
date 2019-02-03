@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.http.response import HttpResponse
 from django.shortcuts import reverse
 
@@ -20,10 +22,19 @@ class BookingViewTests(BaseTest):
     def test_add_booking(self):
         self.set_up_traveller()
         self.assertTrue(self.client.login(**self.credentials))
+        place = Place.objects.get(pk=self.last_place_id)
         response: HttpResponse = self.client.post(reverse('booking:create-booking',
                                                           kwargs={'pk': self.last_place_id}),
-                                                  data={'message': 'hallo'})
-        self.assertContains(response, 'test@user.com')
+                                                  data={'message': 'hallo',
+                                                        'date_from': date(2019, 1, 1),
+                                                        'date_to': date(2019, 1, 2),
+                                                        'adults': 2, 'kids': 0,
+                                                        'place': place.id,
+                                                        'traveller': self.user.id
+                                                        }
+                                                  )
+        self.assertRedirects(response, reverse('places:detail',
+                                               kwargs={'pk': place.id}))
         self.assertEqual(1, Booking.objects.count())
         booking = Booking.objects.get(pk=1)
         self.assertIsInstance(booking, Booking)

@@ -7,7 +7,6 @@
             <div class="w3-section">
                 {% csrf_token %}
                 {% for field in form %}
-
                     {% cycle '<div class="w3-row-padding">' '' %}
                     <div class="w3-half ">
                         {{ field.errors }}
@@ -15,7 +14,6 @@
                         {{ field }}
                     </div>
                     {% cycle '' '</div>' %}
-
                 {% endfor %}
                 <button class="w3-button w3-block w3-pale-green w3-section w3-padding" type="submit">
                     Send

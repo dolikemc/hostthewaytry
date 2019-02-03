@@ -191,5 +191,10 @@ LOGGING = {
                 'handlers': ['console'],
                 'level': 'DEBUG',
             },
+        'booking':
+            {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+            },
     },
 }
