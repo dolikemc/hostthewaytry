@@ -1,4 +1,5 @@
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.remote.webelement import WebElement
 
 from places.models import Place
 from tests.functional_tests.base import FunctionalTest
@@ -51,6 +52,7 @@ class TestWorkflow(FunctionalTest):
         card.click()
         self.wait_for_find_element_by_id('id_place_detail_bar')
         book = self.browser.find_element_by_id('id_book_place')
+        self.assertIsInstance(book, WebElement)
         book.click()
         self.wait_for_find_element_by_id('id_book_email_form')
         self.assertTrue(self.browser.find_element_by_id('id_book_email_from'))
