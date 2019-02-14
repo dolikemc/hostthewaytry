@@ -341,6 +341,9 @@ class Place(models.Model):
         return reverse('places:detail', kwargs={'pk': self.pk})
 
 
+class Hostel(Place):
+    pass
+
 class Price(models.Model):
     CLEANING_FEE = 'CL'
     BREAKFAST = 'BR'
