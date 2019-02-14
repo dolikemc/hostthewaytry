@@ -8,6 +8,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.remote.webdriver import WebElement
 
 from places.models import Place, Room, Price
+from traveller.models import User
 from tests.base import RoleMixin
 
 MAX_WAIT = 6
@@ -25,10 +26,11 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         self.profile.set_preference("geo.prompt.testing", True)
         self.profile.set_preference("geo.prompt.testing.allow", True)
         self.browser = webdriver.Firefox(firefox_profile=self.profile, options=self.options)
-        Place.objects.create(name='Test1', reviewed=True)
-        Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True)
-        Place.objects.create(name='Test3', latitude=11, longitude=48, reviewed=True)
-        place = Place.objects.create(name='Test4', latitude=11, longitude=48, reviewed=True)
+        self.user = User.objects.create(email='admin@all.com')
+        Place.objects.create(name='Test1', reviewed=True, created_by=self.user)
+        Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True, created_by=self.user)
+        Place.objects.create(name='Test3', latitude=11, longitude=48, reviewed=True, created_by=self.user)
+        place = Place.objects.create(name='Test4', latitude=11, longitude=48, reviewed=True, created_by=self.user)
         room = Room.objects.create(room_number='01', place_id=place.id)
         price = Price.objects.create(value=2.2, place_id=place.id)
         self.last_price_id = price.id

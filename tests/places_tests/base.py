@@ -22,12 +22,12 @@ class PlacesPreparedTest(PlacesTest):
     def setUp(self):
         super().setUp()
         # a couple of places
-        place = Place.objects.create(name='TestIt')
+        place = Place.objects.create(name='TestIt', created_by=self.user)
         self.last_place_id = place.id
         Room.objects.create(place_id=self.last_place_id, room_number='01')
         self.last_room_id = Room.objects.create(place_id=self.last_place_id, room_number='02').id
         Price.objects.create(place_id=self.last_place_id)
         self.last_price_id = Price.objects.create(place_id=self.last_place_id).id
-        place2 = Place.objects.create(name='Da')
+        place2 = Place.objects.create(name='Da', created_by=self.user)
         Room.objects.create(place_id=place2.id, room_number='03')
         Price.objects.create(place_id=place2.id)

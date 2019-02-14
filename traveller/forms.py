@@ -11,7 +11,8 @@ from django.shortcuts import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
-from traveller.models import User, PlaceAccount
+from traveller.models import User
+from places.models import PlaceAccount
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)

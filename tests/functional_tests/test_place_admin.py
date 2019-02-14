@@ -3,7 +3,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
 from tests.functional_tests.base import FunctionalTest
-from traveller.models import PlaceAccount, User
+from traveller.models import User
+from places.models import PlaceAccount
 
 
 class TestWorkflow(FunctionalTest):

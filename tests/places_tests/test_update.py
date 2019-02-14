@@ -1,8 +1,7 @@
 from decimal import Decimal
 
-from places.models import Place, Room, Price
+from places.models import Place, Room, Price, PlaceAccount
 from tests.places_tests.base import PlacesPreparedTest
-from traveller.models import PlaceAccount
 
 
 class UpdatePlaceTest(PlacesPreparedTest):

@@ -2,13 +2,14 @@ from decimal import Decimal
 
 from django.test import TestCase
 
-from places.models import Place, Room, Price, GeoName
-from traveller.models import User, PlaceAccount
+from places.models import Place, Room, Price, GeoName, PlaceAccount
+from traveller.models import User
 
 
 class PlaceModel(TestCase):
     def test_properties(self):
-        place = Place.objects.create(name='test')
+        user = User.objects.create(email='a@c.com')
+        place = Place.objects.create(name='test', created_by=user)
         room = Room.objects.create(price_per_person=12.5, room_number='01', beds=2, place_id=place.id)
         place.room_set.add(room)
         room2 = Room.objects.create(price_per_person=13.5, room_number='02', beds=3, place_id=place.id)
@@ -23,8 +24,8 @@ class PlaceModel(TestCase):
         User.objects.create(email='a@b.com')
         user = User.objects.create(email='a@c.com')
         self.assertEqual(2, user.id)
-        Place.objects.create(name='test')
-        place = Place.objects.create(name='test')
+        Place.objects.create(name='test', created_by=user)
+        place = Place.objects.create(name='test', created_by=user)
         PlaceAccount.objects.create(place_id=place.id, user_id=user.id)
         self.assertListEqual([2], place.admin_id_list)
         user = User.objects.create(email='b@b.com')
@@ -33,36 +34,42 @@ class PlaceModel(TestCase):
         self.assertListEqual([2, 3], place.admin_id_list)
 
     def test_distance(self):
-        place: Place = Place.objects.create(name='Lang', latitude=12, longitude=48.5)
+        user = User.objects.create(email='a@c.com')
+        place: Place = Place.objects.create(name='Lang', latitude=12, longitude=48.5, created_by=user)
         self.assertAlmostEqual(place.distance(latitude=11, longitude=48), 1.118, places=2)
 
     def test_categories_tiny(self):
-        place: Place = Place.objects.create(name='Tiny')
+        user = User.objects.create(email='a@c.com')
+        place: Place = Place.objects.create(name='Tiny', created_by=user)
         self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.TINY))
         self.assertEqual(1, place.room_set.count())
         self.assertEqual(2, place.beds)
         self.assertAlmostEqual(Decimal(12.6), place.room_set.first().price_per_person, 2)
 
     def test_categories_small(self):
-        place: Place = Place.objects.create(name='Tiny')
+        user = User.objects.create(email='a@c.com')
+        place: Place = Place.objects.create(name='Tiny', created_by=user)
         self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.SMALL))
         self.assertEqual(2, place.room_set.count())
         self.assertEqual(5, place.beds)
 
     def test_categories_medium(self):
-        place: Place = Place.objects.create(name='Tiny')
+        user = User.objects.create(email='a@c.com')
+        place: Place = Place.objects.create(name='Tiny', created_by=user)
         self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.MEDIUM))
         self.assertEqual(3, place.room_set.count())
         self.assertEqual(11, place.beds)
 
     def test_categories_large(self):
-        place: Place = Place.objects.create(name='Tiny')
+        user = User.objects.create(email='a@c.com')
+        place: Place = Place.objects.create(name='Tiny', created_by=user)
         self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.LARGE))
         self.assertEqual(4, place.room_set.count())
         self.assertEqual(14, place.beds)
 
     def test_email(self):
-        place = Place.objects.create(name='test')
+        user = User.objects.create(email='a@c.com')
+        place = Place.objects.create(name='test', created_by=user)
         user = User.objects.create(screen_name='mail user', email='a@b.de')
         PlaceAccount.objects.create(place_id=place.id, user_id=user.id)
         self.assertEqual('a@b.de', place.email)
@@ -71,7 +78,8 @@ class PlaceModel(TestCase):
         self.assertEqual('a@b.de', place.email)  # sort by creation date, means id
 
     def test_price_repr(self):
-        place = Place.objects.create(name='test')
+        user = User.objects.create(email='a@c.com')
+        place = Place.objects.create(name='test', created_by=user)
         price = Price.objects.create(place_id=place.id)
         self.assertEqual('test () - CL - 0.0EUR', str(price))
 
@@ -81,10 +89,12 @@ class PlaceModel(TestCase):
         self.assertEqual('Home (DE):1', str(GeoName.objects.filter(pk=1).first()))
 
     def test_description(self):
-        place = Place.objects.create(name='test', description='yeah')
+        user = User.objects.create(email='a@c.com')
+        place = Place.objects.create(name='test', description='yeah', created_by=user)
         self.assertEqual('yeah', place.generated_description)
 
     def test_pets(self):
-        place = Place.objects.create(name='test')
+        user = User.objects.create(email='a@c.com')
+        place = Place.objects.create(name='test', created_by=user)
         room = Room.objects.create(price_per_person=12.5, room_number='01', pets=True, place_id=place.id)
         self.assertEqual(True, place.pets)

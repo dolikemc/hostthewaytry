@@ -1,8 +1,9 @@
 from django.contrib.auth.models import AbstractBaseUser
 from django.test.utils import skipIf
 
+from places.models import PlaceAccount, Place
 from tests.base import BaseTest
-from traveller.models import User, PlaceAccount, Place
+from traveller.models import User
 
 
 class ModelTest(BaseTest):
@@ -14,7 +15,7 @@ class ModelTest(BaseTest):
 
     def test_place_account_string(self):
         self.set_up_place_admin()
-        place = Place.objects.create(name='Test')
+        place = Place.objects.create(name='Test', created_by=self.user)
         place_account = PlaceAccount.objects.create(user=self.user, place=place)
         self.assertEqual('test@user.com <-> Test', str(place_account))
 
@@ -38,10 +39,10 @@ class ModelTest(BaseTest):
         User.objects.create(email='next@a.com', screen_name='a', unique_name='a')
         self.set_up_staff()
         self.user.save()
-        self.assertEqual(self.user.id, 2)
+        self.assertEqual(self.user.id, 3)
         self.user.screen_name = 'a'
         self.user.create_screen_names()
-        self.assertEqual('a (a2)', self.user.display_name)
+        self.assertEqual(f'a (a{self.user.id})', self.user.display_name)
 
     def test_unique_name_from_email_html(self):
         self.user = User.objects.create(email='next@a.com')
@@ -58,11 +59,11 @@ class ModelTest(BaseTest):
         User.objects.create(email='next@a.com', screen_name='a', unique_name='a')
         self.set_up_staff()
         self.user.save()
-        self.assertEqual(self.user.id, 2)
+        self.assertEqual(self.user.id, 3)
         self.user.screen_name = 'a'
         self.user.create_screen_names()
         self.assertIn('a', self.user.display_name_html)
-        self.assertIn('(a2)', self.user.display_name_html)
+        self.assertIn(f'(a{self.user.id})', self.user.display_name_html)
 
     def test_is_worker(self):
         self.set_up_worker()

@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from utils.file import ImageX
+from traveller.models import User, logger
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -148,8 +149,6 @@ class Place(models.Model):
                                             default=False)
     max_stay = models.PositiveIntegerField(default=365, help_text='What is the maximum stay?')
     min_stay = models.PositiveIntegerField(default=1, help_text='What is the minimum stay?')
-    category = models.CharField(max_length=2, help_text='Category of your place', choices=HOST_CATEGORY,
-                                default=NOT_AVAILABLE)
 
     # about meal
     meals = models.CharField(max_length=2, help_text='How many meals per day your serve?', choices=MEALS,
@@ -180,7 +179,7 @@ class Place(models.Model):
     priority_category = models.CharField(max_length=2, choices=PRIORITY_TYPES, default=NO_ANSWER, blank=True, null=True)
 
     # technical data
-    group = models.ForeignKey(to=Group, on_delete=models.CASCADE, null=True, blank=True)
+    created_by = models.ForeignKey(to=User, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     reviewed = models.BooleanField(editable=False, default=False)
@@ -405,3 +404,22 @@ class Room(models.Model):
 
     def __str__(self) -> str:
         return f"{self.place} - {self.room_number} - ({self.beds})"
+
+
+class PlaceAccount(models.Model):
+    place = models.ForeignKey(to=Place, null=True, blank=True, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(to=User, null=True, blank=True, on_delete=models.CASCADE)
+
+    @classmethod
+    def edit_place_permission(cls, user: User, place_id: int) -> bool:
+        if user.is_superuser or user.is_staff:
+            logger.debug('super user and staff are allowed to do everything with each place')
+            return True
+        if user.is_anonymous or user.is_traveller:
+            logger.debug('anonymous user or traveller are not allowed to do something with place')
+            return False
+        logger.debug(f'looking for an user {user} and a place with id {place_id}')
+        return cls.objects.filter(user_id=user.id, place_id=place_id).exists()
+
+    def __str__(self):
+        return f"{self.user.email} <-> {self.place.name}"

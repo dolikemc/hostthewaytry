@@ -1,6 +1,5 @@
-from places.models import Room, Place, Price
+from places.models import Room, Place, Price, PlaceAccount
 from tests.places_tests.base import PlacesPreparedTest
-from traveller.models import PlaceAccount
 
 
 class NewPlaceTest(PlacesPreparedTest):

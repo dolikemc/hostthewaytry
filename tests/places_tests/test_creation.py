@@ -1,9 +1,9 @@
 from datetime import date, timedelta
 from decimal import Decimal
 
-from places.models import Place, Room
+from places.models import Place, Room, PlaceAccount
 from tests.places_tests.base import PlacesTest
-from traveller.models import User, PlaceAccount
+from traveller.models import User
 
 
 class NewPlaceTest(PlacesTest):

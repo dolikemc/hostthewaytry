@@ -10,8 +10,7 @@ from django.shortcuts import render, redirect
 
 from places.forms import PlaceCategoryForm
 # my models
-from places.models import Place
-from traveller.models import PlaceAccount
+from places.models import Place, PlaceAccount
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)

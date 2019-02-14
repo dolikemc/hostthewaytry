@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from traveller.models import PlaceAccount, User
+from traveller.models import User
+from places.models import PlaceAccount
 
 # Register your models here.
 admin.site.register(PlaceAccount)

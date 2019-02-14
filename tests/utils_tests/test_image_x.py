@@ -30,7 +30,7 @@ class ExifData(BaseTest):
         self.assertEqual(0, file.orientation)
 
     def test_save_method(self):
-        Place.objects.create(name='Test')
+        Place.objects.create(name='Test', created_by=self.user)
         place = Place.objects.get(id=1)
         place.picture = self.get_file_pointer()
         place.picture.name = 'IMG_3745_X.JPG'

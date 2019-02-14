@@ -11,7 +11,7 @@ from tests.base import BaseTest
 class BookingViewTests(BaseTest):
     def setUp(self):
         super().setUp()
-        self.last_place_id = Place.objects.create(name='Test').id
+        self.last_place_id = Place.objects.create(name='Test', created_by=self.user).id
 
     def test_open_booking(self):
         self.set_up_traveller()

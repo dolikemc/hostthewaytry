@@ -8,8 +8,6 @@ from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from places.models import Place
-
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -148,22 +146,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.display_name
-
-
-class PlaceAccount(models.Model):
-    place = models.ForeignKey(to=Place, null=True, blank=True, on_delete=models.DO_NOTHING)
-    user = models.ForeignKey(to=User, null=True, blank=True, on_delete=models.CASCADE)
-
-    @classmethod
-    def edit_place_permission(cls, user: User, place_id: int) -> bool:
-        if user.is_superuser or user.is_staff:
-            logger.debug('super user and staff are allowed to do everything with each place')
-            return True
-        if user.is_anonymous or user.is_traveller:
-            logger.debug('anonymous user or traveller are not allowed to do something with place')
-            return False
-        logger.debug(f'looking for an user {user} and a place with id {place_id}')
-        return cls.objects.filter(user_id=user.id, place_id=place_id).exists()
-
-    def __str__(self):
-        return f"{self.user.email} <-> {self.place.name}"

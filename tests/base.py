@@ -62,6 +62,7 @@ class BaseTest(TestCase, RoleMixin):
     def setUp(self):
         # Every test needs a client.
         self.client = Client()
+        self.user = User.objects.create(email='admin@test.com')
         self.last_place_id = 0
         self.image_with_exif = 'IMG_3745.JPG'
         self.image_without_exif = 'hosttheway.jpg'

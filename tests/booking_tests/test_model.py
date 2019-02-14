@@ -10,7 +10,7 @@ from traveller.models import User
 class BookingModel(TestCase):
     def test_creation(self):
         user = User.objects.create(email='a@b.com', screen_name='traveller', unique_name='traveller')
-        place = Place.objects.create(name='Test', country='DE')
+        place = Place.objects.create(name='Test', country='DE', created_by=user)
         booking = Booking.objects.create(place=place, traveller=user, date_from=date.today(), adults=2,
                                          date_to=date.today() + timedelta(days=1))
         self.assertTrue(booking)

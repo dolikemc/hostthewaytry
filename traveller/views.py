@@ -10,7 +10,8 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
 from traveller.forms import LoginForm, UserCreationForm
-from traveller.models import PlaceAccount, User
+from traveller.models import User
+from places.models import PlaceAccount
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)

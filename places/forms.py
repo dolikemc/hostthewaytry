@@ -11,8 +11,8 @@ from django.shortcuts import reverse
 from django.views import generic
 
 # my models
-from places.models import Place, Price, Room
-from traveller.models import PlaceAccount, User
+from places.models import Place, Price, Room, PlaceAccount
+from traveller.models import User
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
@@ -218,7 +218,9 @@ class CreatePlaceMinimal(LoginRequiredWithURL, PermissionRequiredMixin, generic.
     @atomic
     def form_valid(self, form):
         logger.debug(self.request.POST)
-        place = form.save(commit=True)
+        place = form.save(commit=False)
+        place.created_by = self.request.user
+        place.save()
         place.add_std_rooms_and_prices(form.cleaned_data['category'], form.cleaned_data['std_price'])
         # todo: what to do with breakfast included
         PlaceAccount.objects.create(place_id=place.id, user_id=self.request.user.id)

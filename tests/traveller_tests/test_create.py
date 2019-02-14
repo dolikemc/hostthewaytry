@@ -1,8 +1,9 @@
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 
+from places.models import PlaceAccount
 from tests.places_tests.base import PlacesPreparedTest
-from traveller.models import PlaceAccount, User
+from traveller.models import User
 
 
 class CreateTest(PlacesPreparedTest):
@@ -13,11 +14,10 @@ class CreateTest(PlacesPreparedTest):
         self.assertTrue(self.client.login(**self.credentials))
         pwd = make_password('zegwugr643267')
         response = self.client.post('/traveller/register/', {'password1': pwd, 'password2': pwd, 'email': 'fl@c.com'})
-        self.assertRedirects(response, '/traveller/user/2/0/')
-        response = self.client.post('/traveller/user/2/0/',
-                                    {'screen_name': 'fl', 'unique_name': 'fl', 'email': 'fl@c.com'})
+        self.assertRedirects(response, f'/traveller/user/{self.user.id + 1}/0/')
+        response = self.client.post(response.url, {'screen_name': 'fl', 'unique_name': 'fl', 'email': 'fl@c.com'})
         self.assertRedirects(response, '/admin/')
-        user = User.objects.get(id=2)
+        user = User.objects.get(id=self.user.id + 1)
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_staff)
@@ -31,10 +31,10 @@ class CreateTest(PlacesPreparedTest):
         pwd = make_password('zegwugr643267')
         response = self.client.post(f'/traveller/register/{self.last_place_id}/', {'password1': pwd, 'password2': pwd,
                                                                                    'email': 'fl@c.com'})
-        self.assertRedirects(response, f'/traveller/user/2/{self.last_place_id}/')
+        self.assertRedirects(response, f'/traveller/user/{self.user.id + 1}/{self.last_place_id}/')
         response = self.client.post(response.url, {'screen_name': 'a', 'unique_name': 'a', 'email': 'fl@c.com'})
         self.assertRedirects(response, f'/places/update/place/{self.last_place_id}/')
-        user = User.objects.get(id=2)
+        user = User.objects.get(id=self.user.id + 1)
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_staff)
@@ -63,10 +63,10 @@ class CreateTest(PlacesPreparedTest):
         response = self.client.post(f'/traveller/register/{self.last_place_id}/',
                                     {'password1': pwd, 'password2': pwd, 'email': 'fl@c.com'})
         self.assertRedirects(response, '/places/worker/')
-        user = User.objects.get(id=2)
+        user = User.objects.get(id=self.user.id + 1)
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_staff)
         self.assertEqual('fl@c.com', user.display_name)
         self.assertTrue(user.groups.filter(name__iexact='PlaceAdmin').exists())
-        self.assertTrue(PlaceAccount.objects.filter(user_id=2, place_id=self.last_place_id).exists())
+        self.assertTrue(PlaceAccount.objects.filter(user_id=self.user.id + 1, place_id=self.last_place_id).exists())
