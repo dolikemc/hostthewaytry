@@ -24,27 +24,6 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 
 
 @atomic
-@permission_required('places.add_place')
-@login_required(login_url='/traveller/login/')
-def create_place(request: HttpRequest) -> HttpResponse:
-    """cover the create new place process."""
-    if request.method == 'POST':
-        logger.debug(request.POST)
-        form = PlaceCategoryForm(request.POST, request.FILES)
-    else:
-        form = PlaceCategoryForm()
-    if form.is_valid():
-        place: Place = form.save(commit=False)
-        place.save()
-        PlaceAccount.objects.create(place_id=place.id, user_id=request.user.id)
-        # noinspection PyTypeChecker,PyCallByClass
-        place.add_std_rooms_and_prices(std_price=Decimal(request.POST.get('std_price', '0.0')))
-        return redirect('places:detail', pk=place.pk)
-    logger.warning(form.errors)
-    return render(request, 'places/create_place_minimal.html', {'form': form})
-
-
-@atomic
 @permission_required('places.delete_place')
 @login_required(login_url='/traveller/login/')
 def delete_place(request: HttpRequest, pk: int) -> HttpResponse:

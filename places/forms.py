@@ -4,6 +4,7 @@ import logging
 # django modules
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.db.transaction import atomic
 from django.forms import ModelForm
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import reverse
@@ -206,13 +207,15 @@ class PlaceCategoryForm(ModelForm):
                   'wifi', 'own_key', 'separate_entrance', 'country']
 
 
-class CreatePlaceMinimal(LoginRequiredWithURL, generic.CreateView):
+class CreatePlaceMinimal(LoginRequiredWithURL, PermissionRequiredMixin, generic.CreateView):
+    permission_required = 'places.add_place'
     form_class = PlaceCategoryForm
     model = Place
     initial = {'breakfast_included': True, 'std_price': 30.0, 'category': Place.TINY}
     template_name = 'places/create_place_minimal.html'
     context_object_name = 'form'
 
+    @atomic
     def form_valid(self, form):
         logger.debug(self.request.POST)
         place = form.save(commit=True)

@@ -37,27 +37,27 @@ class PlaceModel(TestCase):
         self.assertAlmostEqual(place.distance(latitude=11, longitude=48), 1.118, places=2)
 
     def test_categories_tiny(self):
-        place: Place = Place.objects.create(name='Tiny', category=Place.TINY)
-        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6)))
+        place: Place = Place.objects.create(name='Tiny')
+        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.TINY))
         self.assertEqual(1, place.room_set.count())
         self.assertEqual(2, place.beds)
         self.assertAlmostEqual(Decimal(12.6), place.room_set.first().price_per_person, 2)
 
     def test_categories_small(self):
-        place: Place = Place.objects.create(name='Tiny', category=Place.SMALL)
-        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6)))
+        place: Place = Place.objects.create(name='Tiny')
+        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.SMALL))
         self.assertEqual(2, place.room_set.count())
         self.assertEqual(5, place.beds)
 
     def test_categories_medium(self):
-        place: Place = Place.objects.create(name='Tiny', category=Place.MEDIUM)
-        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6)))
+        place: Place = Place.objects.create(name='Tiny')
+        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.MEDIUM))
         self.assertEqual(3, place.room_set.count())
         self.assertEqual(11, place.beds)
 
     def test_categories_large(self):
-        place: Place = Place.objects.create(name='Tiny', category=Place.LARGE)
-        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6)))
+        place: Place = Place.objects.create(name='Tiny')
+        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.LARGE))
         self.assertEqual(4, place.room_set.count())
         self.assertEqual(14, place.beds)
 
