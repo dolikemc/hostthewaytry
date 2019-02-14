@@ -54,7 +54,4 @@ class TestWorkflow(FunctionalTest):
         book = self.browser.find_element_by_id('id_book_place')
         self.assertIsInstance(book, WebElement)
         book.click()
-        self.wait_for_find_element_by_id('id_book_email_form')
-        self.assertTrue(self.browser.find_element_by_id('id_book_email_from'))
-        self.assertTrue(self.browser.find_element_by_id('id_book_email_to'))
-        self.assertTrue(self.browser.find_element_by_id('id_book_email_message'))
+        self.wait_for_find_element_by_id('id_login_form')  # currently only for logged in users

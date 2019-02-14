@@ -77,18 +77,16 @@ class TestWorkflow(FunctionalTest):
         pass
 
     def test_add_book_request(self):
-        detail_button = self.get_detail_block('id_place_list')
-        detail_button.click()
-        book_button = self.wait_for_find_element_by_id('id_book_place')
-        self.assertIsInstance(book_button, WebElement)
-        book_button.click()
-        form = self.wait_for_find_element_by_id('id_book_email_form')
-        self.assertIsInstance(form, WebElement)
-        form.submit()
-
-    @skipIf(True, 'not yet implemented')
-    def test_add_logged_book_request(self):
-        pass
+        self.assertTrue(self.check_if_logged_in())
+        self.browser.get(self.live_server_url + '/places')
+        card = self.get_detail_block('id_place_list')
+        card.click()
+        self.wait_for_find_element_by_id('id_place_detail_bar')
+        book = self.browser.find_element_by_id('id_book_place')
+        self.assertIsInstance(book, WebElement)
+        book.click()
+        self.wait_for_find_element_by_id('id_book_email_form', raise_exception=False)
+        self.assertTrue(self.browser.find_element_by_id('id_submit_booking'))
 
     @skipIf(True, 'not yet implemented')
     def test_delete_logged_book_request(self):

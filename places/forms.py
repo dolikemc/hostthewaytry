@@ -35,19 +35,23 @@ class BaseIndexView(generic.ListView):
             '-created_on')
 
 
-class IndexPlaceAdminView(LoginRequiredMixin, BaseIndexView):
+class LoginRequiredWithURL(LoginRequiredMixin):
+    login_url = '/traveller/login/'
+
+
+class IndexPlaceAdminView(LoginRequiredWithURL, BaseIndexView):
     template_name = 'places/place_admin_index.html'
 
 
-class IndexWorkerView(LoginRequiredMixin, BaseIndexView):
+class IndexWorkerView(LoginRequiredWithURL, BaseIndexView):
     template_name = 'places/worker_index.html'
 
 
-class IndexHistoryView(LoginRequiredMixin, BaseIndexView):
+class IndexHistoryView(LoginRequiredWithURL, BaseIndexView):
     template_name = 'places/histories_index.html'
 
 
-class IndexFilterView(LoginRequiredMixin, BaseIndexView):
+class IndexFilterView(LoginRequiredWithURL, BaseIndexView):
     template_name = 'places/filter_index.html'
 
     def get_queryset(self):
@@ -63,9 +67,8 @@ class IndexView(BaseIndexView):
         return Place.objects.filter(deleted__exact=False, reviewed__exact=True).order_by('-latitude')
 
 
-class BaseDeleteView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin, generic.DeleteView):
+class BaseDeleteView(LoginRequiredWithURL, UserPassesTestMixin, PermissionRequiredMixin, generic.DeleteView):
     """ Base delete form, implements a common test function, the success url and skip confirmation"""
-    login_url = '/traveller/login/'
     permission_required = 'places.delete_place'
 
     def test_func(self):
@@ -87,13 +90,12 @@ class DeleteRoom(BaseDeleteView):
     model = Room
 
 
-class BaseChangeView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin, generic.UpdateView):
+class BaseChangeView(LoginRequiredWithURL, UserPassesTestMixin, PermissionRequiredMixin, generic.UpdateView):
     """Base change form, implements a common test function and the success url. If model is not a detail of
     the place model, but place itself, we can take the id direct from the self.get_object() return value
     and redirect after success to the detail page"""
     template_name = 'places/create_detail.html'
     context_object_name = 'form'
-    login_url = '/traveller/login/'
     permission_required = 'places.change_place'
 
     def test_func(self):
@@ -148,8 +150,7 @@ class ChangePlace(BaseChangeView):
         return super().get_context_data(**kwargs)
 
 
-class BaseCreateView(LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin, generic.CreateView):
-    login_url = '/traveller/login/'
+class BaseCreateView(LoginRequiredWithURL, UserPassesTestMixin, PermissionRequiredMixin, generic.CreateView):
     permission_required = 'places.change_place'
 
     def get_place_id(self):
@@ -187,11 +188,11 @@ class CreateRoom(BaseCreateView):
     template_name = 'places/create_detail.html'
 
 
-class NewPlaceMinimal(LoginRequiredMixin, ModelForm):
+class PlaceCategoryForm(ModelForm):
     """form for the minimum of information creating a new place"""
-    login_url = '/traveller/login/'
-    breakfast_included = forms.BooleanField(initial=True)
+    breakfast_included = forms.BooleanField(required=False)
     std_price = forms.DecimalField(decimal_places=2, label="Standard price for one night and one person")
+    category = forms.ChoiceField(choices=Place.HOST_CATEGORY)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -202,4 +203,20 @@ class NewPlaceMinimal(LoginRequiredMixin, ModelForm):
     class Meta:
         model = Place
         fields = ['name', 'picture', 'description', 'laundry', 'parking',
-                  'wifi', 'own_key', 'separate_entrance', 'category', 'country']
+                  'wifi', 'own_key', 'separate_entrance', 'country']
+
+
+class CreatePlaceMinimal(LoginRequiredWithURL, generic.CreateView):
+    form_class = PlaceCategoryForm
+    model = Place
+    initial = {'breakfast_included': True, 'std_price': 30.0, 'category': Place.TINY}
+    template_name = 'places/create_place_minimal.html'
+    context_object_name = 'form'
+
+    def form_valid(self, form):
+        logger.debug(self.request.POST)
+        place = form.save(commit=True)
+        place.add_std_rooms_and_prices(form.cleaned_data['category'], form.cleaned_data['std_price'])
+        # todo: what to do with breakfast included
+        PlaceAccount.objects.create(place_id=place.id, user_id=self.request.user.id)
+        return HttpResponseRedirect(reverse('places:detail', kwargs={'pk': place.id}))

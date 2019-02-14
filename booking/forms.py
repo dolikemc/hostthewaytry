@@ -5,56 +5,67 @@ from datetime import date, timedelta
 # django modules
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms.models import modelform_factory
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views import generic
 
-# my models
 from booking.models import Booking
+# my models
 from places.models import Place
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-class BookingCreate(LoginRequiredMixin, generic.CreateView):
-    login_url = '/traveller/login/'
-    context_object_name = 'form'
-    form_class = modelform_factory(Booking,
-                                   widgets={'date_from': forms.widgets.SelectDateWidget,
-                                            'date_to': forms.widgets.SelectDateWidget,
-                                            'adults': forms.widgets.NumberInput,
-                                            'kids': forms.widgets.NumberInput,
-                                            'other_email': forms.widgets.EmailInput},
-                                   fields=['traveller', 'place',
-                                           'date_from', 'date_to', 'adults', 'kids', 'message',
-                                           ])
+class BookingEmail(forms.Form):
+    other_email = forms.EmailField(widget=forms.EmailInput)
+    place_email = forms.EmailField(disabled=True)
+    date_from = forms.DateField(widget=forms.SelectDateWidget)
+    date_to = forms.DateField(widget=forms.SelectDateWidget)
+    adults = forms.IntegerField(widget=forms.NumberInput)
+    kids = forms.IntegerField(widget=forms.NumberInput)
+    message = forms.CharField(widget=forms.Textarea, required=False)
 
+
+class BookingCreate(LoginRequiredMixin, generic.edit.FormMixin, generic.DetailView):
+    login_url = '/traveller/login/'
+    form_class = BookingEmail
+    model = Place
     template_name = 'booking/create.html'
 
     def get_success_url(self):
-        return reverse('places:detail', kwargs={'pk': self.get_place_id()})
+        return reverse('places:detail', kwargs={'pk': self.object.id})
 
     def form_valid(self, form):
         logger.debug(self.request.POST)
-        new_model = form.save(commit=False)
-        new_model.place = Place.objects.get(id=self.get_place_id())
-        new_model.user = self.request.user
-        new_model.save()
+        self.object = self.get_object()
+        Booking.objects.create(place=self.object,
+                               traveller=self.request.user,
+                               adults=form.cleaned_data['adults'],
+                               kids=form.cleaned_data['kids'],
+                               date_from=form.cleaned_data['date_from'],
+                               date_to=form.cleaned_data['date_to'],
+                               message=form.cleaned_data['message'])
         return HttpResponseRedirect(self.get_success_url())
 
-    def test_func(self):
-        return True
-
-    def get_place_id(self):
-        for key in ('pk', 'place', 'place_id', 'id'):
-            if key in self.kwargs:
-                logger.debug(f'Place id from {key} parameter is {self.kwargs[key]}')
-                return self.kwargs[key]
-        return 0
-
     def get_initial(self):
-        return {'place': Place.objects.get(pk=self.get_place_id()),
-                'traveller': self.request.user, 'date_from': date.today(),
-                'date_to': date.today() + timedelta(days=1), 'adults': 2, 'kids': 0}
+        self.object = self.get_object()
+        return {'place_email': self.object.email,
+                'other_email': self.request.user.email,
+                'date_from': date.today(),
+                'date_to': date.today() + timedelta(days=1),
+                'adults': 2,
+                'kids': 0}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)

@@ -29,12 +29,9 @@ class BookingViewTests(BaseTest):
                                                         'date_from': date(2019, 1, 1),
                                                         'date_to': date(2019, 1, 2),
                                                         'adults': 2, 'kids': 0,
-                                                        'place': place.id,
-                                                        'traveller': self.user.id
-                                                        }
+                                                        'other_email': self.user.email}
                                                   )
-        self.assertRedirects(response, reverse('places:detail',
-                                               kwargs={'pk': place.id}))
+        self.assertRedirects(response, reverse('places:detail', kwargs={'pk': self.last_place_id}))
         self.assertEqual(1, Booking.objects.count())
         booking = Booking.objects.get(pk=1)
         self.assertIsInstance(booking, Booking)

@@ -252,18 +252,18 @@ class Place(models.Model):
             return text
         return _(self.description)
 
-    def add_std_rooms_and_prices(self, std_price: Decimal) -> bool:
-        if self.category == self.TINY:
+    def add_std_rooms_and_prices(self, category: HOST_CATEGORY, std_price: Decimal) -> bool:
+        if category == self.TINY:
             Room.objects.create(place_id=self.id, room_number='your room', beds=2,
                                 price_per_person=std_price)
             return True
-        if self.category == self.SMALL:
+        if category == self.SMALL:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,
                                 price_per_person=std_price)
             return True
-        if self.category == self.MEDIUM:
+        if category == self.MEDIUM:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,
@@ -271,7 +271,7 @@ class Place(models.Model):
             Room.objects.create(place_id=self.id, room_number='03', beds=6,
                                 price_per_person=std_price)
             return True
-        if self.category == self.LARGE:
+        if category == self.LARGE:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,

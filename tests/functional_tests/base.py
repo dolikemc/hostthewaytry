@@ -85,9 +85,4 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         return self.is_detail_block()
 
     def check_if_logged_in(self) -> bool:
-        try:
-            self.wait_for_find_element_by_id('id_navigator_logout')
-            return True
-        except NoSuchElementException:
-            logger.warning(self.browser.page_source)
-            return False
+        return self.wait_for_find_element_by_id('id_navigator_logout', raise_exception=False)

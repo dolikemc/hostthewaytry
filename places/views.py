@@ -8,7 +8,7 @@ from django.db.transaction import atomic
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
-from places.forms import NewPlaceMinimal
+from places.forms import PlaceCategoryForm
 # my models
 from places.models import Place
 from traveller.models import PlaceAccount
@@ -30,9 +30,9 @@ def create_place(request: HttpRequest) -> HttpResponse:
     """cover the create new place process."""
     if request.method == 'POST':
         logger.debug(request.POST)
-        form = NewPlaceMinimal(request.POST, request.FILES)
+        form = PlaceCategoryForm(request.POST, request.FILES)
     else:
-        form = NewPlaceMinimal()
+        form = PlaceCategoryForm()
     if form.is_valid():
         place: Place = form.save(commit=False)
         place.save()

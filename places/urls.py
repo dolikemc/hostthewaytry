@@ -4,7 +4,8 @@ from django.urls import path
 
 from places import views
 from places.forms import DetailView, IndexView, ChangeRoom, ChangePrice, DeletePrice, DeleteRoom, ChangePlaceAddress, \
-    IndexPlaceAdminView, IndexWorkerView, CreatePrice, CreateRoom, ChangePlace, IndexFilterView, IndexHistoryView
+    IndexPlaceAdminView, IndexWorkerView, CreatePrice, CreateRoom, ChangePlace, IndexFilterView, IndexHistoryView, \
+    CreatePlaceMinimal
 
 app_name = 'places'
 urlpatterns = \
@@ -14,7 +15,7 @@ urlpatterns = \
         path('filter/', IndexFilterView.as_view(), name='filter'),
         path('worker/', IndexWorkerView.as_view(), name='worker'),
         path('place_admin/', IndexPlaceAdminView.as_view(), name='place_admin'),
-        path('new/', views.create_place, name='create-place'),
+        path('new/', CreatePlaceMinimal.as_view(), name='create-place'),
         path('price/<int:pk>/', CreatePrice.as_view(), name='create-price'),
         path('room/<int:pk>/', CreateRoom.as_view(), name='create-room'),
         path('<int:pk>/', DetailView.as_view(), name='detail'),
