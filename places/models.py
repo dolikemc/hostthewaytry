@@ -10,12 +10,13 @@ from typing import List
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
-from django.db.models import Avg, Sum, Min, Max
+from django.db.models import Avg, Sum, Min, Max, Model
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from utils.file import ImageX
+from article.models import Ground
 from traveller.models import User, logger
+from utils.file import ImageX
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -84,7 +85,7 @@ class GeoName(models.Model):
         return f"{self.ascii_name} ({self.country_code}):{self.geo_name_id}"
 
 
-class Place(models.Model):
+class Place(Ground):
     NO_MEAL = 'NO'
     ONLY_BREAKFAST = 'BR'
     BREAKFAST_LUNCH = 'BL'
@@ -117,16 +118,11 @@ class Place(models.Model):
                      (MEDIUM, "Three rooms with 2-6 beds"), (LARGE, "Four rooms with 2-6 beds"),
                      (HOTEL, "More than four rooms to rent "), (NOT_AVAILABLE, "n/a"))
 
-    name = models.CharField(max_length=200, help_text='Name of your place', null=False)
-    description = models.TextField(max_length=1024, default='', blank=True,
-                                   help_text='What else would you like to tell your guests?')
-
     contact_type = models.CharField(max_length=2, help_text='What kind of contact you can offer your guest?',
                                     choices=CONTACT_TYPES, default=NO_ANSWER)
     # address could be filled with geo location data
     street = models.CharField(max_length=100, help_text='Street', blank=True)
     city = models.CharField(max_length=100, help_text='City', blank=True)
-    country = models.CharField(max_length=2, help_text='Country Code', blank=True)
     address_add = models.CharField(max_length=200, help_text='Additional address information', blank=True)
 
     # contact data
@@ -166,7 +162,6 @@ class Place(models.Model):
     latitude = models.FloatField(help_text='Where is your place (latitude)?', null=True, blank=True)
 
     # services
-    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
     currencies = models.CharField(max_length=50, default='€', help_text='What currencies do you accept?')
     check_out_time = models.PositiveIntegerField(default=12, help_text='Check out time')
     check_in_time = models.PositiveIntegerField(default=14, help_text='Check in time')
@@ -179,11 +174,7 @@ class Place(models.Model):
     priority_category = models.CharField(max_length=2, choices=PRIORITY_TYPES, default=NO_ANSWER, blank=True, null=True)
 
     # technical data
-    created_by = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True)
     reviewed = models.BooleanField(editable=False, default=False)
-    deleted = models.BooleanField(default=False)
 
     def distance(self, latitude: float, longitude: float) -> float:
         return sqrt(pow(self.latitude - latitude, 2) +
@@ -343,6 +334,7 @@ class Place(models.Model):
 
 class Hostel(Place):
     pass
+
 
 class Price(models.Model):
     CLEANING_FEE = 'CL'
