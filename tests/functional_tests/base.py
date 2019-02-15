@@ -8,8 +8,8 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.remote.webdriver import WebElement
 
 from places.models import Place, Room, Price
-from traveller.models import User
 from tests.base import RoleMixin
+from traveller.models import User
 
 MAX_WAIT = 6
 
@@ -25,7 +25,7 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         self.profile = webdriver.FirefoxProfile()
         self.profile.set_preference("geo.prompt.testing", True)
         self.profile.set_preference("geo.prompt.testing.allow", True)
-        self.browser = webdriver.Firefox(firefox_profile=self.profile, options=self.options)
+        self.browser = self.wait_for(lambda: webdriver.Firefox(firefox_profile=self.profile, options=self.options))
         self.user = User.objects.create(email='admin@all.com')
         Place.objects.create(name='Test1', reviewed=True, created_by=self.user)
         Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True, created_by=self.user)

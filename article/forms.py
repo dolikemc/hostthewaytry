@@ -15,18 +15,14 @@ logger: logging.Logger = logging.getLogger(__name__)
 # from django.utils.translation import get text_lazy as _
 class AbstractArticleForm(LoginRequiredMixin, CreateView):
     login_url = '/traveller/login/'
-
+    template_name = 'article/article_form.html'
     initial = {'rank': 1, }
 
     def get_success_url(self):
         return reverse('places:detail', kwargs={'pk': self.get_place_id()})
 
     def get_place_id(self):
-        for key in ('pk', 'place', 'place_id', 'id'):
-            if key in self.kwargs:
-                logger.debug(f'Place id from {key} parameter is {self.kwargs[key]}')
-                return self.kwargs[key]
-        return 0
+        return self.kwargs['place_id']
 
     @atomic
     def form_valid(self, form):
@@ -44,4 +40,4 @@ class TextArticleForm(AbstractArticleForm):
 
 class ImageArticleForm(AbstractArticleForm):
     model = ImageArticle
-    fields = '__all__'
+    fields = ['text', 'picture', 'copyright']
