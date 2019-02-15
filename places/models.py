@@ -14,8 +14,8 @@ from django.db.models import Avg, Sum, Min, Max, Model
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from article.models import Ground
-from traveller.models import User, logger
+from article.models import Article
+from traveller.models import User
 from utils.file import ImageX
 
 # Get an instance of a logger
@@ -85,7 +85,30 @@ class GeoName(models.Model):
         return f"{self.ascii_name} ({self.country_code}):{self.geo_name_id}"
 
 
-class Place(Ground):
+class NamedArticle(Article):
+    name = models.CharField(max_length=200, help_text='Name of your place', null=False)
+    description = models.TextField(max_length=1024, default='', blank=True,
+                                   help_text='What else would you like to tell your guests?')
+    country = models.CharField(max_length=2, help_text='Country Code', blank=True)
+    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
+
+    class Meta:
+        abstract = True
+
+
+class Categories:
+    TINY = "TI"
+    SMALL = "SM"
+    MEDIUM = "ME"
+    LARGE = "LA"
+    HOTEL = "HO"
+    NOT_AVAILABLE = "NA"
+    HOST_CATEGORY = ((TINY, "One room to rent with 2 beds"), (SMALL, "Two rooms with 2-3 beds"),
+                     (MEDIUM, "Three rooms with 2-6 beds"), (LARGE, "Four rooms with 2-6 beds"),
+                     (HOTEL, "More than four rooms to rent "), (NOT_AVAILABLE, "n/a"))
+
+
+class Place(NamedArticle):
     NO_MEAL = 'NO'
     ONLY_BREAKFAST = 'BR'
     BREAKFAST_LUNCH = 'BL'
@@ -107,16 +130,6 @@ class Place(Ground):
     NO_ANSWER = 'NA'
     ALWAYS_ON_TOP = 'AW'
     PRIORITY_TYPES = ((NO_ANSWER, "No special category"), (ALWAYS_ON_TOP, "Always on top"))
-
-    TINY = "TI"
-    SMALL = "SM"
-    MEDIUM = "ME"
-    LARGE = "LA"
-    HOTEL = "HO"
-    NOT_AVAILABLE = "NA"
-    HOST_CATEGORY = ((TINY, "One room to rent with 2 beds"), (SMALL, "Two rooms with 2-3 beds"),
-                     (MEDIUM, "Three rooms with 2-6 beds"), (LARGE, "Four rooms with 2-6 beds"),
-                     (HOTEL, "More than four rooms to rent "), (NOT_AVAILABLE, "n/a"))
 
     contact_type = models.CharField(max_length=2, help_text='What kind of contact you can offer your guest?',
                                     choices=CONTACT_TYPES, default=NO_ANSWER)
@@ -242,18 +255,18 @@ class Place(Ground):
             return text
         return _(self.description)
 
-    def add_std_rooms_and_prices(self, category: HOST_CATEGORY, std_price: Decimal) -> bool:
-        if category == self.TINY:
+    def add_std_rooms_and_prices(self, category: Categories.HOST_CATEGORY, std_price: Decimal) -> bool:
+        if category == Categories.TINY:
             Room.objects.create(place_id=self.id, room_number='your room', beds=2,
                                 price_per_person=std_price)
             return True
-        if category == self.SMALL:
+        if category == Categories.SMALL:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,
                                 price_per_person=std_price)
             return True
-        if category == self.MEDIUM:
+        if category == Categories.MEDIUM:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,
@@ -261,7 +274,7 @@ class Place(Ground):
             Room.objects.create(place_id=self.id, room_number='03', beds=6,
                                 price_per_person=std_price)
             return True
-        if category == self.LARGE:
+        if category == Categories.LARGE:
             Room.objects.create(place_id=self.id, room_number='01', beds=2,
                                 price_per_person=std_price)
             Room.objects.create(place_id=self.id, room_number='02', beds=3,

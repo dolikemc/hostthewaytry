@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load l10n i18n %}
+
+    <div class="w3-card-4 hosttheway-color-one w3-border">
+        <form id="id_add_text_article_form" class="w3-container" method="post">
+            <div class="w3-section">
+                {% csrf_token %}
+                {% for field in form %}
+                    {% cycle '<div class="w3-row-padding">' '' %}
+                    <div class="w3-half ">
+                        {{ field.errors }}
+                        {{ field.label_tag }}<br>
+                        {{ field }}
+                    </div>
+                    {% cycle '' '</div>' %}
+                {% endfor %}
+                <button class="w3-button w3-block w3-pale-green w3-section w3-padding" type="submit"
+                        id="id_submit_booking"> Save
+                </button>
+            </div>
+        </form>
+        <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+            <a href="#" onclick="goBack()" class="w3-button w3-bar-item" type="reset">
+                Cancel
+            </a>
+        </div>
+    </div>
+{% endblock %}

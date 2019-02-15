@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 
-from places.models import Place, Room, Price, GeoName, PlaceAccount
+from places.models import Place, Room, Price, GeoName, PlaceAccount, Categories
 from traveller.models import User
 
 
@@ -41,7 +41,7 @@ class PlaceModel(TestCase):
     def test_categories_tiny(self):
         user = User.objects.create(email='a@c.com')
         place: Place = Place.objects.create(name='Tiny', created_by=user)
-        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.TINY))
+        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Categories.TINY))
         self.assertEqual(1, place.room_set.count())
         self.assertEqual(2, place.beds)
         self.assertAlmostEqual(Decimal(12.6), place.room_set.first().price_per_person, 2)
@@ -49,21 +49,21 @@ class PlaceModel(TestCase):
     def test_categories_small(self):
         user = User.objects.create(email='a@c.com')
         place: Place = Place.objects.create(name='Tiny', created_by=user)
-        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.SMALL))
+        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Categories.SMALL))
         self.assertEqual(2, place.room_set.count())
         self.assertEqual(5, place.beds)
 
     def test_categories_medium(self):
         user = User.objects.create(email='a@c.com')
         place: Place = Place.objects.create(name='Tiny', created_by=user)
-        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.MEDIUM))
+        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Categories.MEDIUM))
         self.assertEqual(3, place.room_set.count())
         self.assertEqual(11, place.beds)
 
     def test_categories_large(self):
         user = User.objects.create(email='a@c.com')
         place: Place = Place.objects.create(name='Tiny', created_by=user)
-        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Place.LARGE))
+        self.assertTrue(place.add_std_rooms_and_prices(std_price=Decimal(12.6), category=Categories.LARGE))
         self.assertEqual(4, place.room_set.count())
         self.assertEqual(14, place.beds)
 
@@ -97,4 +97,5 @@ class PlaceModel(TestCase):
         user = User.objects.create(email='a@c.com')
         place = Place.objects.create(name='test', created_by=user)
         room = Room.objects.create(price_per_person=12.5, room_number='01', pets=True, place_id=place.id)
+        self.assertIsInstance(room, Room)
         self.assertEqual(True, place.pets)

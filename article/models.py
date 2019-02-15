@@ -1,29 +1,30 @@
+import logging
+
 from django.db import models
 from django.db.models import Model
 
 from traveller.models import User
 
+# Get an instance of a logger
+logger: logging.Logger = logging.getLogger(__name__)
 
-class Ground(Model):
-    deleted = models.BooleanField(default=False)
+
+class Article(Model):
+    rank = models.PositiveIntegerField(default=1)
     updated_on = models.DateTimeField(auto_now=True)
     created_on = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    currency = models.CharField(help_text='Currency ISO 3 Code', default='EUR', max_length=3)
-    country = models.CharField(max_length=2, help_text='Country Code', blank=True)
-    description = models.TextField(max_length=1024, default='', blank=True,
-                                   help_text='What else would you like to tell your guests?')
-    name = models.CharField(max_length=200, help_text='Name of your place', null=False)
+    deleted = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
 
 
-class TextArticle(Ground):
+class TextArticle(Article):
     text = models.TextField()
 
 
-class ImageArticle(Ground):
+class ImageArticle(Article):
     text = models.TextField(null=True, blank=True)
     # location data
     picture = models.ImageField(help_text='Picture of your place', upload_to='%Y/%m/%d/')

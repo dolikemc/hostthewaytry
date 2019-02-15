@@ -11,7 +11,7 @@ from django.shortcuts import reverse
 from django.views import generic
 
 # my models
-from places.models import Place, Price, Room, PlaceAccount
+from places.models import Place, Price, Room, PlaceAccount, Categories
 from traveller.models import User
 
 # Get an instance of a logger
@@ -191,9 +191,19 @@ class CreateRoom(BaseCreateView):
 
 class PlaceCategoryForm(ModelForm):
     """form for the minimum of information creating a new place"""
+    TINY = "TI"
+    SMALL = "SM"
+    MEDIUM = "ME"
+    LARGE = "LA"
+    HOTEL = "HO"
+    NOT_AVAILABLE = "NA"
+    HOST_CATEGORY = ((TINY, "One room to rent with 2 beds"), (SMALL, "Two rooms with 2-3 beds"),
+                     (MEDIUM, "Three rooms with 2-6 beds"), (LARGE, "Four rooms with 2-6 beds"),
+                     (HOTEL, "More than four rooms to rent "), (NOT_AVAILABLE, "n/a"))
+
     breakfast_included = forms.BooleanField(required=False)
     std_price = forms.DecimalField(decimal_places=2, label="Standard price for one night and one person")
-    category = forms.ChoiceField(choices=Place.HOST_CATEGORY)
+    category = forms.ChoiceField(choices=HOST_CATEGORY)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -211,7 +221,7 @@ class CreatePlaceMinimal(LoginRequiredWithURL, PermissionRequiredMixin, generic.
     permission_required = 'places.add_place'
     form_class = PlaceCategoryForm
     model = Place
-    initial = {'breakfast_included': True, 'std_price': 30.0, 'category': Place.TINY}
+    initial = {'breakfast_included': True, 'std_price': 30.0, 'category': Categories.TINY}
     template_name = 'places/create_place_minimal.html'
     context_object_name = 'form'
 
