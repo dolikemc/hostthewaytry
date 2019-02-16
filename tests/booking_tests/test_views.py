@@ -36,3 +36,17 @@ class BookingViewTests(BaseTest):
         booking = Booking.objects.get(pk=1)
         self.assertIsInstance(booking, Booking)
         self.assertEqual(self.last_place_id, booking.place.id)
+
+    def test_add_booking_invalid(self):
+        self.set_up_traveller()
+        self.assertTrue(self.client.login(**self.credentials))
+        place = Place.objects.get(pk=self.last_place_id)
+        response: HttpResponse = self.client.post(reverse('booking:create-booking',
+                                                          kwargs={'pk': self.last_place_id}),
+                                                  data={'message': 'hallo',
+                                                        'date_from': 'xxx',
+                                                        'date_to': date(2019, 1, 2),
+                                                        'adults': 2, 'kids': 0,
+                                                        'other_email': self.user.email}
+                                                  )
+        self.assertTemplateUsed(response, 'booking/create.html')
