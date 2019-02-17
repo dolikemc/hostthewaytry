@@ -11,7 +11,6 @@ from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.db.models import Avg, Sum, Min, Max, Model
-from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from article.models import Article
@@ -340,9 +339,6 @@ class Place(NamedArticle):
         # change the image field value to be the newly modifed image value
         self.picture = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.picture.name.split('.')[0],
                                             'image/jpeg', sys.getsizeof(output), None)
-
-    def get_absolute_url(self) -> str:
-        return reverse('places:detail', kwargs={'pk': self.pk})
 
 
 class Hostel(Place):

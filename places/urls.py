@@ -24,7 +24,6 @@ urlpatterns = \
         path('delete/place/<int:pk>/', views.delete_place, name='delete-place'),
         path('undelete/place/<int:pk>/', views.undelete_place, name='un-delete-place'),
         path('delete/price/<int:pk>/', forms.DeletePrice.as_view(), name='delete-price'),
-        path('base_layout', views.base_layout, name='base_layout'),
         path('intro/', views.show_intro, name='intro'),
 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

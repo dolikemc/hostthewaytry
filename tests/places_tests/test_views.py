@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.shortcuts import reverse
 
 from tests.places_tests.base import PlacesPreparedTest
 
@@ -8,14 +9,14 @@ class SimpleViewPlaceTest(PlacesPreparedTest):
     def test_on_start(self):
         self.set_up_anonymous()
         # Issue a GET request.
-        response = self.client.get('/places/')
+        response = self.client.get(reverse('places:index'))
         # Check that the response is 200 OK.
         self.assertEqual(response.status_code, 200)
 
     def test_division(self):
         self.set_up_anonymous()
         # Issue a GET request.
-        response: HttpResponse = self.client.get('/places/')
+        response: HttpResponse = self.client.get(reverse('places:index'))
         self.assertContains(response, 'places', status_code=200)
         self.assertInHTML('<title>HOST THE WAY</title>', response.content.decode())
 
@@ -53,3 +54,8 @@ class SimpleViewPlaceTest(PlacesPreparedTest):
         self.assertTrue(self.client.login(**self.credentials))
         response = self.client.get(f'/traveller/user/{self.user.id}/0/')
         self.assertTemplateUsed(response, template_name='traveller/create_place_admin.html')
+
+    def test_intro(self):
+        self.set_up_anonymous()
+        response = self.client.get(reverse('places:intro'))
+        self.assertTemplateUsed(response, 'places/intro.html')

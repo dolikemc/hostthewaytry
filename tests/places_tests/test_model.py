@@ -99,3 +99,9 @@ class PlaceModel(TestCase):
         room = Room.objects.create(price_per_person=12.5, room_number='01', pets=True, place_id=place.id)
         self.assertIsInstance(room, Room)
         self.assertEqual(True, place.pets)
+
+    def test_room_string(self):
+        user = User.objects.create(email='a@c.com')
+        place = Place.objects.create(name='test', created_by=user)
+        room = Room.objects.create(price_per_person=12.5, room_number='01', pets=True, place_id=place.id)
+        self.assertEqual('test () - 01 - (2)', str(room))

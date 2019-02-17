@@ -30,10 +30,8 @@ class BaseIndexView(generic.ListView):
     context_object_name = 'places'
 
     def get_queryset(self):
-        if not hasattr(self.request, 'user'):
-            return Place.objects.filter(deleted__exact=False, reviewed__exact=True)
-        return Place.objects.filter(deleted__exact=False, placeaccount__user__exact=self.request.user).order_by(
-            '-created_on')
+        return Place.objects.filter(deleted__exact=False, placeaccount__user__exact=self.request.user
+                                    ).order_by('-created_on')
 
 
 class LoginRequiredWithURL(LoginRequiredMixin):
@@ -126,12 +124,12 @@ class ChangePlaceAddress(BaseChangeView):
     model = Place
     fields = ['name', 'street', 'country', 'city', 'address_add', 'mobile', 'phone']
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        logger.warning(obj)
-        if hasattr(obj, 'country'):
-            obj.country = str.upper(obj.country[:2])
-        return obj
+    def form_valid(self, form):
+        logger.debug(self.request.POST)
+        place = form.save(commit=False)
+        place.country = str.upper(place.country[:2])
+        place.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ChangePlace(BaseChangeView):
@@ -155,11 +153,7 @@ class BaseCreateView(LoginRequiredWithURL, UserPassesTestMixin, PermissionRequir
     permission_required = 'places.change_place'
 
     def get_place_id(self):
-        for key in ('pk', 'place', 'place_id', 'id'):
-            if key in self.kwargs:
-                logger.debug(f'Place id from {key} parameter is {self.kwargs[key]}')
-                return self.kwargs[key]
-        return 0
+        return self.kwargs['pk']
 
     def get_success_url(self):
         return reverse('places:detail', kwargs={'pk': self.get_place_id()})
@@ -171,8 +165,6 @@ class BaseCreateView(LoginRequiredWithURL, UserPassesTestMixin, PermissionRequir
         return HttpResponseRedirect(self.get_success_url())
 
     def test_func(self):
-        if self.model == Place:
-            return PlaceAccount.edit_place_permission(self.request.user, self.get_place_id())
         return PlaceAccount.edit_place_permission(self.request.user, self.get_place_id())
 
 

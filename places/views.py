@@ -1,6 +1,5 @@
 # import the logging library
 import logging
-from decimal import Decimal
 
 # django modules
 from django.contrib.auth.decorators import login_required, permission_required
@@ -8,18 +7,21 @@ from django.db.transaction import atomic
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
-from places.forms import PlaceCategoryForm
 # my models
-from places.models import Place, PlaceAccount
+from places.models import Place
 
 # Get an instance of a logger
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-def base_layout(request: HttpRequest) -> HttpResponse:
-    """ method to store base layout via service worker"""
-    template = 'base.html'
-    return render(request, template)
+def set_deleted(deleted: bool, pk: int) -> HttpResponse:
+    try:
+        place = Place.objects.get(id=pk)
+        place.deleted = deleted
+        place.save()
+        return redirect('places:detail', pk)
+    except Place.DoesNotExist:
+        return HttpResponse(status=404, content=f'place with id {pk} does not exist')
 
 
 @atomic
@@ -27,11 +29,7 @@ def base_layout(request: HttpRequest) -> HttpResponse:
 @login_required(login_url='/traveller/login/')
 def delete_place(request: HttpRequest, pk: int) -> HttpResponse:
     """set a place to deleted = true (soft delete)"""
-    place = Place.objects.get(id=pk)
-    if place is not None:
-        place.deleted = True
-        place.save()
-    return redirect('places:detail', pk)
+    return set_deleted(True, pk)
 
 
 @atomic
@@ -39,11 +37,7 @@ def delete_place(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required(login_url='/traveller/login/')
 def undelete_place(request: HttpRequest, pk: int) -> HttpResponse:
     """set a place to deleted = true (soft delete)"""
-    place = Place.objects.get(id=pk)
-    if place is not None:
-        place.deleted = False
-        place.save()
-    return redirect('places:detail', pk)
+    return set_deleted(False, pk)
 
 
 def show_intro(request: HttpRequest) -> HttpResponse:
