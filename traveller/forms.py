@@ -32,11 +32,7 @@ class ChangeUserBase(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
         return PlaceAccount.edit_place_permission(self.request.user, place_id)
 
     def get_place_id(self):
-        for key in ('place', 'place_id'):
-            if key in self.kwargs:
-                logger.debug(f'Place id from {key} parameter is {self.kwargs[key]}')
-                return self.kwargs[key]
-        return 0
+        return self.kwargs['place_id']
 
     def get_success_url(self):
         place_id = self.get_place_id()

@@ -70,3 +70,19 @@ class CreateTest(PlacesPreparedTest):
         self.assertEqual('fl@c.com', user.display_name)
         self.assertTrue(user.groups.filter(name__iexact='PlaceAdmin').exists())
         self.assertTrue(PlaceAccount.objects.filter(user_id=self.user.id + 1, place_id=self.last_place_id).exists())
+
+    def test_register_traveller(self):
+        self.set_up_anonymous()
+        Group.objects.create(name='Traveller')
+        pwd = make_password('zegwugr643267')
+        response = self.client.post('/traveller/register/', {'password1': pwd, 'password2': pwd, 'email': 'fl@c.com'})
+        # self.assertRedirects(response, f'/traveller/user/2/0/')
+        return  # todo: is not logged in so will be re-directed
+        response = self.client.post(response.url, {'screen_name': 'fl', 'unique_name': 'fl', 'email': 'fl@c.com'})
+        self.assertRedirects(response, '/places/')
+        user = User.objects.get(id=1)
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_superuser)
+        self.assertFalse(user.is_staff)
+        self.assertEqual('fl', user.display_name)
+        self.assertTrue(user.groups.filter(name='Traveller').exists())
