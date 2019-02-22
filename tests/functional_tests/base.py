@@ -26,7 +26,7 @@ class FunctionalTest(StaticLiveServerTestCase, RoleMixin):
         self.profile.set_preference("geo.prompt.testing", True)
         self.profile.set_preference("geo.prompt.testing.allow", True)
         self.browser = self.wait_for(lambda: webdriver.Firefox(firefox_profile=self.profile, options=self.options),
-                                     raise_exception=False)
+                                     raise_exception=True)
         self.user = User.objects.create(email='admin@all.com')
         Place.objects.create(name='Test1', reviewed=True, created_by=self.user)
         Place.objects.create(name='Test2', latitude=11, longitude=48, reviewed=True, created_by=self.user)
