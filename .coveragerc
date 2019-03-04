@@ -2,6 +2,7 @@
 omit =
   *apps.py,
   *migrations/*,
+  *features/*,
   *settings*,
   *tests/*,
   *urls.py,
