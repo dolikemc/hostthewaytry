@@ -1,0 +1,1 @@
+coverage-3.7 run --source='.' manage.py test tests.utils_tests tests.article_tests tests.booking_tests tests.places_tests tests.traveller_tests
