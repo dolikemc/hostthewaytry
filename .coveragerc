@@ -1,5 +1,4 @@
 [run]                                                                                                                                                                                        
 omit =
   *features/*,
-  *wsgi.py,
-  manage.py
+
