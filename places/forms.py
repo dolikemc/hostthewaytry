@@ -205,8 +205,7 @@ class PlaceCategoryForm(ModelForm):
 
     class Meta:
         model = Place
-        fields = ['name', 'picture', 'description', 'laundry', 'parking',
-                  'wifi', 'own_key', 'separate_entrance', 'country']
+        fields = ['name', 'picture', 'country']
 
 
 class CreatePlaceMinimal(LoginRequiredWithURL, PermissionRequiredMixin, generic.CreateView):

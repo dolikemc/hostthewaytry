@@ -7,9 +7,24 @@
             <h8>
                 Hi {{ user.screen_name }}, ready to add another place?
             </h8>
-            <a href="{% url 'places:create-place' %}" class="w3-button" id="id_create_place"><i
-                    class="fas fa-plus w3-large w3-text-green"></i>
-            </a>
+            <img class="w3-image" src="{% static 'img/hosttheway.jpg' %}" alt="Host The Way"
+                 style="min-width: 600px" width="1500"
+                 height="800">
+            <div class="w3-display-left w3-padding w3-col l6 m8">
+                <div class="w3-container hosttheway-color-two">
+                    <h2><i class="fa fa-bed w3-margin-right"></i>Add a place</h2>
+                </div>
+                <div class="w3-container  hosttheway-color-l-five w3-padding-16">
+                    <div class="w3-row-padding" style="margin:0 -16px;">
+                        <div class="w3-half w3-margin-bottom">
+                            <a href="{% url 'places:create-place' %}" class="w3-button" id="id_create_place"><i
+                                    class="fas fa-plus w3-large w3-text-green"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         {% endif %}
     </div>
     {% include 'places/place_list_include.html' %}
