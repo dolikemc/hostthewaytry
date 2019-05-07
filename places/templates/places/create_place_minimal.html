@@ -1,92 +1,65 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-    <form method="post" class="w3-container" enctype="multipart/form-data" id="id_create_place_minimal_form">
-        {% csrf_token %}
-        <div class="w3-bar">
-            <button onclick="goBack()" class="w3-button w3-bar-item" type="reset">
-                <i class="fa fa-backward w3-large"></i>
-            </button>
-            {% if user.is_authenticated %}
-                <button type="submit" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"
-                                                                       id="id_submit_create_place"></i>
-                </button>
-            {% endif %}
-        </div>
-        <div class="w3-row-padding">
-            <div class="w3-threequarter ">
-                {{ form.name.errors }}
-                {{ form.name.label_tag }}<br>
-                {{ form.name }}
+    <header class="w3-display-container w3-content" style="max-width:1500px">
+        <img class="w3-image" src="{% static 'img/hosttheway.jpg' %}" alt="Host The Way" style="min-width: 600px" width="1500"
+             height="800">
+        <div class="w3-display-left w3-padding w3-col l6 m8">
+            <div class="w3-container hosttheway-color-two">
+                <h2><i class="fa fa-bed w3-margin-right"></i>Add a place</h2>
             </div>
-            <div class="w3-quarter"></div>
-        </div>
-        <div class="w3-row-padding">
-            <div class="w3-threequarter">
-                {{ form.description.errors }}
-                {{ form.description.label_tag }}<br>
-                {{ form.description }}
-            </div>
-            <div class="w3-quarter">
-                {{ form.country.errors }}
-                {{ form.country.label_tag }}<br>
-                {{ form.country }}
-            </div>
-        </div>
-        <div class="w3-row-padding">
-            <div class="w3-threequarter ">
-                {{ form.picture.errors }}
-                {{ form.picture.label_tag }}<br>
-                {{ form.picture }}
-            </div>
-            <div class="w3-quarter"></div>
-        </div>
-        <div class="w3-row-padding">
-            <div class="w3-threequarter ">
-                {{ form.std_price.errors }}
-                {{ form.std_price.label_tag }}<br>
-                {{ form.std_price }}€
-            </div>
-            <div class="w3-quarter ">
-                {{ form.breakfast_included.errors }}
-                {{ form.breakfast_included.label_tag }}<br>
-                {{ form.breakfast_included }}
-            </div>
-        </div>
-        <div class="w3-row-padding">
-            <div class="w3-threequarter ">
-                {{ form.category.errors }}
-                {{ form.category.label_tag }}<br>
-                {{ form.category }}
-            </div>
-            <div class="w3-quarter ">
-                {{ form.separate_entrance.errors }}
-                {{ form.separate_entrance.label_tag }}<br>
-                {{ form.separate_entrance }}
+            <div class="w3-container  hosttheway-color-l-five w3-padding-16">
+                <form method="post" class="w3-container" enctype="multipart/form-data"
+                      id="id_create_place_minimal_form">
+                    {% csrf_token %}
+                    <div class="w3-bar">
+                        <button onclick="goBack()" class="w3-button w3-bar-item" type="reset">
+                            <i class="fa fa-backward w3-large"></i>
+                        </button>
+                        {% if user.is_authenticated %}
+                            <button type="submit" class="w3-button w3-bar-item"><i class="fa fa-save w3-large"
+                                                                                   id="id_submit_create_place"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="w3-row-padding" style="margin:0 -16px;">
+                        <div class="w3-half w3-margin-bottom">
+                            {{ form.name.errors }}
+                            {{ form.name.label_tag }}<br>
+                            {{ form.name }}
+                        </div>
+                        <div class="w3-half">
+                            {{ form.country.errors }}
+                            {{ form.country.label_tag }}<br>
+                            {{ form.country }}
+                        </div>
+                    </div>
+                    <div class="w3-row-padding" style="margin:8px -16px;">
+                         <div class="w3-half w3-margin-bottom">
+                            {{ form.picture.errors }}
+                            {{ form.picture.label_tag }}<br>
+                            {{ form.picture }}
+                        </div>
+                        <div class="w3-half">
+                            {{ form.category.errors }}
+                            {{ form.category.label_tag }}<br>
+                            {{ form.category }}
+                        </div>
+                    </div>
+                    <div class="w3-row-padding" style="margin:16px -16px;">
+                         <div class="w3-half w3-margin-bottom">
+                            {{ form.std_price.errors }}
+                            {{ form.std_price.label_tag }}<br>
+                            {{ form.std_price }}
+                        </div>
+                        <div class="w3-half">
+
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="w3-row-padding">
-            <div class="w3-quarter ">
-                {{ form.wifi.errors }}
-                {{ form.wifi.label_tag }}<br>
-                {{ form.wifi }}
-            </div>
-            <div class="w3-quarter ">
-                {{ form.own_key.errors }}
-                {{ form.own_key.label_tag }}<br>
-                {{ form.own_key }}
-            </div>
-            <div class="w3-quarter ">
-                {{ form.laundry.errors }}
-                {{ form.laundry.label_tag }}<br>
-                {{ form.laundry }}
-            </div>
-            <div class="w3-quarter ">
-                {{ form.parking.errors }}
-                {{ form.parking.label_tag }}<br>
-                {{ form.parking }}
-            </div>
-        </div>
-        <div class="w3-row-padding">
-        </div>
-    </form>
+    </header>
+
 {% endblock %}
+
