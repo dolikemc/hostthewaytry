@@ -163,3 +163,10 @@ body, h1, h2, h3, h4, h5, h6, h7, h8 {
 .scroll::-webkit-scrollbar {
     display: none;
 }
+
+.bgimg {
+  background-image: url('/static/img/hosttheway.jpg');
+  min-height: 100%;
+  background-position: center;
+  background-size: cover;
+}

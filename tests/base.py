@@ -1,8 +1,10 @@
 from pathlib import Path
+import os
 
 from django.contrib.auth.models import Group, Permission, AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
+from hosttheway.settings import BASE_DIR
 
 from traveller.models import User
 
@@ -66,15 +68,15 @@ class BaseTest(TestCase, RoleMixin):
         self.last_place_id = 0
         self.image_with_exif = 'IMG_3745.JPG'
         self.image_without_exif = 'hosttheway.jpg'
-        self.image_path = 'img'
+        self.image_path = os.path.join(BASE_DIR, 'img')
 
     def get_file_pointer(self, with_exif: bool = True):
         if with_exif:
             return SimpleUploadedFile(name=self.image_with_exif,
-                                      content=open('/'.join([self.image_path, self.image_with_exif]), 'rb').read(),
+                                      content=open(os.path.join(self.image_path, self.image_with_exif), 'rb').read(),
                                       content_type='image/jpeg')
         return SimpleUploadedFile(name=self.image_without_exif,
-                                  content=open('/'.join([self.image_path, self.image_without_exif]), 'rb').read(),
+                                  content=open(os.path.join(self.image_path, self.image_without_exif), 'rb').read(),
                                   content_type='image/jpeg')
 
     def tearDown(self):

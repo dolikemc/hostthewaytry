@@ -61,9 +61,19 @@
             <div class="w3-padding-8"><i class="fa fa-info"></i></div>
         </a>
     {% endif %}
-    <a href="{% url 'places:index' %}" class="w3-bar-item w3-button w3-right" id="id_navigator_places">
-        <div class="w3-padding-8"><i class="fa fa-home"></i></div>
-    </a>
+    {% if user.is_worker %}
+        <a href="{% url 'places:worker' %}" class="w3-bar-item w3-button w3-right" id="id_navigator_places">
+            <div class="w3-padding-8"><i class="fa fa-home"></i></div>
+        </a>
+    {% elif user.is_place_admin %}
+        <a href="{% url 'places:place_admin' %}" class="w3-bar-item w3-button w3-right" id="id_navigator_places">
+            <div class="w3-padding-8"><i class="fa fa-home"></i></div>
+        </a>
+    {% else %}
+        <a href="{% url 'places:index' %}" class="w3-bar-item w3-button w3-right" id="id_navigator_places">
+            <div class="w3-padding-8"><i class="fa fa-home"></i></div>
+        </a>
+    {% endif %}
 </div>
 {% comment %}
 <div class="w3-panel w3-center">
