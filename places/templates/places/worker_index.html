@@ -2,8 +2,11 @@
 {% block content %}
     {% load static %}
     {% load leaflet_tags %}
-    <div class="bgimg w3-display-container hosttheway-color-two"
-         style="min-height: 550px" id="id_welcome_worker">
+    <header class="w3-display-container hosttheway-color-two"
+            style="min-height: 550px" id="id_welcome_worker">
+        <img class="w3-image" src="{% static 'img/hosttheway.jpg' %}" alt="Host The Way" style="min-width: 550px"
+             width="1500"
+             height="600">
         {% if  user.is_authenticated %}
             <div class="w3-display-topleft w3-padding">
                 <h4>
@@ -32,5 +35,5 @@
 
 
         {% endif %}
-    </div>
+    </header>
 {% endblock %}
