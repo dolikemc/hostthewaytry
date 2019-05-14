@@ -7,6 +7,10 @@ from traveller.models import User
 
 
 class ModelTest(BaseTest):
+    def setUp(self):
+        super().setUp()
+        place = Place.objects.create(name='Test', created_by=self.user)
+        self.last_place_id = place.id
 
     def test_traveller_string(self):
         self.set_up_staff()
